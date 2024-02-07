@@ -1,0 +1,74 @@
+`ifndef INSTRUCTION_PATTERNS
+`def INSTRUCTION_PATTERNS
+
+parameter ADDRESS   = 16'h0000;
+    parameter MOVA0 = 16'b0000_00xx_00xx_0000, // Cases within Op Code 0
+              MOVA1 = 16'b0000_00xx_1x00_0000,
+              MOVA2 = 16'b0000_00xx_011x_0000,
+              CMPA  = 16'b0000_00xx_1x01_0000,
+              SUBA  = 16'b0000_00xx_1x11_0000,
+              ADDA  = 16'b0000_00xx_1x10_0000,
+              RRCMA = 16'b0000_0000_0100_0000,
+              RRAMA = 16'b0000_0001_0100_0000,
+              RLAMA = 16'b0000_0010_0100_0000,
+              RRUMA = 16'b0000_0011_0100_0000,
+              RRCMW = 16'b0000_0000_0101_0000,
+              RRAMW = 16'b0000_0001_0101_0000,
+              RLAMW = 16'b0000_0010_0101_0000,
+              RRUMW = 16'b0000_0011_0101_0000;
+parameter FORMATII  = 16'h1000;
+    parameter RRC   = 16'h1000,
+              RRCW  = 16'h1040,
+              RRCW  = 16'h1080,
+              RRCW  = 16'h1100,
+              RRCW  = 16'h1140,
+              RRCW  = 16'h1180,
+              RRCW  = 16'h1200,
+              RRCW  = 16'h1240,
+              RRCW  = 16'h1280,
+              RRCW  = 16'h1300,
+             CALLA0 = 16'h1340,
+             CALLA1 = 16'h1380,
+             PUSHMA = 16'h14x0,
+             PUSHMW = 16'h15x0,
+             POPMA  = 16'h16x0,
+             POPMW  = 16'h17x0;
+
+parameter JMP2    = 16'h2000,
+          JMP24   = 16'h2040;
+    parameter JNE = 16'h2000,
+              JEQ = 16'h2400,
+              JNC = 16'h2800,
+              JC  = 16'h2C00;
+parameter JMP3    = 16'h3000,
+          JMP34   = 16'h3040;
+    parameter JN  = 16'h3000,
+              JGE = 16'h3400,
+              JL  = 16'h3800,
+              JMP = 16'h3C00;
+parameter MOV   = 16'h4000,
+          MOVW  = 16'h4040;
+parameter ADD   = 16'h5000,
+          ADDW  = 16'h5040;
+parameter ADDC  = 16'h6000,
+          ADDCW = 16'h6040;
+parameter SUBC  = 16'h7000,
+          SUBCW = 16'h7040;
+parameter SUB   = 16'h8000,
+          SUBW  = 16'h8040;
+parameter CMP   = 16'h9000,
+          CMPW  = 16'h9040;
+parameter DADD  = 16'hA000,
+          DADDW = 16'hA040;
+parameter BIT   = 16'hB000,
+          BITW  = 16'hB040;
+parameter BIC   = 16'hC000,
+          BICW  = 16'hC040;
+parameter BIS   = 16'hD000,
+          BISW  = 16'hD040;
+parameter XOR   = 16'hE000,
+          XORW  = 16'hE040;
+parameter AND   = 16'hF000,
+          ANDW  = 16'hF040;
+
+`endif "instruction_patterns.v"
