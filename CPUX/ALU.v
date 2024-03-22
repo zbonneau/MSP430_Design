@@ -1,12 +1,12 @@
-`include "MSP430_ALU\\instruction_patterns.v"
 
 module ALUX(
     input [15:0] instr, 
     input [19:0] src, dst,
     input Cin, Vin, Nin, Zin,
-    output reg [19:0] result
+    output reg [19:0] result,
     output reg Cout, Vout, Nout, Zout
  );
+`include "CPUX\\instruction_patterns.INC"  
 
     initial begin {result, Cout, Vout, Nout, Zout} = 0; end
 

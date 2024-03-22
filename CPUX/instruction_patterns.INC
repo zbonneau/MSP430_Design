@@ -1,5 +1,3 @@
-`ifndef INSTRUCTION_PATTERNS
-`def INSTRUCTION_PATTERNS
 
 parameter ADDRESS   = 16'h0000;
     parameter MOVA0 = 16'b0000_00xx_00xx_0000, // Cases within Op Code 0
@@ -70,5 +68,3 @@ parameter XOR   = 16'hE000,
           XORB  = 16'hE040;
 parameter AND   = 16'hF000,
           ANDB  = 16'hF040;
-
-`endif "instruction_patterns.v"
