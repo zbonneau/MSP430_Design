@@ -1,0 +1,1 @@
+This folder contains work for the MSP430 CPU without extended or address operations. This memory size is 65 kB (16-bit).
