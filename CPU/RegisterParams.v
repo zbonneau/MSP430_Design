@@ -31,6 +31,7 @@ parameter REGISTER_MODE = 2'b0,
           INDEXED_MODE  = 2'b1,
           SYMBOLIC_MODE = 2'b1,
           ABSOLUTE_MODE = 2'b1,
-          INDIRECT_MODE = 2'b11,
+          INDIRECT_MODE = 2'b10,
           INDIRECT_AUTOINCREMENT_MODE = 2'b11,
           IMMEDIATE_MODE = 2'b11;
+
