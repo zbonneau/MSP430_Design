@@ -38,7 +38,7 @@ module RegisterFile (
     input BranchExecute,
     input [15:0] BranchAddress,
 
-    input SRW, Zin, Vin, Nin, Zin,
+    input SRW, Zin, Vin, Nin, Cin,
 
     input [3:0] srcA, dstA,
     input [1:0] As,
@@ -49,20 +49,21 @@ module RegisterFile (
     input RW,
     input [15:0] dataIn,
 
-    output [15:0] PC, SP, Rsrc, Rdst,
+    output [15:0] PCout, SPout, Rsrc, Rdst,
     output reg [15:0] MAB, 
     output Zcurrent, Vcurrent, Ncurrent, Ccurrent
 );
 
-    `include "CPU\\RegisterParams.v"
+    `include "CPU\\RegFile\\RegisterParams.v"
     `include "CPU\\GeneralParams.v"
 
     reg [15:0] R [15:0];
 
     initial begin 
         MAB <= 0;
-        for (integer i = 0; i < 16; i = i+1) begin R[i] <= 0; end
+        for (integer i = 0; i < 16; i = i+1) begin R[i] <= i; end // for testbench
         // Insert Reset Conditions for special registers here
+        R[CG2] <= 0;
     end
 
    // Reset Control
@@ -75,7 +76,8 @@ module RegisterFile (
 
    // Branch Control
     always @(posedge clk) begin
-        if (BranchExecute) begin R[PC] <= BranchAddress; end
+                           // Prevent jump execution if WB to PC
+        if (BranchExecute & ~(RW & (resultA == PC))) begin R[PC] <= {BranchAddress[15:1], 1'b0}; end // force PC[0] = 0. 
     end
 
    // MO Control
@@ -90,12 +92,21 @@ module RegisterFile (
 
    // MAB Control
     always @(*) begin
-        if (indirect) begin MAB <= (OneOp) ? R[dstA] : R[srcA]; end
+        if (indirect && (MO == MO_NextInstruction || MO == MO_Offset)) begin
+            // MO, indirect are controlled by MicroSequencer. No state drives both high. If that happens, Dead CAR Decoder
+            MAB <= 16'hDEAD;
+        end
+        if (indirect) begin 
+            if      (OneOp & ~dstGenerated)  begin MAB <= R[dstA];  end // Prevent Memory Fetch if attempting to use CG1, CG2
+            else if (~OneOp & ~srcGenerated) begin MAB <= R[srcA];  end
+            else                             begin MAB <= 16'hDEAD; end
+        end
         if (MO == MO_NextInstruction || MO == MO_Offset) begin MAB <= R[PC]; end
+        
     end
 
    // Status Register Control
-    always @(posedge clk) begin 
+    always @(negedge clk) begin 
         if (SRW) begin {R[SR][BITZ], R[SR][BITV], R[SR][BITN], R[SR][BITC]} <= {Zin, Vin, Nin, Cin}; end
     end
 
@@ -113,8 +124,9 @@ module RegisterFile (
 
    // Indirect AutoIncrement Addressing Control
     always @(negedge clk) begin
-        if (incSrc) begin R[srcA] <= (BW) ? R[srcA] + 1 : R[srcA] + 2; end
-        if (incDst) begin R[dstA] <= (BW) ? R[dstA] + 1 : R[dstA] + 2; end
+        // Prevent increment on CG1, CG2
+        if (incSrc & ~(srcGenerated)) begin R[srcA] <= (BW) ? R[srcA] + 1 : R[srcA] + 2; end
+        if (incDst & ~(dstGenerated)) begin R[dstA] <= (BW) ? R[dstA] + 1 : R[dstA] + 2; end
     end
 
    // Constant Generator Unit
@@ -158,8 +170,8 @@ module RegisterFile (
     end
     
    // Output Assignments
-    assign PC = R[PC];
-    assign SP = R[SP];
+    assign PCout = R[PC];
+    assign SPout = R[SP];
     assign Rsrc = (srcGenerated) ? srcConstant : R[srcA];
     assign Rdst = (dstGenerated) ? dstConstant : R[dstA];
 

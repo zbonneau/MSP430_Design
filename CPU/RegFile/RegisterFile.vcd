@@ -1,0 +1,1497 @@
+$date
+	Sat Apr 13 17:52:56 2024
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	100ns
+$end
+$scope module RegisterFile_tb $end
+$var wire 1 ! Zcurrent $end
+$var wire 4 " ZVNCin [3:0] $end
+$var wire 4 # ZVNCcurrent [3:0] $end
+$var wire 1 $ Vcurrent $end
+$var wire 16 % SPout [15:0] $end
+$var wire 16 & Rsrc [15:0] $end
+$var wire 16 ' Rdst [15:0] $end
+$var wire 16 ( PCout [15:0] $end
+$var wire 1 ) Ncurrent $end
+$var wire 16 * MAB [15:0] $end
+$var wire 1 + Ccurrent $end
+$var parameter 2 , ABSOLUTE_MODE $end
+$var parameter 32 - BITC $end
+$var parameter 32 . BITN $end
+$var parameter 32 / BITV $end
+$var parameter 32 0 BITZ $end
+$var parameter 4 1 CG1 $end
+$var parameter 4 2 CG2 $end
+$var parameter 32 3 GIE $end
+$var parameter 2 4 IMMEDIATE_MODE $end
+$var parameter 2 5 INDEXED_MODE $end
+$var parameter 2 6 INDIRECT_AUTOINCREMENT_MODE $end
+$var parameter 2 7 INDIRECT_MODE $end
+$var parameter 2 8 MO_NOP $end
+$var parameter 2 9 MO_NextInstruction $end
+$var parameter 2 : MO_Offset $end
+$var parameter 2 ; MO_SPPreDec $end
+$var parameter 4 < PC $end
+$var parameter 4 = R0 $end
+$var parameter 4 > R1 $end
+$var parameter 4 ? R10 $end
+$var parameter 4 @ R11 $end
+$var parameter 4 A R12 $end
+$var parameter 4 B R13 $end
+$var parameter 4 C R14 $end
+$var parameter 4 D R15 $end
+$var parameter 4 E R2 $end
+$var parameter 4 F R3 $end
+$var parameter 4 G R4 $end
+$var parameter 4 H R5 $end
+$var parameter 4 I R6 $end
+$var parameter 4 J R7 $end
+$var parameter 4 K R8 $end
+$var parameter 4 L R9 $end
+$var parameter 2 M REGISTER_MODE $end
+$var parameter 4 N SP $end
+$var parameter 4 O SR $end
+$var parameter 2 P SYMBOLIC_MODE $end
+$var reg 1 Q Ad $end
+$var reg 2 R As [1:0] $end
+$var reg 1 S BW $end
+$var reg 16 T BranchAddress [15:0] $end
+$var reg 1 U BranchExecute $end
+$var reg 1 V Cin $end
+$var reg 2 W MO [1:0] $end
+$var reg 1 X Nin $end
+$var reg 1 Y OneOp $end
+$var reg 1 Z RW $end
+$var reg 1 [ SRW $end
+$var reg 1 \ Vin $end
+$var reg 1 ] Zin $end
+$var reg 1 ^ clk $end
+$var reg 16 _ dataIn [15:0] $end
+$var reg 4 ` dstA [3:0] $end
+$var reg 1 a incDst $end
+$var reg 1 b incSrc $end
+$var reg 1 c indirect $end
+$var reg 1 d reset $end
+$var reg 4 e resultA [3:0] $end
+$var reg 4 f srcA [3:0] $end
+$scope module uut $end
+$var wire 1 Q Ad $end
+$var wire 2 g As [1:0] $end
+$var wire 1 S BW $end
+$var wire 16 h BranchAddress [15:0] $end
+$var wire 1 U BranchExecute $end
+$var wire 1 V Cin $end
+$var wire 2 i MO [1:0] $end
+$var wire 1 X Nin $end
+$var wire 1 Y OneOp $end
+$var wire 16 j PCout [15:0] $end
+$var wire 1 Z RW $end
+$var wire 16 k SPout [15:0] $end
+$var wire 1 [ SRW $end
+$var wire 1 \ Vin $end
+$var wire 1 ] Zin $end
+$var wire 1 ^ clk $end
+$var wire 16 l dataIn [15:0] $end
+$var wire 4 m dstA [3:0] $end
+$var wire 1 a incDst $end
+$var wire 1 b incSrc $end
+$var wire 1 c indirect $end
+$var wire 1 d reset $end
+$var wire 4 n resultA [3:0] $end
+$var wire 4 o srcA [3:0] $end
+$var wire 1 ! Zcurrent $end
+$var wire 1 $ Vcurrent $end
+$var wire 16 p Rsrc [15:0] $end
+$var wire 16 q Rdst [15:0] $end
+$var wire 1 ) Ncurrent $end
+$var wire 1 + Ccurrent $end
+$var parameter 2 r ABSOLUTE_MODE $end
+$var parameter 32 s BITC $end
+$var parameter 32 t BITN $end
+$var parameter 32 u BITV $end
+$var parameter 32 v BITZ $end
+$var parameter 4 w CG1 $end
+$var parameter 4 x CG2 $end
+$var parameter 32 y GIE $end
+$var parameter 2 z IMMEDIATE_MODE $end
+$var parameter 2 { INDEXED_MODE $end
+$var parameter 2 | INDIRECT_AUTOINCREMENT_MODE $end
+$var parameter 2 } INDIRECT_MODE $end
+$var parameter 2 ~ MO_NOP $end
+$var parameter 2 !" MO_NextInstruction $end
+$var parameter 2 "" MO_Offset $end
+$var parameter 2 #" MO_SPPreDec $end
+$var parameter 4 $" PC $end
+$var parameter 4 %" R0 $end
+$var parameter 4 &" R1 $end
+$var parameter 4 '" R10 $end
+$var parameter 4 (" R11 $end
+$var parameter 4 )" R12 $end
+$var parameter 4 *" R13 $end
+$var parameter 4 +" R14 $end
+$var parameter 4 ," R15 $end
+$var parameter 4 -" R2 $end
+$var parameter 4 ." R3 $end
+$var parameter 4 /" R4 $end
+$var parameter 4 0" R5 $end
+$var parameter 4 1" R6 $end
+$var parameter 4 2" R7 $end
+$var parameter 4 3" R8 $end
+$var parameter 4 4" R9 $end
+$var parameter 2 5" REGISTER_MODE $end
+$var parameter 4 6" SP $end
+$var parameter 4 7" SR $end
+$var parameter 2 8" SYMBOLIC_MODE $end
+$var reg 16 9" MAB [15:0] $end
+$var reg 16 :" dstConstant [15:0] $end
+$var reg 1 ;" dstGenerated $end
+$var reg 16 <" srcConstant [15:0] $end
+$var reg 1 =" srcGenerated $end
+$scope begin $ivl_for_loop0 $end
+$var integer 32 >" i [31:0] $end
+$upscope $end
+$scope begin $ivl_for_loop1 $end
+$var integer 32 ?" i [31:0] $end
+$upscope $end
+$upscope $end
+$scope begin $ivl_for_loop2 $end
+$var integer 32 @" i [31:0] $end
+$upscope $end
+$scope begin $ivl_for_loop3 $end
+$var integer 32 A" i [31:0] $end
+$upscope $end
+$scope begin $ivl_for_loop4 $end
+$var integer 32 B" i [31:0] $end
+$upscope $end
+$upscope $end
+$scope module RegisterFile_tb $end
+$scope module uut $end
+$var reg 16 C" \R[0] [15:0] $end
+$upscope $end
+$upscope $end
+$scope module RegisterFile_tb $end
+$scope module uut $end
+$var reg 16 D" \R[1] [15:0] $end
+$upscope $end
+$upscope $end
+$scope module RegisterFile_tb $end
+$scope module uut $end
+$var reg 16 E" \R[2] [15:0] $end
+$upscope $end
+$upscope $end
+$scope module RegisterFile_tb $end
+$scope module uut $end
+$var reg 16 F" \R[3] [15:0] $end
+$upscope $end
+$upscope $end
+$scope module RegisterFile_tb $end
+$scope module uut $end
+$var reg 16 G" \R[4] [15:0] $end
+$upscope $end
+$upscope $end
+$scope module RegisterFile_tb $end
+$scope module uut $end
+$var reg 16 H" \R[5] [15:0] $end
+$upscope $end
+$upscope $end
+$scope module RegisterFile_tb $end
+$scope module uut $end
+$var reg 16 I" \R[6] [15:0] $end
+$upscope $end
+$upscope $end
+$scope module RegisterFile_tb $end
+$scope module uut $end
+$var reg 16 J" \R[7] [15:0] $end
+$upscope $end
+$upscope $end
+$scope module RegisterFile_tb $end
+$scope module uut $end
+$var reg 16 K" \R[8] [15:0] $end
+$upscope $end
+$upscope $end
+$scope module RegisterFile_tb $end
+$scope module uut $end
+$var reg 16 L" \R[9] [15:0] $end
+$upscope $end
+$upscope $end
+$scope module RegisterFile_tb $end
+$scope module uut $end
+$var reg 16 M" \R[10] [15:0] $end
+$upscope $end
+$upscope $end
+$scope module RegisterFile_tb $end
+$scope module uut $end
+$var reg 16 N" \R[11] [15:0] $end
+$upscope $end
+$upscope $end
+$scope module RegisterFile_tb $end
+$scope module uut $end
+$var reg 16 O" \R[12] [15:0] $end
+$upscope $end
+$upscope $end
+$scope module RegisterFile_tb $end
+$scope module uut $end
+$var reg 16 P" \R[13] [15:0] $end
+$upscope $end
+$upscope $end
+$scope module RegisterFile_tb $end
+$scope module uut $end
+$var reg 16 Q" \R[14] [15:0] $end
+$upscope $end
+$upscope $end
+$scope module RegisterFile_tb $end
+$scope module uut $end
+$var reg 16 R" \R[15] [15:0] $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+$comment Show the parameter values. $end
+$dumpall
+b1 8"
+b10 7"
+b1 6"
+b0 5"
+b1001 4"
+b1000 3"
+b111 2"
+b110 1"
+b101 0"
+b100 /"
+b11 ."
+b10 -"
+b1111 ,"
+b1110 +"
+b1101 *"
+b1100 )"
+b1011 ("
+b1010 '"
+b1 &"
+b0 %"
+b0 $"
+b11 #"
+b10 ""
+b1 !"
+b0 ~
+b10 }
+b11 |
+b1 {
+b11 z
+b11 y
+b11 x
+b10 w
+b1 v
+b1000 u
+b10 t
+b0 s
+b1 r
+b1 P
+b10 O
+b1 N
+b0 M
+b1001 L
+b1000 K
+b111 J
+b110 I
+b101 H
+b100 G
+b11 F
+b10 E
+b1111 D
+b1110 C
+b1101 B
+b1100 A
+b1011 @
+b1010 ?
+b1 >
+b0 =
+b0 <
+b11 ;
+b10 :
+b1 9
+b0 8
+b10 7
+b11 6
+b1 5
+b11 4
+b11 3
+b11 2
+b10 1
+b1 0
+b1000 /
+b10 .
+b0 -
+b1 ,
+$end
+#0
+$dumpvars
+b1111 R"
+b1110 Q"
+b1101 P"
+b1100 O"
+b1011 N"
+b1010 M"
+b1001 L"
+b1000 K"
+b111 J"
+b110 I"
+b101 H"
+b100 G"
+b0 F"
+b10 E"
+b1 D"
+b0 C"
+bx B"
+bx A"
+b10000 @"
+bx ?"
+b10000 >"
+0="
+b1101111010101101 <"
+0;"
+b1101111010101101 :"
+b0 9"
+b0 q
+b0 p
+b0 o
+b0 n
+b0 m
+b0 l
+b1 k
+b0 j
+b0 i
+b0 h
+b0 g
+b0 f
+b0 e
+0d
+0c
+0b
+0a
+b0 `
+b0 _
+0^
+0]
+0\
+0[
+0Z
+0Y
+0X
+b0 W
+0V
+0U
+b0 T
+0S
+b0 R
+0Q
+0+
+b0 *
+0)
+b0 (
+b0 '
+b0 &
+b1 %
+0$
+b1000 #
+b0 "
+1!
+$end
+#2
+b1 "
+1V
+b0 A"
+#5
+1^
+#10
+0^
+#12
+1X
+b10 "
+0V
+b1 A"
+#15
+1^
+#20
+0^
+#22
+b11 "
+1V
+b10 A"
+#25
+1^
+#30
+0^
+#32
+1\
+0X
+b100 "
+0V
+b11 A"
+#35
+1^
+#40
+0^
+#42
+b101 "
+1V
+b100 A"
+#45
+1^
+#50
+0^
+#52
+1X
+b110 "
+0V
+b101 A"
+#55
+1^
+#60
+0^
+#62
+b111 "
+1V
+b110 A"
+#65
+1^
+#70
+0^
+#72
+1]
+0\
+0X
+b1000 "
+0V
+b111 A"
+#75
+1^
+#80
+0^
+#82
+b1001 "
+1V
+b1000 A"
+#85
+1^
+#90
+0^
+#92
+1X
+b1010 "
+0V
+b1001 A"
+#95
+1^
+#100
+0^
+#102
+b1011 "
+1V
+b1010 A"
+#105
+1^
+#110
+0^
+#112
+1\
+0X
+b1100 "
+0V
+b1011 A"
+#115
+1^
+#120
+0^
+#122
+b1101 "
+1V
+b1100 A"
+#125
+1^
+#130
+0^
+#132
+1X
+b1110 "
+0V
+b1101 A"
+#135
+1^
+#140
+0^
+#142
+b1111 "
+1V
+b1110 A"
+#145
+1^
+#150
+0^
+#152
+1[
+0]
+0\
+0X
+b0 "
+0V
+b1111 A"
+#155
+1^
+#160
+b0 #
+0!
+b0 E"
+0^
+#162
+b1 "
+1V
+b10000 A"
+#165
+1^
+#170
+b1 #
+1+
+b1 E"
+0^
+#172
+1X
+b10 "
+0V
+b10001 A"
+#175
+1^
+#180
+1)
+b10 #
+0+
+b100 E"
+0^
+#182
+b11 "
+1V
+b10010 A"
+#185
+1^
+#190
+b11 #
+1+
+b101 E"
+0^
+#192
+1\
+0X
+b100 "
+0V
+b10011 A"
+#195
+1^
+#200
+1$
+0)
+b100 #
+0+
+b100000000 E"
+0^
+#202
+b101 "
+1V
+b10100 A"
+#205
+1^
+#210
+b101 #
+1+
+b100000001 E"
+0^
+#212
+1X
+b110 "
+0V
+b10101 A"
+#215
+1^
+#220
+1)
+b110 #
+0+
+b100000100 E"
+0^
+#222
+b111 "
+1V
+b10110 A"
+#225
+1^
+#230
+b111 #
+1+
+b100000101 E"
+0^
+#232
+1]
+0\
+0X
+b1000 "
+0V
+b10111 A"
+#235
+1^
+#240
+1!
+0$
+0)
+b1000 #
+0+
+b10 E"
+0^
+#242
+b1001 "
+1V
+b11000 A"
+#245
+1^
+#250
+b1001 #
+1+
+b11 E"
+0^
+#252
+1X
+b1010 "
+0V
+b11001 A"
+#255
+1^
+#260
+1)
+b1010 #
+0+
+b110 E"
+0^
+#262
+b1011 "
+1V
+b11010 A"
+#265
+1^
+#270
+b1011 #
+1+
+b111 E"
+0^
+#272
+1\
+0X
+b1100 "
+0V
+b11011 A"
+#275
+1^
+#280
+1$
+0)
+b1100 #
+0+
+b100000010 E"
+0^
+#282
+b1101 "
+1V
+b11100 A"
+#285
+1^
+#290
+b1101 #
+1+
+b100000011 E"
+0^
+#292
+1X
+b1110 "
+0V
+b11101 A"
+#295
+1^
+#300
+1)
+b1110 #
+0+
+b100000110 E"
+0^
+#302
+b1111 "
+1V
+b11110 A"
+#305
+1^
+#310
+b1111 #
+1+
+b100000111 E"
+0^
+#312
+0[
+0]
+0\
+0X
+b0 "
+0V
+b11111 A"
+#315
+1^
+#320
+0^
+#322
+b1010 T
+b1010 h
+b100000 A"
+#325
+1^
+#330
+0^
+#332
+1U
+#335
+b1010 &
+b1010 p
+b1010 '
+b1010 q
+b1010 C"
+b1010 (
+b1010 j
+1^
+#340
+0^
+#342
+b10101 T
+b10101 h
+#345
+b10100 &
+b10100 p
+b10100 '
+b10100 q
+b10100 C"
+b10100 (
+b10100 j
+1^
+#350
+0^
+#352
+b101000 _
+b101000 l
+1Z
+b11110 T
+b11110 h
+#355
+b101000 &
+b101000 p
+b101000 '
+b101000 q
+b101000 C"
+b101000 (
+b101000 j
+1^
+#360
+0^
+#362
+b0 _
+b0 l
+0Z
+0U
+#365
+1^
+#370
+0^
+#372
+b10010000000000 D"
+b10010000000000 %
+b10010000000000 k
+b0 T
+b0 h
+#375
+1^
+#380
+0^
+#382
+b101000 *
+b101000 9"
+b1 W
+b1 i
+#385
+1^
+#390
+b101010 *
+b101010 9"
+b101010 &
+b101010 p
+b101010 '
+b101010 q
+b101010 C"
+b101010 (
+b101010 j
+0^
+#392
+b10 W
+b10 i
+#395
+1^
+#400
+b101100 *
+b101100 9"
+b101100 &
+b101100 p
+b101100 '
+b101100 q
+b101100 C"
+b101100 (
+b101100 j
+0^
+#402
+b11 W
+b11 i
+#405
+1^
+#410
+b10001111111110 D"
+b10001111111110 %
+b10001111111110 k
+0^
+#412
+b101 *
+b101 9"
+b1010 '
+b1010 q
+b101 &
+b101 p
+b10 R
+b10 g
+b1010 `
+b1010 m
+b101 f
+b101 o
+1c
+b0 W
+b0 i
+#415
+1^
+#420
+0^
+#422
+b110 *
+b110 9"
+b1011 '
+b1011 q
+b110 &
+b110 p
+1b
+b11 R
+b11 g
+b1011 `
+b1011 m
+b110 f
+b110 o
+#425
+1^
+#430
+b1000 *
+b1000 9"
+b1000 &
+b1000 p
+b1000 I"
+0^
+#432
+b100 <"
+b1101111010101101 *
+b1101111010101101 9"
+b1010 '
+b1010 q
+1="
+b100 &
+b100 p
+0b
+b10 R
+b10 g
+b1010 `
+b1010 m
+b10 f
+b10 o
+#435
+1^
+#440
+0^
+#442
+b1111111111111111 &
+b1111111111111111 p
+b1111111111111111 <"
+b1011 '
+b1011 q
+1b
+b11 R
+b11 g
+b1011 `
+b1011 m
+b11 f
+b11 o
+#445
+1^
+#450
+0^
+#452
+b1101111010101101 <"
+b1010 *
+b1010 9"
+b101 &
+b101 p
+b1010 '
+b1010 q
+0="
+0b
+b10 R
+b10 g
+b1010 `
+b1010 m
+b101 f
+b101 o
+1Y
+#455
+1^
+#460
+0^
+#462
+b1011 *
+b1011 9"
+b1011 '
+b1011 q
+b1000 &
+b1000 p
+1S
+1a
+b11 R
+b11 g
+b1011 `
+b1011 m
+b110 f
+b110 o
+#465
+1^
+#470
+b1100 *
+b1100 9"
+b1100 '
+b1100 q
+b1100 N"
+0^
+#472
+b100 :"
+b1101111010101101 *
+b1101111010101101 9"
+b100 '
+b100 q
+1;"
+b101 &
+b101 p
+0a
+b10 R
+b10 g
+b10 `
+b10 m
+b101 f
+b101 o
+#475
+1^
+#480
+0^
+#482
+b1111111111111111 '
+b1111111111111111 q
+b1111111111111111 :"
+b1000 &
+b1000 p
+1a
+b11 R
+b11 g
+b11 `
+b11 m
+b110 f
+b110 o
+#485
+1^
+#490
+0^
+#492
+b111 '
+b111 q
+0;"
+b1101111010101101 :"
+b1000 *
+b1000 9"
+b11110 _
+b11110 l
+1Z
+0a
+0S
+b0 R
+b0 g
+b111 `
+b111 m
+0c
+0Y
+#495
+b11110 C"
+b11110 (
+b11110 j
+1^
+#500
+0^
+#502
+b101001 _
+b101001 l
+#505
+b101000 C"
+b101000 (
+b101000 j
+1^
+#510
+0^
+#512
+b11110 _
+b11110 l
+b1 e
+b1 n
+#515
+b11110 D"
+b11110 %
+b11110 k
+1^
+#520
+0^
+#522
+b101001 _
+b101001 l
+#525
+b101000 D"
+b101000 %
+b101000 k
+1^
+#530
+0^
+#532
+b100001100100001 _
+b100001100100001 l
+b10 e
+b10 n
+#535
+0!
+b101 #
+0)
+b100100001 E"
+1^
+#540
+0^
+#542
+b11000 _
+b11000 l
+b11 e
+b11 n
+#545
+b0 F"
+1^
+#550
+0^
+#552
+b1000000 _
+b1000000 l
+b100 e
+b100 n
+b100 B"
+#555
+b1000000 G"
+1^
+#560
+0^
+#562
+b1010000 _
+b1010000 l
+b101 e
+b101 n
+b101 B"
+#565
+b1010000 H"
+1^
+#570
+0^
+#572
+b1100000 _
+b1100000 l
+b110 e
+b110 n
+b110 B"
+#575
+b1100000 &
+b1100000 p
+b1100000 I"
+1^
+#580
+0^
+#582
+b1110000 _
+b1110000 l
+b111 e
+b111 n
+b111 B"
+#585
+b1110000 '
+b1110000 q
+b1110000 J"
+1^
+#590
+0^
+#592
+b10000000 _
+b10000000 l
+b1000 e
+b1000 n
+b1000 B"
+#595
+b10000000 K"
+1^
+#600
+0^
+#602
+b10010000 _
+b10010000 l
+b1001 e
+b1001 n
+b1001 B"
+#605
+b10010000 L"
+1^
+#610
+0^
+#612
+0Z
+b10100000 _
+b10100000 l
+b1010 e
+b1010 n
+b1010 B"
+#615
+1^
+#620
+0^
+#622
+b10110000 _
+b10110000 l
+b1011 e
+b1011 n
+b1011 B"
+#625
+1^
+#630
+0^
+#632
+b11000000 _
+b11000000 l
+b1100 e
+b1100 n
+b1100 B"
+#635
+1^
+#640
+0^
+#642
+b11010000 _
+b11010000 l
+b1101 e
+b1101 n
+b1101 B"
+#645
+1^
+#650
+0^
+#652
+b11100000 _
+b11100000 l
+b1110 e
+b1110 n
+b1110 B"
+#655
+1^
+#660
+0^
+#662
+b11110000 _
+b11110000 l
+b1111 e
+b1111 n
+b1111 B"
+#665
+1^
+#670
+0^
+#672
+b100100001 <"
+1="
+b100100001 &
+b100100001 p
+b10 f
+b10 o
+b10000 B"
+#675
+1^
+#680
+0^
+#682
+b0 &
+b0 p
+b0 <"
+b1 R
+b1 g
+#685
+1^
+#690
+0^
+#692
+b100 &
+b100 p
+b100 <"
+b10 R
+b10 g
+#695
+1^
+#700
+0^
+#702
+b1000 &
+b1000 p
+b1000 <"
+b11 R
+b11 g
+#705
+1^
+#710
+0^
+#712
+b0 &
+b0 p
+b0 <"
+b0 R
+b0 g
+b11 f
+b11 o
+#715
+1^
+#720
+0^
+#722
+b1 &
+b1 p
+b1 <"
+b1 R
+b1 g
+#725
+1^
+#730
+0^
+#732
+b10 &
+b10 p
+b10 <"
+b10 R
+b10 g
+#735
+1^
+#740
+0^
+#742
+b1111111111111111 &
+b1111111111111111 p
+b1111111111111111 <"
+b11 R
+b11 g
+#745
+1^
+#750
+0^
+#752
+b100100001 :"
+b1101111010101101 <"
+b101000 &
+b101000 p
+b100100001 '
+b100100001 q
+1;"
+0="
+b10 `
+b10 m
+1Y
+b0 R
+b0 g
+b0 f
+b0 o
+#755
+1^
+#760
+0^
+#762
+b0 '
+b0 q
+b0 :"
+b1 R
+b1 g
+#765
+1^
+#770
+0^
+#772
+b100 '
+b100 q
+b100 :"
+b10 R
+b10 g
+#775
+1^
+#780
+0^
+#782
+b1000 '
+b1000 q
+b1000 :"
+b11 R
+b11 g
+#785
+1^
+#790
+0^
+#792
+b0 '
+b0 q
+b0 :"
+b0 R
+b0 g
+b11 `
+b11 m
+#795
+1^
+#800
+0^
+#802
+b1 '
+b1 q
+b1 :"
+b1 R
+b1 g
+#805
+1^
+#810
+0^
+#812
+b10 '
+b10 q
+b10 :"
+b10 R
+b10 g
+#815
+1^
+#820
+0^
+#822
+b1111111111111111 '
+b1111111111111111 q
+b1111111111111111 :"
+b11 R
+b11 g
+#825
+1^
+#830
+0^
+#832
+b100100001 '
+b100100001 q
+b100100001 :"
+b10 `
+b10 m
+0Y
+b0 R
+b0 g
+#835
+1^
+#840
+0^
+#842
+b0 '
+b0 q
+b0 :"
+1Q
+#845
+1^
+#850
+0^
+#852
+0Q
+b11 `
+b11 m
+#855
+1^
+#860
+0^
+#862
+b1 '
+b1 q
+b1 :"
+1Q
+#865
+1^
+#870
+0^
+#872
+b1101111010101101 :"
+b1100000 '
+b1100000 q
+0;"
+1d
+0Q
+b110 `
+b110 m
+#875
+b0 '
+b0 q
+0$
+b0 #
+0+
+b0 &
+b0 p
+b0 R"
+b0 Q"
+b0 P"
+b0 O"
+b0 N"
+b0 M"
+b0 L"
+b0 K"
+b0 J"
+b0 I"
+b0 H"
+b0 G"
+b0 F"
+b0 E"
+b0 D"
+b0 %
+b0 k
+b0 C"
+b0 (
+b0 j
+b10000 ?"
+1^
+#880
+0^
+#882
+0d
+#885
+1^
+#890
+0^
+#892
