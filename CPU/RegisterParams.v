@@ -20,11 +20,11 @@ parameter PC  = 0,
           R14 = 14,
           R15 = 15;
 
-parameter Carry = 0,
-          Zero  = 1,
-          Neg   = 2,
+parameter BITC  = 0,
+          BITZ  = 1,
+          BITN  = 2,
           GIE   = 3,
-          V     = 8;
+          BITV  = 8;
 
 
 parameter REGISTER_MODE = 2'b0,

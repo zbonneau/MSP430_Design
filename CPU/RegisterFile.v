@@ -1,121 +1,170 @@
-/*------------------------------------
-    Module Name: Register File
+/*--------------------------------------------------------
+    Module Name : RegisterFile
     Description:
-        Describes the MSP430FR6989 Register File
-        as 16-bit registers (no extended/address instructions, Memory Range = 65 kB)
-
+        Describes the MSP430 Register File as 16-bit registers.
+        No Extended/address instructions, Memory Range = 65 kB
+    
     Inputs:
-        clk, reset - reset is from hardware RST IO
-        incSrc, incPC - used for indirect autoincrement, increment PC on IF, offset fetch
-        branch - latches PC for branching operations
-        SRW, BW - control SR writes, BW for indirect autoincrement
-        As, Ad - address modes for src, dst (for constant generator)
-        srcA, srcData - source address, data
-        dstA, dstData - dst address, data
-        RW, DA, dataIn - reg write, data address, data
-        BranchAddress - PC input for branches
-        Zin, Vin, Nin, Cin - SR input Z, V, N, C In/Out relative to Reg File
-        PC, SP, SR - special registers
+        clk, reset
+        MO - used for instruction Fetch, offset fetch, SP predecrement
 
-------------------------------------*/
+        BranchExecute - write PC <- BranchAddress on posedge for conditional jumps
+        BranchAddress - PC <- BranchAddress on posedge with BrEx
+
+        SRW - Update SR bits Z, V, N, C from Function Unit
+        Zin, Vin, Nin, Cin - status bits from Function Unit
+
+        srcA, dstA - src, dst Address
+        As - Address Mode for Source.      Used only for CG1, CG2 generation
+        Ad - Address Mode for Destination. Used only for CG1, CG2 generation
+        OneOp: Controls Constant Generator and indirect address mux (0: R[src], 1: R[dst])
+        incSrc, incDst, BW, indirect - for indirect AutoIncrement (BW: +1, ~BW: +2)
+
+        resultA - Address for write back data
+        RW - enable write back
+        dataIn  - write back data
+
+    Outputs:
+        PC, SP - special register outputs
+        MAB - address value to fetch instruction/data from
+        Rsrc, Rdst - register mode operands for src, dst
+        Zcurrent, Vcurrent, Ncurrent, Ccurrent - Current Status Bits from SR
+--------------------------------------------------------*/
 
 module RegisterFile (
     input clk, reset,
-    input incSrc, incPC, branch
-    input SRW, BW, RW, Ad
-    input [1:0] As,
-    input [3:0] srcA, dstA, DA
-    input [15:0] dataIn, branchAddress,
-    input Zin, Vin, Nin, Cin,
+    input [1:0] MO,
+    
+    input BranchExecute,
+    input [15:0] BranchAddress,
 
-    output reg [15:0] srcData, dstData
-    output [15:0] PC, SP
-    output Zout, Vout, Nout, Cout
+    input SRW, Zin, Vin, Nin, Zin,
+
+    input [3:0] srcA, dstA,
+    input [1:0] As,
+    input Ad, OneOp,
+    input incSrc, incDst, BW, indirect,
+
+    input [3:0] resultA,
+    input RW,
+    input [15:0] dataIn,
+
+    output [15:0] PC, SP, Rsrc, Rdst,
+    output reg [15:0] MAB, 
+    output Zcurrent, Vcurrent, Ncurrent, Ccurrent
 );
 
     `include "CPU\\RegisterParams.v"
-    initial begin {srcData, dstData} = 0; end
+    `include "CPU\\GeneralParams.v"
 
     reg [15:0] R [15:0];
 
-    initial begin
-        PC  <= 0;
-        SP  <= 0;
-        SR  <= 0;
-        CG2 <= 0;
-        // Complete Reset Conditions Here
-        R[R4]  <= 16'hFFFF;
-        R[R5]  <= 16'hFFFF;
-        R[R6]  <= 16'hFFFF;
-        R[R7]  <= 16'hA55A;
-        R[R8]  <= 16'hFFFF;
-        R[R9]  <= 16'h0116;
-        R[R10] <= 16'h1AF8;
-        R[R11] <= 16'hFFFF;
-        R[R12] <= 16'h4;
-        // R[R13] <= 16'h0; // R13 Reset Condition appears undefined
-        R[R14] <= 16'h1A1A;
-        R[R15] <= 16'h4400;
+    initial begin 
+        MAB <= 0;
+        for (integer i = 0; i < 16; i = i+1) begin R[i] <= 0; end
+        // Insert Reset Conditions for special registers here
     end
 
-    // handle src, dst assignments
-    always @(*) begin
-        if (srcA == CG1 || srcA == CG2) begin
-            // Handles Constant Generation for src operands. 
-            // Taken from Family User Guide, 4.3.4, Pg 119. 
-            // Table 4-2 Values of Constant Generators CG1, CG2
-            case ({srcA, As})
-                {CG1, REGISTER_MODE}              : srcData <= R[srcA];  // Register Mode, SR bits used
-                {CG1, ABSOLUTE_MODE}              : srcData <= 0;        // absolute addressing from SR
-                {CG1, INDIRECT_MODE}              : srcData <= 4;        // +4, bit processing
-                {CG1, INDIRECT_AUTOINCREMENT_MODE}: srcData <= 8;        // +8, bit processing
-                {CG2, REGISTER_MODE}              : srcData <= 0;        // 0, word processing
-                {CG2, ABSOLUTE_MODE}              : srcData <= 1;        // +1, bit processing, increment, decrement
-                {CG2, INDIRECT_MODE}              : srcData <= 2;        // +4, bit processing
-                {CG2, INDIRECT_AUTOINCREMENT_MODE}: srcData <= 16'hFFFF; // -1, word processing
-            endcase
-        end
-        dstData <= R[dstA];
-    end
-
-    // handle Negative Edge assignments 
-    // PC increment, SRW, @Rn+
-    always @(negedge clk) begin
-        if (incSrc) begin R[srcA] <= (BW) ? R[srcA] + 1 : R[srcA] + 2; end // Autoincrement by 1 if Byte data, 2 if word
-        if (incPC)  begin R[PC] <= R[PC] + 2; R[PC][0] <= 0; end // force PC to even addresses
-        if (branch) begin R[PC] <= branchAddress; end// handle branching 
-        if (SRW)    begin R[SR] <= {7'b0, Vin, 4'b0, R[SR][GIE], Nin, Zin, Cin}; end // do not overwrite GIE
-    end
-
-    // Handle WB
-
+   // Reset Control
     always @(posedge clk) begin
         if (reset) begin
-            // Reset Conditions Here
-            PC  <= 0;
-            SP  <= 0;
-            SR  <= 0;
-            CG2 <= 0;
-            // Complete Reset Conditions Here
-            R[R4]  <= 16'hFFFF;
-            R[R5]  <= 16'hFFFF;
-            R[R6]  <= 16'hFFFF;
-            R[R7]  <= 16'hA55A;
-            R[R8]  <= 16'hFFFF;
-            R[R9]  <= 16'h0116;
-            R[R10] <= 16'h1AF8;
-            R[R11] <= 16'hFFFF;
-            R[R12] <= 16'h4;
-            // R[R13] <= 16'h0; // R13 Reset Condition appears undefined
-            R[R14] <= 16'h1A1A;
-            R[R15] <= 16'h4400;
-        end
-        else begin
-            if (RW) begin
-                if (DA != CG2) begin
-                    R[DA] <= dataIn;
-                end
-            end
+            for (integer i = 0; i < 16; i = i+1) begin R[i] <= 0; end
+            // Describe Special register reset conditions here
         end
     end
+
+   // Branch Control
+    always @(posedge clk) begin
+        if (BranchExecute) begin R[PC] <= BranchAddress; end
+    end
+
+   // MO Control
+    always @(negedge clk) begin
+        case (MO)
+            MO_NOP:             begin end
+            MO_NextInstruction: begin R[PC] <= R[PC] + 2; end 
+            MO_Offset:          begin R[PC] <= R[PC] + 2; end
+            MO_SPPreDec:        begin R[SP] <= R[SP] - 2; end
+        endcase
+    end
+
+   // MAB Control
+    always @(*) begin
+        if (indirect) begin MAB <= (OneOp) ? R[dstA] : R[srcA]; end
+        if (MO == MO_NextInstruction || MO == MO_Offset) begin MAB <= R[PC]; end
+    end
+
+   // Status Register Control
+    always @(posedge clk) begin 
+        if (SRW) begin {R[SR][BITZ], R[SR][BITV], R[SR][BITN], R[SR][BITC]} <= {Zin, Vin, Nin, Cin}; end
+    end
+
+   // Write Back Control
+    always @(posedge clk) begin
+        if (RW) begin  
+            case (resultA)
+                PC, SP:     R[resultA] <= {dataIn[15:1] , 1'b0}; // force PC[0] or SP[0] to 0
+                SR:         R[resultA] <= {7'b0, dataIn[8:0]}; // SR[15:9] are reserved (0)
+                CG2:        R[resultA] <= 0; // R3, Constant Generator always 0
+                default:    R[resultA] <= dataIn;
+            endcase
+        end
+    end
+
+   // Indirect AutoIncrement Addressing Control
+    always @(negedge clk) begin
+        if (incSrc) begin R[srcA] <= (BW) ? R[srcA] + 1 : R[srcA] + 2; end
+        if (incDst) begin R[dstA] <= (BW) ? R[dstA] + 1 : R[dstA] + 2; end
+    end
+
+   // Constant Generator Unit
+    reg [15:0] srcConstant, dstConstant;
+    reg srcGenerated, dstGenerated;
+    always @(*) begin
+        case ({As, srcA})
+            {REGISTER_MODE, R2}:                begin srcConstant <= R[srcA];  srcGenerated = 1; end
+            {INDEXED_MODE,  R2}:                begin srcConstant <= 16'h0;    srcGenerated = 1; end
+            {INDIRECT_MODE, R2}:                begin srcConstant <= 16'h4;    srcGenerated = 1; end
+            {INDIRECT_AUTOINCREMENT_MODE, R2}:  begin srcConstant <= 16'h8;    srcGenerated = 1; end
+            {REGISTER_MODE, R3}:                begin srcConstant <= 16'h0;    srcGenerated = 1; end
+            {INDEXED_MODE,  R3}:                begin srcConstant <= 16'h1;    srcGenerated = 1; end
+            {INDIRECT_MODE, R3}:                begin srcConstant <= 16'h2;    srcGenerated = 1; end
+            {INDIRECT_AUTOINCREMENT_MODE, R3}:  begin srcConstant <= 16'hFFFF; srcGenerated = 1; end
+            default:                            begin srcConstant <= 16'hDEAD; srcGenerated = 0; end // srcA != CG1, CG2
+        endcase
+
+        if (OneOp) begin
+            case ({As, dstA})
+                {REGISTER_MODE, R2}:                begin dstConstant <= R[dstA];  dstGenerated = 1; end
+                {INDEXED_MODE,  R2}:                begin dstConstant <= 16'h0;    dstGenerated = 1; end
+                {INDIRECT_MODE, R2}:                begin dstConstant <= 16'h4;    dstGenerated = 1; end
+                {INDIRECT_AUTOINCREMENT_MODE, R2}:  begin dstConstant <= 16'h8;    dstGenerated = 1; end
+                {REGISTER_MODE, R3}:                begin dstConstant <= 16'h0;    dstGenerated = 1; end
+                {INDEXED_MODE,  R3}:                begin dstConstant <= 16'h1;    dstGenerated = 1; end
+                {INDIRECT_MODE, R3}:                begin dstConstant <= 16'h2;    dstGenerated = 1; end
+                {INDIRECT_AUTOINCREMENT_MODE, R3}:  begin dstConstant <= 16'hFFFF; dstGenerated = 1; end
+                default                             begin dstConstant <= 16'hDEAD; dstGenerated = 0; end // dstA != CG1, CG2
+            endcase
+        end
+        else begin
+            case ({Ad, dstA})
+                {1'b0, R2}: begin dstConstant <= R[dstA];  dstGenerated = 1;  end
+                {1'b1, R2}: begin dstConstant <= 16'h0;    dstGenerated = 1;  end
+                {1'b0, R3}: begin dstConstant <= 16'h0;    dstGenerated = 1;  end
+                {1'b1, R3}: begin dstConstant <= 16'h1;    dstGenerated = 1;  end
+                default:    begin dstConstant <= 16'hDEAD; dstGenerated = 0;  end 
+            endcase
+        end
+    end
+    
+   // Output Assignments
+    assign PC = R[PC];
+    assign SP = R[SP];
+    assign Rsrc = (srcGenerated) ? srcConstant : R[srcA];
+    assign Rdst = (dstGenerated) ? dstConstant : R[dstA];
+
+    assign Zcurrent = R[SR][BITZ];
+    assign Vcurrent = R[SR][BITV];
+    assign Ncurrent = R[SR][BITN];
+    assign Ccurrent = R[SR][BITC];
 endmodule
