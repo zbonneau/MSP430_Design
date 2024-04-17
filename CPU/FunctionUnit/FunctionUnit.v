@@ -230,6 +230,10 @@ module FunctionUnit(
 
             XORB : begin 
                 result[7:0] = src[7:0] ^ dst[7:0];
+                Zout <= (result == 0);
+                Cout <= (result != 0);
+                Nout <= result[7];
+                Vout <= src[7] & dst[7];
             end
 
             default: begin 
