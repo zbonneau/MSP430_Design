@@ -28,7 +28,7 @@ module FunctionUnit(
 
     always @(*) begin
         // By default, status bits are not changed
-        {Zout, Vout, Nout, Cout} <= {Zin, Vin, Nin, Cin}; 
+        {Zout, Vout, Nout, Cout} = {Zin, Vin, Nin, Cin}; 
         result = 0; // set 0 so that byte operations have high byte = 0
         case (FS)
             RRC  : begin 
@@ -64,11 +64,11 @@ module FunctionUnit(
             end
 
             SXT  : begin 
-                result = {8'{dst[7]}, dst[7:0]};
+                result = {{8{dst[7]}}, dst[7:0]};
                 Zout <= (result == 0);
                 Cout <= (result != 0);
                 Nout <= result[15];
-                Vout <= 0
+                Vout <= 1'b0;
             end
 
             PUSH : begin 
@@ -136,7 +136,7 @@ module FunctionUnit(
             end
 
             SUBCB: begin 
-                {Cout, result[7:0]} = dst[7:0] + ~src[7:0] + 1 + Cin;
+                {Cout, result[7:0]} = dst[7:0] + ~src[7:0] + Cin;
                 Zout <= (result == 0);
                 Nout <= result[7];
                 Vout <= (dst[7] & ~src[7] & ~result[7] | 
@@ -237,8 +237,9 @@ module FunctionUnit(
             end
 
             default: begin 
-                result <= 16'hDEAD;
+                result = 16'hDEAD;
             end
         endcase
     end
+
 endmodule
