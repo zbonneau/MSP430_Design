@@ -36,7 +36,7 @@ StopWDT     mov.w   #WDTPW|WDTHOLD,&WDTCTL  ; Stop watchdog timer
 
 	clr SR
 	mov #0xA5, R4
-	mov #0xA5, R4
+	mov #0xA5, R5
 	clr R6
 	clr R7
 	rrc.b R4 ; No  Cin, yes Cout, No  N,  No Z
@@ -78,7 +78,7 @@ StopWDT     mov.w   #WDTPW|WDTHOLD,&WDTCTL  ; Stop watchdog timer
 	mov #0x007f, R4 ; Yes Cout, No  N, No  Z
 	mov #0x0080, R5 ; Yes Cout, Yes N, No  Z
 	mov #0x00FF, R6 ; Yes Cout, Yes N, No  Z
-	mov #0x0000, R6 ; No  Cout, No  N, Yes Z
+	mov #0x0000, R7 ; No  Cout, No  N, Yes Z
 	sxt R4
 	sxt R5
 	sxt R6
@@ -100,7 +100,7 @@ StopWDT     mov.w   #WDTPW|WDTHOLD,&WDTCTL  ; Stop watchdog timer
 	mov #0x8000, R7
 
 	add #0x0001, R4 ; MAXPOS + 1 = MAXNEG
-	add #0x7fff, R5 ; MAXPOS + MAXPOS = -2
+	add #0xFFFF, R5 ; MAXPOS + MAXPOS = -2
 	add #0x8000, R6 ; MAXNEG + MAXNEG = 0
 	add #0xFFFF, R7 ; MAXNEG + -1 = MAXPOS
 
@@ -111,7 +111,7 @@ StopWDT     mov.w   #WDTPW|WDTHOLD,&WDTCTL  ; Stop watchdog timer
 	mov #0x0080, R7
 
 	add.b #0x0001, R4 ; MAXPOS + 1 = MAXNEG
-	add.b #0x007f, R5 ; MAXPOS + MAXPOS = -2
+	add.b #0x00FF, R5 ; MAXPOS + MAXPOS = -2
 	add.b #0x0080, R6 ; MAXNEG + MAXNEG = 0
 	add.b #0x00FF, R7 ; MAXNEG + -1 = MAXPOS
 
@@ -149,11 +149,11 @@ StopWDT     mov.w   #WDTPW|WDTHOLD,&WDTCTL  ; Stop watchdog timer
 	mov #0x7fff, R5
 	mov #0x8000, R6
 	setc
-	subc #0xFFFF, R4 ; MAXPOS - NEG + 1 + Cin = NEG
+	subc #0xFFFF, R4 ; MAXPOS - NEG -1 + Cin = MAXNEG
 	setc
-	subc #0x8001, R5 ; MAXPOS - 8001h + 1 + Cin = 0
+	subc #0x7FFF, R5 ; MAXPOS - MAXPOS - 1 + Cin = 0
 	setc
-	subc #0x7fff, R6 ; MAXNEG - MAXPOS + 2 = POS
+	subc #0x7fff, R6 ; MAXNEG - MAXPOS - 1 + Cin = POS
 
 
 	clr SR
@@ -163,7 +163,7 @@ StopWDT     mov.w   #WDTPW|WDTHOLD,&WDTCTL  ; Stop watchdog timer
 	setc
 	subc.b #0x00FF, R4 ; MAXPOS - NEG + 1 + Cin = NEG
 	setc
-	subc.b #0x0081, R5 ; MAXPOS - 8001h + 1 + Cin = 0
+	subc.b #0x007F, R5 ; MAXPOS - 8001h + 1 + Cin = 0
 	setc
 	subc.b #0x007f, R6 ; MAXNEG - MAXPOS + 2 = POS
 

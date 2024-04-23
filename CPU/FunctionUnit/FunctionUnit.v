@@ -128,7 +128,7 @@ module FunctionUnit(
             end
 
             SUBC : begin 
-                {Cout, result} = dst - src + 1 + Cin;
+                {Cout, result} = dst + ~src + Cin;
                 Zout <= (result == 0);
                 Nout <= result[15];
                 Vout <= (dst[15] & ~src[15] & ~result[15] | 
@@ -136,7 +136,7 @@ module FunctionUnit(
             end
 
             SUBCB: begin 
-                {Cout, result[7:0]} = dst[7:0] - src[7:0] + 1 + Cin;
+                {Cout, result[7:0]} = dst[7:0] + ~src[7:0] + 1 + Cin;
                 Zout <= (result == 0);
                 Nout <= result[7];
                 Vout <= (dst[7] & ~src[7] & ~result[7] | 
