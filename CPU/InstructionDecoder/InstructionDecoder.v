@@ -29,10 +29,11 @@ module InstructionDecoder(
 
     `include "CPU\\FunctionUnit\\FSparams.v"
     `include "CPU\\InstructionDecoder\\DecoderParams.v"
+    `include "CPU\\RegFile\\RegisterParams.v"
 
     initial begin {FS, srcA, dstA, As, Ad, BW, OneOp} <= 0; end
 
-    always @(*) begin
+    always @(Instruction) begin
         {BranchOffset, srcA, dstA, As, Ad, BW, OneOp} <= 0;
         case(Instruction[15:12])
             4'h0: begin 
@@ -42,6 +43,12 @@ module InstructionDecoder(
             end
 
             4'h1: begin // Format 2 - One Operand
+                if (Instruction == RETI) begin
+                    FS <= RETI
+                    srcA <= SP;
+                    dstA <= PC;
+                    As <= INDIRECT_AUTOINCREMENT_MODE;
+                end
                 FS <= {Instruction[15:6], 6'b0}; // mask dstA, Ad
                 dsta <= Instruction[3:0];
                 As <= Instruction[5:4];

@@ -20,6 +20,6 @@ module InstructionDecoder_tb;
         $dumpfile("InstructionDecoder.vcd");
         $dumpvars(0, InstructionDecoder_tb);
         // Dump Instructions Here
-
+        
     end
 endmodule
