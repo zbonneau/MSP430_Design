@@ -26,7 +26,7 @@ module FunctionUnit(
 
     `include "CPU\\FunctionUnit\\FSparams.v"
 
-    always @(*) begin
+    always @(FS, src, dst, Zin, Vin, Nin, Cin) begin
         // By default, status bits are not changed
         {Zout, Vout, Nout, Cout} = {Zin, Vin, Nin, Cin}; 
         result = 0; // set 0 so that byte operations have high byte = 0
@@ -127,8 +127,11 @@ module FunctionUnit(
                         ~src[7] & ~dst[7] &  result[7]);
             end
 
+            // Subtraction operations compute 17-bit subtraction. Vectored dst, src extend 
+            // operands as unsigned operands to compute the correct Carry values
+
             SUBC : begin 
-                {Cout, result} = dst + ~src + Cin;
+                {Cout, result} = {1'b0, dst} + {1'b0, ~src} + Cin;
                 Zout <= (result == 0);
                 Nout <= result[15];
                 Vout <= (dst[15] & ~src[15] & ~result[15] | 
@@ -136,7 +139,7 @@ module FunctionUnit(
             end
 
             SUBCB: begin 
-                {Cout, result[7:0]} = dst[7:0] + ~src[7:0] + Cin;
+                {Cout, result[7:0]} = {1'b0, dst[7:0]} + {1'b0, ~src[7:0]} + Cin;
                 Zout <= (result == 0);
                 Nout <= result[7];
                 Vout <= (dst[7] & ~src[7] & ~result[7] | 
@@ -144,7 +147,8 @@ module FunctionUnit(
             end
 
             SUB, CMP  : begin // SUB, CMP execute the same operation, with/wout dst overwrite
-                {Cout, result} = dst - src;
+                {Cout, result} = {1'b0, dst} + {1'b0, ~src} + 1'b1;
+                // {Cout, result} = dst - src;
                 Zout <= (result == 0);
                 Nout <= result[15];
                 Vout <= (dst[15] & ~src[15] & ~result[15] | 
@@ -152,7 +156,8 @@ module FunctionUnit(
             end
 
             SUBB, CMPB : begin 
-                {Cout, result[7:0]} = dst[7:0] - src[7:0];
+                {Cout, result[7:0]} = {1'b0, dst[7:0]} + {1'b0, ~src[7:0]} + 1'b1;
+                // {Cout, result[7:0]} = dst[7:0] - src[7:0];
                 Zout <= (result == 0);
                 Nout <= result[7];
                 Vout <= (dst[7] & ~src[7] & ~result[7] | 
@@ -241,5 +246,4 @@ module FunctionUnit(
             end
         endcase
     end
-
 endmodule
