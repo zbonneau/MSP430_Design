@@ -21,14 +21,14 @@
 module InstructionDecoder(
     input [15:0] Instruction,
 
-    output reg [15:0] FS, BranchOffset
+    output reg [15:0] FS, BranchOffset,
     output reg [3:0] srcA, dstA,
     output reg [1:0] As,
     output reg Ad, BW, OneOp
     );
 
     `include "CPU\\FunctionUnit\\FSparams.v"
-    `include "CPU\\InstructionDecoder\\DecoderParams.v"
+    //`include "CPU\\InstructionDecoder\\DecoderParams.v"
     `include "CPU\\RegFile\\RegisterParams.v"
 
     initial begin {FS, srcA, dstA, As, Ad, BW, OneOp} <= 0; end
@@ -44,21 +44,23 @@ module InstructionDecoder(
 
             4'h1: begin // Format 2 - One Operand
                 if (Instruction == RETI) begin
-                    FS <= RETI
+                    FS <= RETI;
                     srcA <= SP;
                     dstA <= PC;
                     As <= INDIRECT_AUTOINCREMENT_MODE;
                 end
-                FS <= {Instruction[15:6], 6'b0}; // mask dstA, Ad
-                dsta <= Instruction[3:0];
-                As <= Instruction[5:4];
-                BW <= Instruction[6];
-                OneOp <= 1;
+                else begin
+                    FS <= {Instruction[15:6], 6'b0}; // mask dstA, Ad
+                    dstA <= Instruction[3:0];
+                    As <= Instruction[5:4];
+                    BW <= Instruction[6];
+                    OneOp <= 1;
+                end
             end
 
             4'h2, 4'h3:begin // Jump Instructions
                 FS <= {Instruction[15:10], 10'b0};
-                BranchOffset <= {5'{Instruction[9]},Instruction[9:0],1'b0};
+                BranchOffset <= {{5{Instruction[9]}},Instruction[9:0],1'b0};
             end
 
             default:begin // Format 1 Instruction
