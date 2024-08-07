@@ -32,7 +32,7 @@ module FunctionUnit(
         result = 0; // set 0 so that byte operations have high byte = 0
         case ({IW[15:12], 5'b0, IW[6], 6'b0})
             16'h1000, 16'h1040: begin
-                case (IW[15:6], 6'b0)
+                case ({IW[15:6], 6'b0})
                     RRC  : begin 
                         {result, Cout} = {Cin, dst};
                         Zout <= (result == 0);
@@ -93,38 +93,39 @@ module FunctionUnit(
                         result = 16'hDEAD;// default 1 OP Instruction - dead
                     end
                 endcase
-            
-            16'h2000, 16'h3000: // jumps
-                      // New Address offset from PC by 10-bit SE offset
-                result = dst + {6{IW[9]}, IW[8:0], 1b'0}; // assume condition is met
-                case(IW[15:10], 10'b0)
+            end
+
+            16'h2000, 16'h3000: begin // jumps
+                // New Address offset from PC by 10-bit SE offset
+                result = dst + {{5{IW[9]}}, IW[9:0], 1'b0}; // assume condition is met
+                case({IW[15:10], 10'b0})
                         // if Condition not met, result = dst (PC)
                     JNE, JNZ: begin
-                        if Zin begin result = dst end
+                        if (Zin) begin result = dst; end
                      end
 
                     JEQ, JZ: begin
-                        if ~Zin begin result = dst end
+                        if (~Zin) begin result = dst; end
                      end
 
                     JNC: begin
-                        if Cin begin result = dst end
+                        if (Cin) begin result = dst; end
                      end
 
                     JC : begin
-                        if ~Cin begin result = dst end
+                        if (~Cin) begin result = dst; end
                      end
 
                     JN : begin
-                        if ~Nin begin result = dst end
+                        if (~Nin) begin result = dst; end
                      end
 
                     JGE: begin
-                        if (Nin^Vin) begin result = dst end
+                        if (Nin^Vin) begin result = dst; end
                      end
 
                     JL : begin
-                        if ~(Nin^Vin) begin result = dst end
+                        if (~Nin^Vin) begin result = dst; end
                      end
 
                     JMP: begin
@@ -132,6 +133,7 @@ module FunctionUnit(
                      end
 
                 endcase
+            end
 
             MOV  : begin 
                 result <= src;
