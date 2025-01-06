@@ -1,5 +1,5 @@
-`ifndef MACROS
-`define MACROS
+// `ifndef MACROS
+// `define MACROS
 
     // Defines for Control Unit parameters
         parameter [1:0] INSTRUCTION_FETCH   = 1,
@@ -164,4 +164,4 @@
             INDIRECT_AUTOINCREMENT_MODE = 2'b11,
             IMMEDIATE_MODE = 2'b11;
 
-`endif 
+// `endif 

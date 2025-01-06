@@ -95,7 +95,7 @@ module FunctionUnit(
                 endcase
             end
 
-            16'h2000, 16'h3000: begin // jumps
+            16'h2000, 16'h2040, 16'h3000, 16'h3040: begin // jumps
                 // New Address offset from PC by 10-bit SE offset
                 result = dst + {{5{IW[9]}}, IW[9:0], 1'b0}; // assume condition is met
                 case({IW[15:10], 10'b0})
