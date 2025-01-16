@@ -67,12 +67,14 @@
                   CAR_CALL_IDX3 = 49,
                   CAR_RETI0     = 50,
                   CAR_RETI1     = 51,
-                  CAR_INT0      = 52,
-                  CAR_INT1      = 53,
-                  CAR_INT2      = 54,
-                  CAR_INT3      = 55,
-                  CAR_INT4      = 56,
-                  CAR_JMP       = 57;
+                  CAR_RETI2     = 52,
+                  CAR_RETI3     = 53,
+                  CAR_INT0      = 54,
+                  CAR_INT1      = 55,
+                  CAR_INT2      = 56,
+                  CAR_INT3      = 57,
+                  CAR_INT4      = 58,
+                  CAR_JMP0      = 59;
 
 
     // Defines for Instruction Types
