@@ -9,9 +9,15 @@
         IR  - instruction register
 
     Outputs: 
-        IW - Instruction word (usually directly piped from IR, but can be altered for Interrupt)
+        IW       - Instruction word (usually directly piped from IR, but can be
+                                     altered for Interrupt)
         srcA, As - src register and address mode
         dstA, Ad - dst register and address mode
+        Format   - instruction Format type. Controls Constant Generator 
+                   behavior: 
+                    0: Format 1 - 2-op
+                    1: Format 2 - 1-op
+        INTACK   - INTerrupt ACKnowledge
         {PCO[1:0], MEM, EX, srcM, srcL, dstM, dstL, AddressM[1:0], AddressL, IdxM} ->
          -> 12-bit output containing controll signals for PC options, memory/execute, operand selection, and address manipulation
                 
@@ -20,18 +26,25 @@
 
 module ControlUnit(
     input [CAR_BITS-1:0] CAR,
-    input [15:0] IR,
+    input [15:0]        IR,
 
-    output reg [15:0] IW,
-    output reg [3:0] srcA,
-    output reg [1:0] As,
-    output reg [3:0] dstA,
-    output reg Ad,
-    output reg [11:0] ControlWord
+    output reg [15:0]   IW,
+    output reg [3:0]    srcA,
+    output reg [1:0]    As,
+    output reg [3:0]    dstA,
+    output reg          Ad, 
+    output              Format, INTACK,
+    output reg [11:0]   ControlWord
 );
 
     `include "NEW\MACROS.v"
     initial begin {IW, srcA, As, dstA, Ad, ControlWord} <= 0; end
+
+    /* Format 1 vs 2 instructions. Controls Constant Generator */
+    assign Format = (IW[15:12] == 4'h1);
+
+    /* INTACK - informs interrupt unit that Controller accepts interrupt */
+    assign INTACK = (CAR == CAR_INT4); 
 
     always @(*) begin
         IW      = IR;

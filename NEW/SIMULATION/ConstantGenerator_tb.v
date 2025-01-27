@@ -10,7 +10,7 @@
 `timescale 100ns/100ns
 
 module tb_ConstantGenerator;
-reg [15:0]  IW;
+reg         Format;
 reg [3:0]   srcA;
 reg [1:0]   As;
 reg [3:0]   dstA;
@@ -20,11 +20,11 @@ wire srcGenerated, dstGenerated;
 
 `include "NEW\\MACROS.v"
 
-initial begin {IW, srcA, As, dstA, Ad} = 0; end
+initial begin {Format, srcA, As, dstA, Ad} = 0; end
 
 ConstantGenerator uut
 (
-    .IW(IW),
+    .Format(Format),
     .srcA(srcA), .As(As),    
     .dstA(dstA), .Ad(Ad),    
     .src(src), .dst(dst),    
@@ -41,31 +41,33 @@ end
 
 initial begin
     // 2-op instructions
-    IW = MOV; srcA = R4 ; As = 00; dstA = R5 ; Ad = 0; #CLK_PERIOD; 
-    IW = MOV; srcA = R4 ; As = 01; dstA = R5 ; Ad = 0; #CLK_PERIOD; 
-    IW = MOV; srcA = R4 ; As = 10; dstA = R5 ; Ad = 0; #CLK_PERIOD; 
-    IW = MOV; srcA = R4 ; As = 11; dstA = R5 ; Ad = 0; #CLK_PERIOD; 
-    IW = MOV; srcA = CG1; As = 00; dstA = R5 ; Ad = 0; #CLK_PERIOD; 
-    IW = MOV; srcA = CG1; As = 01; dstA = CG1; Ad = 0; #CLK_PERIOD; 
-    IW = MOV; srcA = CG1; As = 10; dstA = CG1; Ad = 1; #CLK_PERIOD; 
-    IW = MOV; srcA = CG1; As = 11; dstA = CG2; Ad = 0; #CLK_PERIOD; 
-    IW = MOV; srcA = CG2; As = 00; dstA = CG2; Ad = 1; #CLK_PERIOD; 
-    IW = MOV; srcA = CG2; As = 01; dstA = R5 ; Ad = 0; #CLK_PERIOD; 
-    IW = MOV; srcA = CG2; As = 10; dstA = R5 ; Ad = 0; #CLK_PERIOD; 
-    IW = MOV; srcA = CG2; As = 11; dstA = R5 ; Ad = 0; #CLK_PERIOD; 
+    Format = 0;
+    srcA = R4 ; As = 00; dstA = R5 ; Ad = 0; #CLK_PERIOD; 
+    srcA = R4 ; As = 01; dstA = R5 ; Ad = 0; #CLK_PERIOD; 
+    srcA = R4 ; As = 10; dstA = R5 ; Ad = 0; #CLK_PERIOD; 
+    srcA = R4 ; As = 11; dstA = R5 ; Ad = 0; #CLK_PERIOD; 
+    srcA = CG1; As = 00; dstA = R5 ; Ad = 0; #CLK_PERIOD; 
+    srcA = CG1; As = 01; dstA = CG1; Ad = 0; #CLK_PERIOD; 
+    srcA = CG1; As = 10; dstA = CG1; Ad = 1; #CLK_PERIOD; 
+    srcA = CG1; As = 11; dstA = CG2; Ad = 0; #CLK_PERIOD; 
+    srcA = CG2; As = 00; dstA = CG2; Ad = 1; #CLK_PERIOD; 
+    srcA = CG2; As = 01; dstA = R5 ; Ad = 0; #CLK_PERIOD; 
+    srcA = CG2; As = 10; dstA = R5 ; Ad = 0; #CLK_PERIOD; 
+    srcA = CG2; As = 11; dstA = R5 ; Ad = 0; #CLK_PERIOD; 
     // 1-op instructions
-    IW = RRC; srcA = CG1; As = 00; dstA = R5 ; Ad = 0; #CLK_PERIOD; 
-    IW = RRC; srcA = CG1; As = 01; dstA = R5 ; Ad = 1; #CLK_PERIOD; 
-    IW = RRC; srcA = CG2; As = 10; dstA = R5 ; Ad = 0; #CLK_PERIOD; 
-    IW = RRC; srcA = CG2; As = 11; dstA = R5 ; Ad = 1; #CLK_PERIOD; 
-    IW = RRC; srcA = R0 ; As = 00; dstA = CG1; Ad = 0; #CLK_PERIOD; 
-    IW = RRC; srcA = R0 ; As = 01; dstA = CG1; Ad = 1; #CLK_PERIOD; 
-    IW = RRC; srcA = R0 ; As = 10; dstA = CG1; Ad = 0; #CLK_PERIOD; 
-    IW = RRC; srcA = R0 ; As = 11; dstA = CG1; Ad = 1; #CLK_PERIOD; 
-    IW = RRC; srcA = R0 ; As = 00; dstA = CG2; Ad = 0; #CLK_PERIOD; 
-    IW = RRC; srcA = R0 ; As = 01; dstA = CG2; Ad = 1; #CLK_PERIOD; 
-    IW = RRC; srcA = R0 ; As = 10; dstA = CG2; Ad = 0; #CLK_PERIOD; 
-    IW = RRC; srcA = R0 ; As = 11; dstA = CG2; Ad = 1; #CLK_PERIOD; 
+    Format = 1;
+    srcA = CG1; As = 00; dstA = R5 ; Ad = 0; #CLK_PERIOD; 
+    srcA = CG1; As = 01; dstA = R5 ; Ad = 1; #CLK_PERIOD; 
+    srcA = CG2; As = 10; dstA = R5 ; Ad = 0; #CLK_PERIOD; 
+    srcA = CG2; As = 11; dstA = R5 ; Ad = 1; #CLK_PERIOD; 
+    srcA = R0 ; As = 00; dstA = CG1; Ad = 0; #CLK_PERIOD; 
+    srcA = R0 ; As = 01; dstA = CG1; Ad = 1; #CLK_PERIOD; 
+    srcA = R0 ; As = 10; dstA = CG1; Ad = 0; #CLK_PERIOD; 
+    srcA = R0 ; As = 11; dstA = CG1; Ad = 1; #CLK_PERIOD; 
+    srcA = R0 ; As = 00; dstA = CG2; Ad = 0; #CLK_PERIOD; 
+    srcA = R0 ; As = 01; dstA = CG2; Ad = 1; #CLK_PERIOD; 
+    srcA = R0 ; As = 10; dstA = CG2; Ad = 0; #CLK_PERIOD; 
+    srcA = R0 ; As = 11; dstA = CG2; Ad = 1; #CLK_PERIOD; 
 
     $finish(0);
 end

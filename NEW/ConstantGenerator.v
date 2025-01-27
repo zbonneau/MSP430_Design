@@ -10,8 +10,7 @@
         operands.
     
     Inputs:
-        IW - Instruction Word used for decoding 1- vs 2-operand 
-             instructions
+        Format   - Format 1/2 indicator (~1/2)
         srcA, As - Combinations of these IW bits produce CGx output
         dstA, Ad - Same as above. Less common, but possible for 
                    instructions such as Push, Call, etc 
@@ -24,13 +23,13 @@
 --------------------------------------------------------*/
 
 module ConstantGenerator(
-    input [15:0] IW,
-    input [3:0]  srcA,
-    input [1:0]  As,
-    input [3:0]  dstA,
-    input        Ad,
-    output reg [15:0] src, dst,
-    output reg srcGenerated, dstGenerated
+    input               Format,
+    input [3:0]         srcA,
+    input [1:0]         As,
+    input [3:0]         dstA,
+    input               Ad,
+    output reg [15:0]   src, dst,
+    output reg          srcGenerated, dstGenerated
  );
  `include "NEW\\MACROS.v"
 
@@ -41,7 +40,7 @@ module ConstantGenerator(
     // default behavior
     {src, dst, srcGenerated, dstGenerated} = 0;
 
-    if (|IW[15:14]) begin
+    if (~Format) begin
         // 2-op instruction decoding
         case ({srcA, As})
             {CG1, INDEXED_MODE}:                begin src <= 16'h0;     srcGenerated <= 1; end

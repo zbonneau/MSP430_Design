@@ -18,6 +18,7 @@ wire [3:0] srcA;
 wire [1:0] As;
 wire [3:0] dstA;
 wire Ad;
+wire Format, INTACK;
 wire [11:0] ControlWord;
 
 `include "NEW\\MACROS.v"
@@ -30,6 +31,7 @@ ControlUnit uut
 .IW(IW),
 .srcA(srcA), .As(As),
 .dstA(dstA), .Ad(Ad),
+.Format(Format), .INTACK(INTACK),
 .ControlWord(ControlWord)
 );
 
@@ -38,9 +40,10 @@ localparam CLK_PERIOD = 10;
 initial begin
     $dumpfile("ControlUnit.vcd");
     $dumpvars(0, tb_ControlUnit);
-    $display("| CAR |  IR  |  IW  | Rs | As | Rd | Ad | Ctl |");
-    $display("|-----|------|------|----|----|----|----|-----|");
-    $monitor("|  %2d | %4h | %4h | %2d | %2b | %2d |  %1d | %3h |", CAR, IR, IW, srcA, As, dstA, Ad, ControlWord);
+    $display("| CAR |  IR  |  IW  | Rs | As | Rd | Ad | Ctl | F | INTACK |");
+    $display("|-----|------|------|----|----|----|----|-----|---|--------|");
+    $monitor("|  %2d | %4h | %4h | %2d | %2b | %2d |  %1d | %3h | %1h |    %1h   |",
+                 CAR,  IR,    IW,  srcA, As,   dstA,  Ad, ControlWord, Format, INTACK);
 end
 
 initial begin
