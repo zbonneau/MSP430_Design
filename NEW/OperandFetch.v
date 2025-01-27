@@ -37,7 +37,7 @@ module OperandFetch(
     assign MAB   = (AddrM == 0) ? Addr :
                    (AddrM == 1) ? Rsrc - 2 :
                    (AddrM == 2) ? Rsrc : 
-                   (AddrM == 3) ? Rdst;
+                   (AddrM == 3) ? Rdst : 16'hDEAD;
 
  // Sequential Logic - src, dst, Addr for various address modes
     always @(posedge clk) begin
