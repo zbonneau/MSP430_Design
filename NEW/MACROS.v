@@ -154,7 +154,7 @@
             BITC  = 0,
             BITZ  = 1,
             BITN  = 2,
-            GIE   = 3,
+            BITGIE= 3,
             BITV  = 8;
 
         parameter

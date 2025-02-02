@@ -112,7 +112,7 @@ module ControlUnit(
             CAR_INT1      : begin ControlWord <= 12'h324; srcA = SP; dstA = PC; IW = PUSH; end
             CAR_INT2      : begin ControlWord <= 12'h010; srcA = SP; dstA = SR; end
             CAR_INT3      : begin ControlWord <= 12'h324; srcA = SP; dstA = SR; IW = PUSH; end
-            CAR_INT4      : begin ControlWord <= 12'h100; srcA = SP; dstA = PC; end
+            CAR_INT4      : begin ControlWord <= 12'h000; end
             CAR_JMP0      : begin ControlWord <= 12'h100; dstA = PC; end
             default: ControlWord <= 12'h000;
         endcase
