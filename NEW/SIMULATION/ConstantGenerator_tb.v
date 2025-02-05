@@ -35,8 +35,10 @@ ConstantGenerator uut
 localparam CLK_PERIOD = 10;
 
 initial begin
-    $dumpfile("tb_ConstantGenerator.vcd");
-    $dumpvars(0, tb_ConstantGenerator);
+    $display("| F | srcA | As | dstA | Ad ||| src  | G | dst  | G |");
+    $display("|---|------|----|------|----|||------|---|------|---|");
+    $monitor("| %1b |  %1h   | %2b |  %1h   | %1b  ||| %4h | %1b | %4h | %1b |",
+              Format, srcA, As, dstA, Ad, src, srcGenerated, dst, dstGenerated);
 end
 
 initial begin
@@ -69,6 +71,7 @@ initial begin
     srcA = R0 ; As = 10; dstA = CG2; Ad = 0; #CLK_PERIOD; 
     srcA = R0 ; As = 11; dstA = CG2; Ad = 1; #CLK_PERIOD; 
 
+    $display("|---|------|----|------|----|||------|---|------|---|");
     $finish(0);
 end
 
