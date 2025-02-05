@@ -37,16 +37,16 @@ initial begin
     $display("  CAR_INT0 = %2d", CAR_INT0);
     $display("  CAR_INT4 = %2d", CAR_INT4);
     $display("|-----|-----|-----|-----|");
-    $display("| rst | INT | Br  | IF  | CARnext");
+    $display("| rst | Br  | INT | IF  | CARnext");
     $display("|-----|-----|-----|-----|");
     $monitor("|  %1b  |  %1b  |  %1b  |  %1b  |  %2d", 
-                 rst,    INTREQ, Br,     IF,     CARnext);
+                 rst,    Br,    INTREQ,  IF,     CARnext);
 end
 
 initial begin
     /* Small enough to test all cases */
     for (integer i = 0; i < 16; i = i + 1) begin
-        {rst, INTREQ, Br, IF} = i[3:0]; #CLK_PERIOD;
+        {rst, Br, INTREQ, IF} = i[3:0]; #CLK_PERIOD;
     end
     
     $display("|-----|-----|-----|-----|");

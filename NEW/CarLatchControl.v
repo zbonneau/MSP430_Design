@@ -28,8 +28,8 @@ module CarLatchControl(
 
     /* Continuous Logic Assignments */
     assign CARnext = (rst) ? CAR_INT4 : // Interrupt sequence w/out PUSHes
-      (INTREQ & (IF | Br)) ? CAR_INT0 : // Interrupt sequence w/ PUSHes
                      (Br)  ? CAR_0    : // PC WB occured @ end of uSeq 
+             (INTREQ & IF) ? CAR_INT0 : // Interrupt sequence w/ PUSHes
                      (IF)  ? CARnew   : // PC valid & CAR Decoder produces next uSeq
                              CARold +1; // No special case, default behavior
 endmodule
