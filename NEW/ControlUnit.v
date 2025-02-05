@@ -37,7 +37,7 @@ module ControlUnit(
     output reg [11:0]   ControlWord
 );
 
-    `include "NEW\MACROS.v"
+    `include "NEW\\MACROS.v"
     initial begin {IW, srcA, As, dstA, Ad, ControlWord} <= 0; end
 
     /* Format 1 vs 2 instructions. Controls Constant Generator */
