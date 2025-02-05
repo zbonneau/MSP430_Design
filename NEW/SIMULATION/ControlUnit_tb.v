@@ -110,7 +110,7 @@ initial begin
     CAR = 58; IR = SUBC | R6 <<8 | INDIRECT_MODE<<4 | R9  | REGISTER_MODE<<7; #CLK_PERIOD;
     CAR = 59; IR = JMP  |          REGISTER_MODE<<4 |       REGISTER_MODE<<7; #CLK_PERIOD;
     
-    $display("|-----|------|------|----|----|----|----|-----|");
+    $display("|-----|------|------|----|----|----|----|-----|---|--------|");
     $finish(0);
 end
 endmodule
