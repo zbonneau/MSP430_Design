@@ -23,8 +23,9 @@ CarDecoder uut
 localparam CLK_PERIOD = 10;
 
 initial begin
-    $dumpfile("CarDecoder.vcd");
-    $dumpvars(0, tb_CarDecoder);
+    $display("| Inst | CAR |");
+    $display("|------|-----|");
+    $monitor("| %4h | %2d  |", IW, CAR);
 end
 
 initial begin
@@ -88,6 +89,7 @@ initial begin
     IW = XORB  | R2<<8 | INDEXED_MODE <<4 | R2 | REGISTER_MODE<<7; #CLK_PERIOD
     IW = AND   | R0<<8 | INDIRECT_MODE<<4 | R0 | REGISTER_MODE<<7; #CLK_PERIOD
     IW = ANDB  | R2<<8 | INDIRECT_MODE<<4 | R2 | REGISTER_MODE<<7; #CLK_PERIOD
+    $display("|------|-----|");
     $finish(0);
 end
 endmodule
