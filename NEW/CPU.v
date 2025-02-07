@@ -53,7 +53,7 @@ module CPU(
     wire Format;
     wire [3:0] srcA, dstA;
     wire [1:0] As;
-    wire Ad;
+    wire Ad, CtlBW;
 
     /* From Constant Generator */
     wire [15:0] CGsrc, CGdst;
@@ -79,16 +79,16 @@ module CPU(
     /* Continuous Logic Assignments */
     assign INTREQ = NMI | INT & GIE;
     assign IntAddr = {9'b1111_1111_1, IntAddrLSBs, 1'b0};
+    assign Br = INTACK | (~Mem & Ex & (dstA == PC));
 
     /* Sequential Logic Assignments */
     always @(posedge MCLK) begin
+        CAR <= CARnext;
         if (reset) begin
-            {InstructionReg, CAR} <= 0;
+            InstructionReg <= 0;
         end
-        else begin
-            CAR <= CARnext;
-            if (IF) 
-                InstructionReg <= MDBin;
+        else if (IF) begin  
+            InstructionReg <= MDBin;
         end
     end
 
@@ -110,8 +110,8 @@ module CPU(
 
     ControlUnit controller(
         .CAR(CAR), .IR(InstructionReg), 
-        .IW(IW), .srcA(srcA), .As(As), .dstA(dstA), .Ad(Ad), .Format(Format),
-        .INTACK(INTACK),
+        .IW(IW), .srcA(srcA), .As(As), .dstA(dstA), .Ad(Ad), .BW(CtlBW),
+        .Format(Format), .INTACK(INTACK),
         .ControlWord({IdxF, IF, Mem, Ex, srcM, srcL, dstM, dstL, AddrM, AddrL, IdxM})
     );
 
@@ -138,7 +138,7 @@ module CPU(
         .SPF(AddrM == 2'b01),
         .INTACK(INTACK), .Ex(Ex),
         .SRnew(SRnew), .srcA(srcA), .dstA(dstA),
-        .IW6(IW[6]), 
+        .IW6(CtlBW), 
         .srcInc((AddrM == 2'b10) & (As == INDIRECT_AUTOINCREMENT_MODE)),
         .dstInc((AddrM == 2'b11) & (As == INDIRECT_AUTOINCREMENT_MODE)),
         .RW(~Mem && Ex && (({IW[15:12], 12'b0} != CMP) || {IW[15:12], 12'b0} != BIT)),
@@ -149,7 +149,7 @@ module CPU(
     );
 
     SystemBusControl BusCtl(
-        .IdxF(IdxF), .IF(IF), .Mem(Mem), .Ex(Ex), .INTACK(INTACK), .IW6(IW[6]),
+        .IdxF(IdxF), .IF(IF), .Mem(Mem), .Ex(Ex), .INTACK(INTACK), .IW6(CtlBW),
         .PCnt(RegPC), .Addr(OpAddr), .IntAddr(IntAddr), .result(result),
         .MAB(MAB), .MDBout(MDBout), .BW(BW), .MW(MW)
     );
