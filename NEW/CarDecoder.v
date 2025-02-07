@@ -52,11 +52,13 @@ module CarDecoder(
     always @(*) begin
         if (|IW[15:14]) begin
             // 2-op instruction -----------------------------------------------
-            if (IW[11:8] == CG1 || IW[11:8] == CG2 || 
-                IW[5:4] == REGISTER_MODE) begin
+            if (IW[5:4] == REGISTER_MODE || IW[11:8] == CG2 || 
+                (IW[11:8] == CG1 && IW[5:4] != INDEXED_MODE)
+                ) begin
                 // Special Decoding for Constant Generator calls to source
                 // && Register address mode
-                if (IW[3:0] == CG1 || IW[3:0] == CG2) begin
+                if ((IW[3:0] == CG1 && IW[7] != INDEXED_MODE) || 
+                     IW[3:0] == CG2) begin
                     // Special Decoding for Constant Generator calls to dst
                     CAR = CAR_REG_REG;
                 end
@@ -68,7 +70,8 @@ module CarDecoder(
 
             else if (IW[5:4] == INDEXED_MODE) begin
                 // As = Indexed mode
-                if (IW[3:0] == CG1 || IW[3:0] == CG2) begin
+                if ((IW[3:0] == CG1 && IW[7] != INDEXED_MODE) || 
+                     IW[3:0] == CG2) begin
                     // Special Decoding for Constant Generator calls to dst
                     CAR = CAR_IDX_REG0;
                 end
@@ -80,7 +83,8 @@ module CarDecoder(
 
             else begin
                 // As = indirect (autoincrement) mode
-                if (IW[3:0] == CG1 || IW[3:0] == CG2) begin
+                if ((IW[3:0] == CG1 && IW[7] != INDEXED_MODE) || 
+                     IW[3:0] == CG2) begin
                     // Special Decoding for Constant Generator calls to dst
                     CAR = CAR_IND_REG0;
                 end
@@ -101,7 +105,8 @@ module CarDecoder(
             case({IW[15:7], 7'b0})
                 RRC, RRCB, SWPB, RRA, RRAB, SXT: begin
                     // basic 1-op ALU instructions ------------------------
-                    if (IW[3:0] == CG1 || IW[3:0] == CG2) begin
+                    if (IW[3:0] == CG1 && IW[5:4] != INDEXED_MODE || 
+                        IW[3:0] == CG2) begin
                         // Special decoding for constant generator calls
                         CAR = CAR_1OP_REG;
                     end
@@ -117,7 +122,8 @@ module CarDecoder(
 
                 PUSH, PUSHB: begin
                     // Push decoding --------------------------------------
-                    if (IW[3:0] == CG1 || IW[3:0] == CG2) begin
+                    if (IW[3:0] == CG1 && IW[5:4] != INDEXED_MODE || 
+                        IW[3:0] == CG2) begin
                         // Special decoding for constant generator calls
                         CAR = CAR_PUSH_REG0;
                     end
@@ -133,7 +139,8 @@ module CarDecoder(
 
                 CALL: begin
                     // Call decoding --------------------------------------
-                    if (IW[3:0] == CG1 || IW[3:0] == CG2) begin
+                    if (IW[3:0] == CG1 && IW[5:4] != INDEXED_MODE || 
+                        IW[3:0] == CG2) begin
                         // Special decoding for constant generator calls
                         CAR = CAR_CALL_REG0;
                     end
