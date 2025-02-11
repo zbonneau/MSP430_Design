@@ -1,8 +1,8 @@
 /*--------------------------------------------------------
     Module Name: FRAM
     Description:
-        The FRAM module contains the simulated non-volatile
-        memory (NVM). This is where programs would be located.
+        The MEMORY module contains the simulated memory. 
+        This module will be used to simulate RAM/FRAM/IVT sections.
 
     Inputs:
         MAB - Memory Address Bus
@@ -14,12 +14,12 @@
 
 --------------------------------------------------------*/
 
-module FRAM#(
-    parameter   DEPTH = FRAM_LEN,
-                START = FRAM,
+module MEMORY #(
+    parameter   START   = 0,
+                DEPTH   = 0,                
                 INITVAL = 16'h0000
     )(
-    input MCLK, erase, // NVM is not reset by POR
+    input MCLK, reset, 
     input [15:0] MAB, MDBwrite,
     input MW, BW,
 
@@ -45,7 +45,7 @@ module FRAM#(
 
     /* Sequential Logic Assignments */
     always @(posedge MCLK) begin
-        if (erase) begin
+        if (reset) begin
             for (i = 0; i < DEPTH; i = i + 2) 
                 {memory[i+1], memory[i]} = 0;
         end else if (MW && (MAB >= START && MAB < START + DEPTH)) begin

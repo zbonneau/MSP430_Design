@@ -1,25 +1,27 @@
 /*--------------------------------------------------------
-    Module Name : FRAM Testbench
+    Module Name : MEMORY Testbench
     Description:
-        Verifies Functionality of the FRAM
+        Verifies Functionality of the MEMORY
 
 --------------------------------------------------------*/
 
 `default_nettype none
 `timescale 100ns/100ns
 
-module tb_FRAM;
-reg clk, erase;
+module tb_MEMORY;
+reg clk, reset;
 reg [15:0] MAB, MDBwrite;
 reg MW, BW;
 
 wire [15:0] MDBread;
+`include "NEW\\PARAMS.v"
 
-initial begin {clk, erase, MAB, MDBwrite} = 0; end
+initial begin {clk, reset, MAB, MDBwrite} = 0; end
 
-FRAM uut
+MEMORY #(.START(FRAM_START), .DEPTH(20), .INITVAL(0))
+uut
 (
-.MCLK(clk), .erase(erase),
+.MCLK(clk), .reset(reset),
 .MAB(MAB), .MDBwrite(MDBwrite), 
 .MW(MW), .BW(BW), 
 .MDBread(MDBread)
@@ -38,8 +40,8 @@ assign m8 = {uut.memory[9],  uut.memory[8]};
 assign mA = {uut.memory[11], uut.memory[10]};
 
 initial begin
-    $dumpfile("FRAM.vcd");
-    $dumpvars(0, tb_FRAM);
+    $dumpfile("MEMORY.vcd");
+    $dumpvars(0, tb_MEMORY);
 end
 
 initial begin
@@ -68,8 +70,8 @@ initial begin
     // write invalid
     `PULSE(MW)
 
-    // erase FRAM
-    `PULSE(erase)
+    // reset MEMORY
+    `PULSE(reset)
 
     #CLK_PERIOD;
 

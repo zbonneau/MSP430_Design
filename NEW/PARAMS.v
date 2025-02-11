@@ -157,10 +157,10 @@
 
     // Defines for Memory Map
     localparam 
-        RAM = 16'h1C00,
-        RAM_LEN = 16'h0800,
-        FRAM = 16'h4400,
-        FRAM_LEN = 16'hBB80,
-        IVT = 16'hFF80,
-        IVT_LEN = 16'h0080;
+        RAM_START   = 16'h1C00,
+        RAM_LEN     = 16'h0800,
+        FRAM_START  = 16'h4400,
+        FRAM_LEN    = 16'hBB80,
+        IVT_START   = 16'hFF80,
+        IVT_LEN     = 16'h0080;
 // `endif 
