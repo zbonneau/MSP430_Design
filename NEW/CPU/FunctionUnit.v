@@ -24,7 +24,7 @@ module FunctionUnit(
 
     initial begin {result, Zout, Vout, Nout, Cout} <= 0; end
 
-    `include "NEW\\MACROS.v"
+    `include "NEW\\PARAMS.v"
 
     always @(IW, src, dst, Zin, Vin, Nin, Cin) begin
         // By default, status bits are not changed

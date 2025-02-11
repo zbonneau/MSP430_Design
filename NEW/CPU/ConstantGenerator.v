@@ -31,7 +31,7 @@ module ConstantGenerator(
     output reg [15:0]   src, dst,
     output reg          srcGenerated, dstGenerated
  );
- `include "NEW\\MACROS.v"
+ `include "NEW\\PARAMS.v"
 
  // Initialize regs
     initial begin {src, dst, srcGenerated, dstGenerated} = 0; end

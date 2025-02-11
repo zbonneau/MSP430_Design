@@ -5,7 +5,7 @@
 
 --------------------------------------------------------*/
 
-`include "NEW\\ConstantGenerator.v"
+// `include "NEW\\ConstantGenerator.v"
 `default_nettype none
 `timescale 100ns/100ns
 
@@ -18,7 +18,7 @@ reg         Ad;
 wire [15:0] src, dst;
 wire srcGenerated, dstGenerated;
 
-`include "NEW\\MACROS.v"
+`include "NEW\\PARAMS.v"
 
 initial begin {Format, srcA, As, dstA, Ad} = 0; end
 

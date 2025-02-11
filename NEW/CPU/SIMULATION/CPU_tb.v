@@ -25,7 +25,7 @@ wire MW, BW, INTACK;
 wire [15:0] Reg0, Reg1, Reg2, Reg3, Reg4, Reg5, Reg6, Reg7,
       Reg8, Reg9, Reg10, Reg11, Reg12, Reg13, Reg14, Reg15;
 
-`include "NEW\\MACROS.v"
+`include "NEW\\PARAMS.v"
 
 initial begin 
     {MCLK, reset} = 0; 

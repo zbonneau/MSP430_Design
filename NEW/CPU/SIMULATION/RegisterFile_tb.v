@@ -5,7 +5,7 @@
 
 --------------------------------------------------------*/
 
-`include "NEW\\RegisterFile.v"
+// `include "NEW\\RegisterFile.v"
 `default_nettype none
 `timescale 100ns/100ns
 
@@ -20,7 +20,7 @@ wire [15:0] PCout, SPout, Rsrc, Rdst;
 wire [3:0] SRcurrent;
 wire GIE;
 
-`include "NEW\\MACROS.v" // global parameter defines
+`include "NEW\\PARAMS.v" // global parameter defines
 
 
 initial begin 

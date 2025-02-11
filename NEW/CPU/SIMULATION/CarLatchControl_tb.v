@@ -5,7 +5,7 @@
 
 --------------------------------------------------------*/
 
-`include "NEW\\CarLatchControl.v"
+// `include "NEW\\CarLatchControl.v"
 `default_nettype none
 `timescale 100ns/100ns
 
@@ -14,7 +14,7 @@ reg rst, INTREQ, IF, Br;
 reg [CAR_BITS-1:0]  CARnew, CARold;
 wire [CAR_BITS-1:0] CARnext;
 
-`include "NEW\\MACROS.v"
+`include "NEW\\PARAMS.v"
 
 initial begin 
     {rst, INTREQ, IF, Br} = 0;

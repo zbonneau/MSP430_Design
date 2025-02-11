@@ -32,7 +32,7 @@ module CPU(
     output [15:0] MDBout,
     output MW, BW, INTACK
  );
-    `include "NEW\\MACROS.v" // global parameter defines
+    `include "NEW\\PARAMS.v" // global parameter defines
 
     /* Internal signal definitions */
     reg [15:0] InstructionReg;

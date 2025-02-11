@@ -1,20 +1,7 @@
-// `ifndef MACROS
-// `define MACROS
-
-    // Defines for Control Unit parameters
-        parameter [1:0] INSTRUCTION_FETCH   = 1,
-                        INDEX_FETCH         = 2,
-                        REG_WRITE           = 1,
-                        MEM_READ            = 2,
-                        MEM_WRITE           = 3,
-                        ADDR_ADDRESS        = 0,
-                        ADDR_PREDEC         = 1,
-                        ADDR_SRC            = 2,
-                        ADDR_DST            = 3;
 
     // Defines for CAR states
-        parameter CAR_BITS      = 6;
-        parameter [CAR_BITS-1:0] 
+        localparam CAR_BITS      = 6;
+        localparam [CAR_BITS-1:0] 
                   CAR_0         = 0,
                   CAR_REG_REG   = 1,
                   CAR_REG_IDX0  = 2,
@@ -78,7 +65,7 @@
 
 
     // Defines for Instruction Types
-        parameter [15:0] 
+        localparam [15:0] 
             RRC     = 16'h1000, 
             RRCB    = 16'h1040,
             SWPB    = 16'h1080,
@@ -127,7 +114,7 @@
             ANDB    = 16'hF040;
 
     // Defines for Register Names
-        parameter [3:0]
+        localparam [3:0]
             PC  = 4'd0,
             SP  = 4'd1,
             SR  = 4'd2,
@@ -150,14 +137,14 @@
             R14 = 4'd14,
             R15 = 4'd15;
     
-        parameter 
+        localparam 
             BITC  = 0,
             BITZ  = 1,
             BITN  = 2,
             BITGIE= 3,
             BITV  = 8;
 
-        parameter
+        localparam
             REGISTER_MODE = 2'b0,
             INDEXED_MODE  = 2'b1,
             SYMBOLIC_MODE = 2'b1,

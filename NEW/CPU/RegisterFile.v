@@ -54,7 +54,7 @@ module RegisterFile(
             Registers[i] = 0;
      end
 
-    `include "NEW\\MACROS.v" // global parameter defines
+    `include "NEW\\PARAMS.v" // global parameter defines
 
     /* Continuous Logic Assignments */
     assign PCout = Registers[PC];

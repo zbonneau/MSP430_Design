@@ -5,7 +5,7 @@
         
 --------------------------------------------------------*/
 
-`include "NEW\\FunctionUnit.v"
+// `include "NEW\\FunctionUnit.v"
 `default_nettype none
 `timescale 100ns/100ns
 
@@ -21,7 +21,7 @@ wire diffResult, diffStatus;
 assign diffResult = (result == expectedResult) ? 0 : 1'bx;
 assign diffStatus = ({Vout, Nout, Zout, Cout} == expectedStatus) ? 0 : 1'bx;
 
-`include "NEW\\MACROS.v"
+`include "NEW\\PARAMS.v"
 
 initial begin {src, dst, IW, Zin, Vin, Nin, Cin, expectedStatus, expectedResult} = 0; end
 

@@ -37,7 +37,7 @@ module SystemBusControl(
     output        BW, MW
  );
 
-    `include "NEW\\MACROS.v" // global parameter defines
+    `include "NEW\\PARAMS.v" // global parameter defines
 
     /* Continuous Logic Assignments */
     assign MAB = (INTACK) ? IntAddr : // Fetch IVT

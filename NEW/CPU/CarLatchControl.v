@@ -24,7 +24,7 @@ module CarLatchControl(
     output [CAR_BITS-1:0] CARnext
  );
 
-    `include "NEW\\MACROS.v" // global parameter defines
+    `include "NEW\\PARAMS.v" // global parameter defines
 
     /* Continuous Logic Assignments */
     assign CARnext = (rst) ? CAR_INT4 : // Interrupt sequence w/out PUSHes
