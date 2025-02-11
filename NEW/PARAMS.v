@@ -137,20 +137,30 @@
             R14 = 4'd14,
             R15 = 4'd15;
     
-        localparam 
-            BITC  = 0,
-            BITZ  = 1,
-            BITN  = 2,
-            BITGIE= 3,
-            BITV  = 8;
+    // Defines for SR bits
+    localparam 
+        BITC  = 0,
+        BITZ  = 1,
+        BITN  = 2,
+        BITGIE= 3,
+        BITV  = 8;
 
-        localparam
-            REGISTER_MODE = 2'b0,
-            INDEXED_MODE  = 2'b1,
-            SYMBOLIC_MODE = 2'b1,
-            ABSOLUTE_MODE = 2'b1,
-            INDIRECT_MODE = 2'b10,
-            INDIRECT_AUTOINCREMENT_MODE = 2'b11,
-            IMMEDIATE_MODE = 2'b11;
+    // Defines for Address Modes
+    localparam
+        REGISTER_MODE = 2'b0,
+        INDEXED_MODE  = 2'b1,
+        SYMBOLIC_MODE = 2'b1,
+        ABSOLUTE_MODE = 2'b1,
+        INDIRECT_MODE = 2'b10,
+        INDIRECT_AUTOINCREMENT_MODE = 2'b11,
+        IMMEDIATE_MODE = 2'b11;
 
+    // Defines for Memory Map
+    localparam 
+        RAM = 16'h1C00,
+        RAM_LEN = 16'h0800,
+        FRAM = 16'h4400,
+        FRAM_LEN = 16'hBB80,
+        IVT = 16'hFF80,
+        IVT_LEN = 16'h0080;
 // `endif 

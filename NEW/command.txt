@@ -1,2 +1,5 @@
 -y NEW
 -y NEW/CPU
+-y NEW/MemoryMap
+
+NEW/MACROS.v
