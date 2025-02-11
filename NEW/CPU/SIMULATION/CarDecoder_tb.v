@@ -5,7 +5,7 @@
 
 --------------------------------------------------------*/
 
-`include "NEW\\CarDecoder.v"
+// `include "NEW\\CarDecoder.v"
 `default_nettype none
 `timescale 100ns/100ns
 
@@ -13,7 +13,7 @@ module tb_CarDecoder;
 reg [15:0] IW;
 wire [CAR_BITS-1:0] CAR;
 
-`include "NEW\\MACROS.v"
+`include "NEW\\PARAMS.v"
 
 CarDecoder uut
 (

@@ -16,7 +16,7 @@ module CarDecoder(
     output reg [CAR_BITS-1:0] CAR
  );
 
-    `include "NEW\\MACROS.v"
+    `include "NEW\\PARAMS.v"
 
     initial begin CAR = 0; end
 
