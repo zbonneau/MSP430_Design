@@ -15,9 +15,9 @@
 --------------------------------------------------------*/
 
 module MEMORY #(
-    parameter   START   = 0,
-                DEPTH   = 0,                
-                INITVAL = 16'h0000
+    parameter [16:0]    START   = 0,
+                        DEPTH   = 0,                
+                        INITVAL = 16'h0000
     )(
     input MCLK, reset, 
     input [15:0] MAB, MDBwrite,
