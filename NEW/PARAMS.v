@@ -173,4 +173,37 @@
         IVT_START   = 16'hFF80,
         IVT_LEN     = 16'h0080;
 
+    localparam [5:0]
+        IVT_RESET       = 63,
+        IVT_SNMI        = 62,
+        IVT_UNMI        = 61,
+        IVT_ComparatorE = 60, 
+        IVT_Timer0B0    = 59,
+        IVT_Timer0B1    = 58,
+        IVT_WDT         = 57,
+        IVT_ESI         = 56,
+        IVT_eUSCI_A0    = 55,
+        IVT_eUSCI_B0    = 54,
+        IVT_ADC12_B     = 53,
+        IVT_Timer0A0    = 52,
+        IVT_Timer0A1    = 51,
+        IVT_eUSCI_A1    = 50,
+        IVT_eUSCI_B1    = 49,
+        IVT_DMA         = 48,
+        IVT_Timer1A0    = 47,
+        IVT_Timer1A1    = 46,
+        IVT_PORT1       = 45,
+        IVT_Timer2A0    = 44,
+        IVT_Timer2A1    = 43,
+        IVT_PORT2       = 42,
+        IVT_Timer3A0    = 41,
+        IVT_Timer3A1    = 40,
+        IVT_PORT3       = 39,
+        IVT_PORT4       = 38,
+        IVT_LCD_C       = 37,
+        IVT_RTC_C       = 36,
+        IVT_AES         = 35,
+        IVT_NONE        =  0;
+
+
 // `endif 

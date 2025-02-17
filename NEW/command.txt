@@ -1,5 +1,7 @@
 -y NEW
 -y NEW/CPU
 -y NEW/MemoryMap
+-y NEW/InterruptUnit
 
 NEW/MACROS.v
+NEW/SYNTHESIS.v
