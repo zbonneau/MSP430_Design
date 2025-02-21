@@ -3,6 +3,7 @@
 -y NEW/MemoryMap
 -y NEW/InterruptUnit
 -y NEW/GPIO
+-y NEW/TimerA
 
 NEW/MACROS.v
 NEW/SYNTHESIS.v

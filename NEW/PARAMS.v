@@ -304,5 +304,80 @@
         P2IFG           = PAIFG_H,
         P1IV            = MAP_PORTA+14,
         P2IV            = MAP_PORTA+30;
-        
+
+    // defines for TIMER A Module
+    localparam
+        TASSEL1         = 9,
+        TASSEL0         = 8,
+        ID1             = 7,
+        ID0             = 6,
+        MC1             = 5,
+        MC0             = 4,
+        TACLR           = 2,
+        TAIE            = 1,
+        TAIFG           = 0;
+    
+    localparam 
+        MC__STOP        = 0,
+        MC__UP          = 1,
+        MC__CONTINUOUS  = 2,
+        MC__UPDOWN      = 3,
+        ID__1           = 0,
+        ID__2           = 1,
+        ID__4           = 2,
+        ID__8           = 3,
+        TASSEL__TACLK   = 0,
+        TASSEL__ACLK    = 1,
+        TASSEL__SMCLK   = 2,
+        TASSEL__INCLK   = 3;
+
+
+    localparam
+        CM1             = 15,
+        CM0             = 14,
+        CCIS1           = 13,
+        CCIS0           = 12,
+        SCS             = 11,
+        SCCI            = 10,
+        CAP             = 8,
+        OUTMOD2         = 7,
+        OUTMOD1         = 6,
+        OUTMOD0         = 5,
+        CCIE            = 4,
+        CCI             = 3,
+        OUT             = 2,
+        COV             = 1,
+        CCIFG           = 0;
+
+    localparam
+        TAnIV_NONE      = 0,
+        TAnIV_CCIFG1    = 2,
+        TAnIV_CCIFG2    = 4,
+        TAnIV_CCIFG3    = 6,
+        TAnIV_CCIFG4    = 8,
+        TAnIV_CCIFG5    = 10,
+        TAnIV_CCIFG6    = 12,
+        TAnIV_TAIFG     = 14;
+
+    localparam
+        TAIDEX2         = 2,
+        TAIDEX1         = 1,
+        TAIDEX0         = 0;
+
+
+
+    // defines for TIMER A0
+    localparam
+        TA0_CCM_COUNT   = 3,
+        TA0CTL          = MAP_TIMER_TA0,
+        TA0CCTL0        = MAP_TIMER_TA0 + 8'h02,
+        TA0CCTL1        = MAP_TIMER_TA0 + 8'h04,
+        TA0CCTL2        = MAP_TIMER_TA0 + 8'h06,
+        TA0R            = MAP_TIMER_TA0 + 8'h10,
+        TA0CCR0         = MAP_TIMER_TA0 + 8'h12,
+        TA0CCR1         = MAP_TIMER_TA0 + 8'h14,
+        TA0CCR2         = MAP_TIMER_TA0 + 8'h16,
+        TA0IV           = MAP_TIMER_TA0 + 8'h2E,
+        TA0EX0          = MAP_TIMER_TA0 + 8'h20;
+
 // `endif 
