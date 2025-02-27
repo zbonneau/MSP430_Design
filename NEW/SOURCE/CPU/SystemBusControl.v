@@ -28,6 +28,7 @@
         MW - Memory Write Enable
 
 --------------------------------------------------------*/
+`timescale 100ns/100ns
 
 module SystemBusControl(
     input IdxF, IF, Mem, Ex, INTACK, IW6,

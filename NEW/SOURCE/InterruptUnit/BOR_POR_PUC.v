@@ -17,6 +17,7 @@
         DELAY - A decrement counter emulates a BOR circuit as Vss rises
 
 --------------------------------------------------------*/
+`timescale 100ns/100ns
 
 module BOR_POR_PUC#(
     parameter   DELAYBITS = 2,

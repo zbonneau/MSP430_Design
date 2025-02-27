@@ -14,6 +14,7 @@
         result - data out
         
 --------------------------------------------------------*/
+`timescale 100ns/100ns
 
 module FunctionUnit(
     input [15:0] src, dst, IW,

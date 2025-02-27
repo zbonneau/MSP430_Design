@@ -1,9 +1,11 @@
 -y NEW
--y NEW/CPU
--y NEW/MemoryMap
--y NEW/InterruptUnit
--y NEW/GPIO
--y NEW/TimerA
+-y NEW/SOURCE/CPU
+-y NEW/SOURCE/GPIO
+-y NEW/SOURCE/InterruptUnit
+-y NEW/SOURCE/MemoryMap
+-y NEW/SOURCE/TimerA
+
++timescale+100ns/100ns
 
 NEW/MACROS.v
 NEW/SYNTHESIS.v

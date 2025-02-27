@@ -14,6 +14,7 @@
         TimerClock - selected, divided clock signal.
 
 --------------------------------------------------------*/
+`timescale 100ns/100ns
 
 module TimerA_PreDiv(
     input TAxCLK, ACLK, SMCLK, INCLK,

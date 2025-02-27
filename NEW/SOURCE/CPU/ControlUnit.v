@@ -22,7 +22,7 @@
          -> 12-bit output containing controll signals for PC options, memory/execute, operand selection, and address manipulation
                 
 --------------------------------------------------------*/
-
+`timescale 100ns/100ns
 
 module ControlUnit(
     input [CAR_BITS-1:0] CAR,

@@ -17,6 +17,7 @@
         TAIFGset - triggers set on rising edge
 
 --------------------------------------------------------*/
+`timescale 100ns/100ns
 
 module TimerACount(
     input TimerClock,

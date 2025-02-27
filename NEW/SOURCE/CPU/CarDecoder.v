@@ -10,6 +10,7 @@
         CAR - CAR microsequence index
 
 --------------------------------------------------------*/
+`timescale 100ns/100ns
 
 module CarDecoder(
     input [15:0] IW,

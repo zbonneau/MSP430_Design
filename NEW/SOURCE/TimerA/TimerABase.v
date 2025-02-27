@@ -16,6 +16,7 @@
         MDBread - to CPU
 
 --------------------------------------------------------*/
+`timescale 100ns/100ns
 
 module TimerABase#(
     parameter   TAnCTL = TA0CTL,
@@ -36,6 +37,7 @@ module TimerABase#(
     /* Internal signal definitions */
     reg [15:0] TAxCTL, TAxR, TAxEX0;
     wire [15:0] TAxRnew;
+    wire TAIFGset;
 
     // Register Bit assignements
     wire [1:0] TASSEL, ID, MC;

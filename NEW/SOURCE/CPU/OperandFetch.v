@@ -15,6 +15,7 @@
         address  - memory address for operand fetch, result write
         
 --------------------------------------------------------*/
+`timescale 100ns/100ns
 
 module OperandFetch(
     input clk, rst,

@@ -16,6 +16,7 @@
         CCIFGclr[n:0] clear TAxCCTLn.CCIFG
 
 --------------------------------------------------------*/
+`timescale 100ns/100ns
 
 module TimerAINT#(
     parameter [2:0] CCM_COUNT = 1

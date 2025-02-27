@@ -16,6 +16,7 @@
         MDBread - MDB from memory+peripherals to CPU
 
 --------------------------------------------------------*/
+`timescale 100ns/100ns
 
 module MemoryMap (
     input MCLK, rst,

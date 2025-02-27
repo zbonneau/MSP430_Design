@@ -20,6 +20,7 @@
         INDEX - Priority Index of module. Configures Addr index when triggered
 
 --------------------------------------------------------*/
+`timescale 100ns/100ns
 
 module InterruptModule#(
     parameter [5:0] INDEX = 0

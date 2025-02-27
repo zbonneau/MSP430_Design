@@ -21,6 +21,7 @@
         INTACK - Interrupt Acknowledge
 
 --------------------------------------------------------*/
+`timescale 100ns/100ns
 
 module CPU(
     input MCLK, reset,

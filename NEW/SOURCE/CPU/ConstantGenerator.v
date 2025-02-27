@@ -21,6 +21,7 @@
             notify external modules that the CG triggered
 
 --------------------------------------------------------*/
+`timescale 100ns/100ns
 
 module ConstantGenerator(
     input               Format,

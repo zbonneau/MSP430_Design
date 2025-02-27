@@ -20,6 +20,7 @@
         Module_n_clr - interrupt clear flag to module n
 
 --------------------------------------------------------*/
+`timescale 100ns/100ns
 
 module InterruptUnit(
     input MCLK, RSTn, INTACK, Vacant,

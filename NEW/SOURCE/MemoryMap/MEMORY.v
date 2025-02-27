@@ -13,6 +13,7 @@
         MDBread - Memory Data Bus from FRAM to CPU. Default Hi-Z
 
 --------------------------------------------------------*/
+`timescale 100ns/100ns
 
 module MEMORY #(
     parameter [16:0]    START   = 0,

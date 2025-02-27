@@ -19,6 +19,7 @@
             -   Duplicate outputs for Py
 
 --------------------------------------------------------*/
+`timescale 100ns/100ns
 
 module GPIO16#(
     parameter [16:0] START = MAP_PORTA

@@ -32,6 +32,7 @@
         Rsrc, Rdst - register operands
 
 --------------------------------------------------------*/
+`timescale 100ns/100ns
 
 module RegisterFile(
     input clk, rst,
