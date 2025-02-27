@@ -105,7 +105,8 @@ module TimerABase#(
             end
 
             // TACLR autoclears after resetting device. Do it on next MCLK
-            TAxCTL[TACLR] <= 1'b0;
+            if (TAxCTL[TACLR])
+                TAxCTL[TACLR] <= 1'b0;
 
             // TAIFG autoclears when IV read
             if (TAIFGclr)
@@ -113,19 +114,21 @@ module TimerABase#(
         end
     end
     
-    always @(posedge TimerClock or posedge (TACLR|reset)) begin
-        if (TACLR | reset) begin
+    always @(posedge TimerClock or posedge wTACLR or posedge reset) begin
+        if (wTACLR | reset) begin
             TAxR <= 0;
         end
         else begin
             TAxR <= TAxRnew;
+            if (TAIFGset)
+                TAxCTL[TAIFG] <= 1'b1;
         end
     end
 
-    always @(posedge TAIFGset) begin
-        if (~reset)
-            TAxCTL[TAIFG] <= 1'b1;
-    end
+    // always @(posedge TAIFGset) begin
+    //     if (~reset)
+    //         TAxCTL[TAIFG] <= 1'b1;
+    // end
 
     /* Submodule Instantiation */
     TimerA_PreDiv PreDiv(
