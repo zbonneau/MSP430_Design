@@ -348,6 +348,24 @@
         OUT             = 2,
         COV             = 1,
         CCIFG           = 0;
+    
+    localparam
+        CM__NONE        = 0,
+        CM__RISING      = 1,
+        CM__FALLING     = 2,
+        CM__BOTH        = 3,
+        CCIS__A         = 0,
+        CCIS__B         = 1,
+        CCIS__GND       = 2,
+        CCIS__VCC       = 3,
+        OUTMOD__OUT     = 0,
+        OUTMOD__SET     = 1,
+        OUTMOD__TOG_RST = 2,
+        OUTMOD__SET_RST = 3,
+        OUTMOD__TOG     = 4,
+        OUTMOD__RST     = 5,
+        OUTMOD__TOG_SET = 6,
+        OUTMOD__RST_SET = 7;
 
     localparam
         TAnIV_NONE      = 0,
