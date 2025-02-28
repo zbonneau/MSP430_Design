@@ -60,16 +60,26 @@ module TimerAINT#(
         TAIFGclr = 0;
         CCIFGclr = TAxCLR0;
         if (TAxIVread) begin
-            case(TAxIVcurrent)
-                4'h2:    CCIFGclr[1] = 1'b1;
-                4'h4:    CCIFGclr[2] = 1'b1;
-                4'h6:    CCIFGclr[3] = 1'b1;
-                4'h8:    CCIFGclr[4] = 1'b1;
-                4'hA:    CCIFGclr[5] = 1'b1;
-                4'hC:    CCIFGclr[6] = 1'b1;
-                4'hE:    TAIFGclr = 1'b1;
-                default: begin end
-            endcase
+            /*
+             * Converted from case to if-else to avoid warning. When 
+             * CCM_COUNT < 7, case statement throws warnings that CCIFG
+             * has bits out of reach.
+             */
+            if (CCM_COUNT >= 2 && TAxIVcurrent == 4'h2)
+                CCIFGclr[1] = 1'b1;
+            else if (CCM_COUNT >= 3 && TAxIVcurrent == 4'h4)
+                CCIFGclr[2] = 1'b1;
+            else if (CCM_COUNT >= 4 && TAxIVcurrent == 4'h6)
+                CCIFGclr[3] = 1'b1;
+            else if (CCM_COUNT >= 5 && TAxIVcurrent == 4'h8)
+                CCIFGclr[4] = 1'b1;
+            else if (CCM_COUNT >= 6 && TAxIVcurrent == 4'hA)
+                CCIFGclr[5] = 1'b1;
+            else if (CCM_COUNT >= 7 && TAxIVcurrent == 4'hC)
+                CCIFGclr[6] = 1'b1;
+            else if (TAxIVcurrent == 4'hE)
+                TAIFGclr = 1'b1;
+            
         end
     end
     

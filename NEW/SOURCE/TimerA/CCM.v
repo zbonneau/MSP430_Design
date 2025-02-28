@@ -22,8 +22,8 @@
 `timescale 100ns/100ns
 
 module CCM#(
-    parameter   CCRx = TA0CCR0,
-    parameter   CCTLx = TA0CCTL0
+    parameter   CCRn_OFFSET = TA0CCR0,
+    parameter   CCTLn_OFFSET = TA0CCTL0
     )(
     input MCLK, TimerClock, reset,
     input [15:0] MAB, MDBwrite,
@@ -38,7 +38,7 @@ module CCM#(
     `include "NEW/PARAMS.v" // global parameter defines
 
     /* Internal signal definitions */
-    reg [15:0] CCTLn, CCRn;
+    reg [15:0] CCTLx, CCRx;
     wire SetCCIFG;
 
     wire [1:0] CM, CCIS;
@@ -46,29 +46,29 @@ module CCM#(
     wire [2:0] OUTMOD;
     wire wCCI, wOUT, wCOV;
 
-    initial begin {MDBread, CCTLn, CCRn} = 0; end
+    initial begin {MDBread, CCTLx, CCRx} = 0; end
 
     /* Continuous Logic Assignments */
-    assign {CM, CCIS, wSCS, wSCCI} = CCTLn[CM1:SCCI];
-    assign {wCAP, OUTMOD, CCIEn, wCCI, wOUT, wCOV, CCIFGn} = CCTLn[CAP:CCIFG];
-    assign EQUn = (TAxRcurrent == CCRn);
+    assign {CM, CCIS, wSCS, wSCCI} = CCTLx[CM1:SCCI];
+    assign {wCAP, OUTMOD, CCIEn, wCCI, wOUT, wCOV, CCIFGn} = CCTLx[CAP:CCIFG];
+    assign EQUn = (TAxRcurrent == CCRx);
     assign SetCCIFG = (wCAP) ? 0 : EQUn;
 
     /* Describe MMR read */
     always @(*) begin
         if (BW) begin
             case(MAB) 
-                CCRx:    MDBread = {8'h00, CCRn[7:0]  };
-                CCRx+1:  MDBread = {8'h00, CCRn[15:8] };
-                CCTLx:   MDBread = {8'h00, CCTLn[7:0] };
-                CCTLx+1: MDBread = {8'h00, CCTLn[15:0]};
-                default: MDBread = {16{1'bz}};
+                CCRn_OFFSET:    MDBread = {8'h00, CCRx[7:0]  };
+                CCRn_OFFSET+1:  MDBread = {8'h00, CCRx[15:8] };
+                CCTLn_OFFSET:   MDBread = {8'h00, CCTLx[7:0] };
+                CCTLn_OFFSET+1: MDBread = {8'h00, CCTLx[15:0]};
+                default:        MDBread = {16{1'bz}};
             endcase
         end else begin
             case(MAB&~1)
-                CCRx:    MDBread = CCRn;
-                CCTLx:   MDBread = CCTLn;
-                default: MDBread = {16{1'bz}};
+                CCRn_OFFSET:    MDBread = CCRx;
+                CCTLn_OFFSET:   MDBread = CCTLx;
+                default:        MDBread = {16{1'bz}};
             endcase
         end
     end
@@ -76,33 +76,33 @@ module CCM#(
     /* Sequential Logic Assignments */
     always @(posedge SetCCIFG) begin
         if (~reset)
-            CCTLn[CCIFG] <= 1'b1;
+            CCTLx[CCIFG] <= 1'b1;
     end
 
     always @(posedge MCLK or posedge reset) begin
         if (reset) begin
-            {CCTLn, CCRn} <= 0;
+            {CCTLx, CCRx} <= 0;
         end else begin
             /* Describe MMR write */
             if (MW & BW) begin
                 case(MAB)
-                    CCRx:    CCRn[7:0]   <= MDBwrite[7:0];
-                    CCRx+1:  CCRn[15:8]  <= MDBwrite[7:0];
-                    CCTLx:   CCTLn[7:0]  <= MDBwrite[7:0];
-                    CCTLx+1: CCTLn[15:0] <= MDBwrite[7:0];
-                    default: begin end
+                    CCRn_OFFSET:    CCRx[7:0]   <= MDBwrite[7:0];
+                    CCRn_OFFSET+1:  CCRx[15:8]  <= MDBwrite[7:0];
+                    CCTLn_OFFSET:   CCTLx[7:0]  <= MDBwrite[7:0];
+                    CCTLn_OFFSET+1: CCTLx[15:0] <= MDBwrite[7:0];
+                    default:        begin end
                 endcase
             end else if (MW & ~BW) begin
                 case(MAB & ~1)
-                    CCRx:  CCRn  <= MDBwrite;
-                    CCTLx: CCTLn <= MDBwrite;
-                    default: begin end
+                    CCRn_OFFSET:  CCRx  <= MDBwrite;
+                    CCTLn_OFFSET: CCTLx <= MDBwrite;
+                    default:      begin end
                 endcase
             end
 
             /* Handle CCIFG Autoclear */
             if (CCIFGclr)
-                CCTLn[CCIFG] <= 1'b0;
+                CCTLx[CCIFG] <= 1'b0;
 
         end
     end

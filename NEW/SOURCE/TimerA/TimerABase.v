@@ -19,9 +19,9 @@
 `timescale 100ns/100ns
 
 module TimerABase#(
-    parameter   TAnCTL = TA0CTL,
-                TAnR = TA0R,
-                TAnEX0 = TA0EX0
+    parameter   TAnCTL_OFFSET = TA0CTL,
+                TAnR_OFFSET   = TA0R,
+                TAnEX0_OFFSET = TA0EX0
     )(
     input MCLK, TACLK, ACLK, SMCLK, INCLK, reset,
     input [15:0] MAB, MDBwrite,
@@ -61,19 +61,19 @@ module TimerABase#(
     always @(*) begin
         if (BW) begin
             case(MAB)
-                TAnCTL:     MDBread = {8'h00, TAxCTL[7:0]};
-                TAnCTL+1:   MDBread = {8'h00, TAxCTL[15:8]};
-                TAnR:       MDBread = {8'h00, TAxR[7:0]};
-                TAnR+1:     MDBread = {8'h00, TAxR[15:8]};
-                TAnEX0:     MDBread = {8'h00, TAxEX0[7:0]};
-                TAnEX0+1:   MDBread = {8'h00, TAxEX0[15:8]};
-                default:    MDBread = {16{1'bz}};
+                TAnCTL_OFFSET:     MDBread = {8'h00, TAxCTL[7:0]};
+                TAnCTL_OFFSET+1:   MDBread = {8'h00, TAxCTL[15:8]};
+                TAnR_OFFSET:       MDBread = {8'h00, TAxR[7:0]};
+                TAnR_OFFSET+1:     MDBread = {8'h00, TAxR[15:8]};
+                TAnEX0_OFFSET:     MDBread = {8'h00, TAxEX0[7:0]};
+                TAnEX0_OFFSET+1:   MDBread = {8'h00, TAxEX0[15:8]};
+                default:           MDBread = {16{1'bz}};
             endcase
         end else begin
             case(MAB & ~1)
-                TAnCTL:     MDBread = TAxCTL;
-                TAnR:       MDBread = TAxR;
-                TAnEX0:     MDBread = TAxEX0;
+                TAnCTL_OFFSET:     MDBread = TAxCTL;
+                TAnR_OFFSET:       MDBread = TAxR;
+                TAnEX0_OFFSET:     MDBread = TAxEX0;
                 default:    MDBread =  {16{1'bz}};
             endcase
         end
@@ -88,21 +88,21 @@ module TimerABase#(
             // Handle Memory Writes
             if (MW & BW) begin
                 case(MAB)
-                    TAnCTL:     TAxCTL[7:0]  <= MDBwrite[7:0];
-                    TAnCTL+1:   TAxCTL[15:8] <= MDBwrite[7:0];
-                    TAnR:       TAxR[7:0]    <= MDBwrite[7:0];
-                    TAnR+1:     TAxR[15:8]   <= MDBwrite[7:0];
-                    TAnEX0:     TAxEX0[2:0]  <= MDBwrite[2:0];
-                    TAnEX0+1:   begin end // reserved as r0
-                    default:    begin end
+                    TAnCTL_OFFSET:     TAxCTL[7:0]  <= MDBwrite[7:0];
+                    TAnCTL_OFFSET+1:   TAxCTL[15:8] <= MDBwrite[7:0];
+                    TAnR_OFFSET:       TAxR[7:0]    <= MDBwrite[7:0];
+                    TAnR_OFFSET+1:     TAxR[15:8]   <= MDBwrite[7:0];
+                    TAnEX0_OFFSET:     TAxEX0[2:0]  <= MDBwrite[2:0];
+                    TAnEX0_OFFSET+1:   begin end // reserved as r0
+                    default:           begin end
                 endcase
             end
             else if (MW & ~BW) begin
                 case(MAB & ~1)
-                    TAnCTL:     TAxCTL <= MDBwrite;
-                    TAnR:       TAxR <= MDBwrite;
-                    TAnEX0:     TAxEX0[2:0] <= MDBwrite[2:0];
-                    default:    begin end
+                    TAnCTL_OFFSET:     TAxCTL <= MDBwrite;
+                    TAnR_OFFSET:       TAxR <= MDBwrite;
+                    TAnEX0_OFFSET:     TAxEX0[2:0] <= MDBwrite[2:0];
+                    default:           begin end
                 endcase
             end
 

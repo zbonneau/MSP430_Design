@@ -306,6 +306,26 @@
         P2IV            = MAP_PORTA+30;
 
     // defines for TIMER A Module
+    localparam 
+        TAnCTL          = 8'h00,
+        TAnCCTL0        = 8'h02,
+        TAnCCTL1        = 8'h04,
+        TAnCCTL2        = 8'h06,
+        TAnCCTL3        = 8'h08,
+        TAnCCTL4        = 8'h0A,
+        TAnCCTL5        = 8'h0C,
+        TAnCCTL6        = 8'h0E,
+        TAnR            = 8'h10,
+        TAnCCR0         = 8'h12,
+        TAnCCR1         = 8'h14,
+        TAnCCR2         = 8'h16,
+        TAnCCR3         = 8'h18,
+        TAnCCR4         = 8'h1A,
+        TAnCCR5         = 8'h1C,
+        TAnCCR6         = 8'h1E,
+        TAnEX0          = 8'h20,
+        TAnIV           = 8'h2E;
+
     localparam
         TASSEL1         = 9,
         TASSEL0         = 8,
