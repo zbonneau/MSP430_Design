@@ -8,7 +8,7 @@
 
     // Defines for Interrupt Module synthesis. If defined, it is synthesized
 `define IVT_RESET_USED      
-`define IVT_SNMI_USED       
+// `define IVT_SNMI_USED       
 // `define IVT_UNMI_USED       
 // `define IVT_ComparatorE_USED
 // `define IVT_Timer0B0_USED   

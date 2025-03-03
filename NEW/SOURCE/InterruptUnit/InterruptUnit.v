@@ -23,25 +23,123 @@
 `timescale 100ns/100ns
 
 module InterruptUnit(
-    input MCLK, RSTn, INTACK, Vacant,
-    input Module_60_int, Module_59_int, Module_58_int, Module_57_int,
-    input Module_56_int, Module_55_int, Module_54_int, Module_53_int, 
-    input Module_52_int, Module_51_int, Module_50_int, Module_49_int,
-    input Module_48_int, Module_47_int, Module_46_int, Module_45_int, 
-    input Module_44_int, Module_43_int, Module_42_int, Module_41_int, 
-    input Module_40_int, Module_39_int, Module_38_int, Module_37_int, 
-    input Module_36_int, Module_35_int,
-
+    input MCLK, RSTn, INTACK, 
     output reset, NMI, INT,
-    output [5:0] IntAddrLSBs,
-    output VMA_clr, RST_NMI_clr,
-    output Module_60_clr, Module_59_clr, Module_58_clr, Module_57_clr,
-    output Module_56_clr, Module_55_clr, Module_54_clr, Module_53_clr, 
-    output Module_52_clr, Module_51_clr, Module_50_clr, Module_49_clr,
-    output Module_48_clr, Module_47_clr, Module_46_clr, Module_45_clr, 
-    output Module_44_clr, Module_43_clr, Module_42_clr, Module_41_clr, 
-    output Module_40_clr, Module_39_clr, Module_38_clr, Module_37_clr, 
-    output Module_36_clr, Module_35_clr
+
+    // Conditionally Compiled netlist elements
+    `ifdef IVT_SNMI_USED
+        input Vacant,
+        output VMA_clr, 
+     `endif 
+    `ifdef IVT_UNMI_USED
+        output RST_NMI_clr,
+     `endif
+    `ifdef IVT_ComparatorE_USED 
+        input Module_60_int, 
+        output Module_60_clr, 
+     `endif
+    `ifdef IVT_Timer0B0_USED 
+        input Module_59_int, 
+        output Module_59_clr, 
+     `endif
+    `ifdef IVT_Timer0B1_USED 
+        input Module_58_int, 
+        output Module_58_clr, 
+     `endif
+    `ifdef IVT_WDT_USED 
+        input Module_57_int,
+        output Module_57_clr,
+     `endif
+    `ifdef IVT_ESI_USED 
+        input Module_56_int, 
+        output Module_56_clr, 
+     `endif
+    `ifdef IVT_eUSCI_A0_USED 
+        input Module_55_int, 
+        output Module_55_clr, 
+     `endif
+    `ifdef IVT_eUSCI_B0_USED 
+        input Module_54_int, 
+        output Module_54_clr, 
+     `endif
+    `ifdef IVT_ADC12_B_USED 
+        input Module_53_int, 
+        output Module_53_clr, 
+     `endif
+    `ifdef IVT_Timer0A0_USED 
+        input Module_52_int, 
+        output Module_52_clr, 
+     `endif
+    `ifdef IVT_Timer0A1_USED 
+        input Module_51_int, 
+        output Module_51_clr, 
+     `endif
+    `ifdef IVT_eUSCI_A1_USED 
+        input Module_50_int, 
+        output Module_50_clr, 
+     `endif
+    `ifdef IVT_eUSCI_B1_USED 
+        input Module_49_int,
+        output Module_49_clr,
+     `endif
+    `ifdef IVT_DMA_USED 
+        input Module_48_int, 
+        output Module_48_clr, 
+     `endif
+    `ifdef IVT_Timer1A0_USED 
+        input Module_47_int, 
+        output Module_47_clr, 
+     `endif
+    `ifdef IVT_Timer1A1_USED 
+        input Module_46_int, 
+        output Module_46_clr, 
+     `endif
+    `ifdef IVT_PORT1_USED 
+        input Module_45_int, 
+        output Module_45_clr, 
+     `endif
+    `ifdef IVT_Timer2A0_USED 
+        input Module_44_int, 
+        output Module_44_clr, 
+     `endif
+    `ifdef IVT_Timer2A1_USED 
+        input Module_43_int, 
+        output Module_43_clr, 
+     `endif
+    `ifdef IVT_PORT2_USED 
+        input Module_42_int, 
+        output Module_42_clr, 
+     `endif
+    `ifdef IVT_Timer3A0_USED 
+        input Module_41_int, 
+        output Module_41_clr, 
+     `endif
+    `ifdef IVT_Timer3A1_USED 
+        input Module_40_int, 
+        output Module_40_clr, 
+     `endif
+    `ifdef IVT_PORT3_USED 
+        input Module_39_int, 
+        output Module_39_clr, 
+     `endif
+    `ifdef IVT_PORT4_USED 
+        input Module_38_int, 
+        output Module_38_clr, 
+     `endif
+    `ifdef IVT_LCD_C_USED 
+        input Module_37_int, 
+        output Module_37_clr, 
+     `endif
+    `ifdef IVT_RTC_C_USED 
+        input Module_36_int, 
+        output Module_36_clr, 
+     `endif
+    `ifdef IVT_AES_USED 
+        input Module_35_int,
+        output Module_35_clr,
+     `endif
+    // Netlist requires no comma at the end. Place one constant element here
+    output [5:0] IntAddrLSBs
  );
     `include "NEW\\PARAMS.v" // global parameter defines
 
@@ -116,7 +214,6 @@ module InterruptUnit(
         assign REQ_from_SNMI = REQ_from_UNMI;
         assign IntAddr_from_SNMI = IntAddr_from_UNMI;
         assign INTACK_from_SNMI = INTACK_from_RESET;
-        assign VMA_clr = 1'b0;
     `endif
     
     `ifdef IVT_UNMI_USED
@@ -132,7 +229,6 @@ module InterruptUnit(
         assign REQ_from_UNMI = 1'b0;
         assign IntAddr_from_UNMI = IntAddr_from_ComparatorE;
         assign INTACK_from_UNMI = INTACK_from_SNMI;
-        assign RST_NMI_clr = 1'b0;
     `endif
 
     `ifdef IVT_ComparatorE_USED
@@ -148,7 +244,6 @@ module InterruptUnit(
         assign REQ_from_ComparatorE = REQ_from_Timer0B0;
         assign IntAddr_from_ComparatorE = IntAddr_from_Timer0B0;
         assign INTACK_from_ComparatorE = INTACK_from_UNMI;
-        assign Module_60_clr = 1'b0;
     `endif
    
    `ifdef IVT_Timer0B0_USED
@@ -164,7 +259,6 @@ module InterruptUnit(
        assign REQ_from_Timer0B0 = REQ_from_Timer0B1;
        assign IntAddr_from_Timer0B0 = IntAddr_from_Timer0B1;
        assign INTACK_from_Timer0B0 = INTACK_from_ComparatorE;
-       assign Module_59_clr = 1'b0;
    `endif
    
    `ifdef IVT_Timer0B1_USED
@@ -180,7 +274,6 @@ module InterruptUnit(
        assign REQ_from_Timer0B1 = REQ_from_WDT;
        assign IntAddr_from_Timer0B1 = IntAddr_from_WDT;
        assign INTACK_from_Timer0B1 = INTACK_from_Timer0B0;
-       assign Module_58_clr = 1'b0;
    `endif
    
    `ifdef IVT_WDT_USED
@@ -196,7 +289,6 @@ module InterruptUnit(
        assign REQ_from_WDT = REQ_from_ESI;
        assign IntAddr_from_WDT = IntAddr_from_ESI;
        assign INTACK_from_WDT = INTACK_from_Timer0B1;
-       assign Module_57_clr = 1'b0;
    `endif
    
    `ifdef IVT_ESI_USED
@@ -212,7 +304,6 @@ module InterruptUnit(
        assign REQ_from_ESI = REQ_from_eUSCI_A0;
        assign IntAddr_from_ESI = IntAddr_from_eUSCI_A0;
        assign INTACK_from_ESI = INTACK_from_WDT;
-       assign Module_56_clr = 1'b0;
    `endif
    
    `ifdef IVT_eUSCI_A0_USED
@@ -228,7 +319,6 @@ module InterruptUnit(
        assign REQ_from_eUSCI_A0 = REQ_from_eUSCI_B0;
        assign IntAddr_from_eUSCI_A0 = IntAddr_from_eUSCI_B0;
        assign INTACK_from_eUSCI_A0 = INTACK_from_ESI;
-       assign Module_55_clr = 1'b0;
    `endif
    
    `ifdef IVT_eUSCI_B0_USED
@@ -244,7 +334,6 @@ module InterruptUnit(
        assign REQ_from_eUSCI_B0 = REQ_from_ADC12_B;
        assign IntAddr_from_eUSCI_B0 = IntAddr_from_ADC12_B;
        assign INTACK_from_eUSCI_B0 = INTACK_from_eUSCI_A0;
-       assign Module_54_clr = 1'b0;
    `endif
    
    `ifdef IVT_ADC12_B_USED
@@ -260,7 +349,6 @@ module InterruptUnit(
        assign REQ_from_ADC12_B = REQ_from_Timer0A0;
        assign IntAddr_from_ADC12_B = IntAddr_from_Timer0A0;
        assign INTACK_from_ADC12_B = INTACK_from_eUSCI_B0;
-       assign Module_53_clr = 1'b0;
    `endif
    
    `ifdef IVT_Timer0A0_USED
@@ -276,7 +364,6 @@ module InterruptUnit(
        assign REQ_from_Timer0A0 = REQ_from_Timer0A1;
        assign IntAddr_from_Timer0A0 = IntAddr_from_Timer0A1;
        assign INTACK_from_Timer0A0 = INTACK_from_ADC12_B;
-       assign Module_52_clr = 1'b0;
    `endif
    
    `ifdef IVT_Timer0A1_USED
@@ -292,7 +379,6 @@ module InterruptUnit(
        assign REQ_from_Timer0A1 = REQ_from_eUSCI_A1;
        assign IntAddr_from_Timer0A1 = IntAddr_from_eUSCI_A1;
        assign INTACK_from_Timer0A1 = INTACK_from_Timer0A0;
-       assign Module_51_clr = 1'b0;
    `endif
    
    `ifdef IVT_eUSCI_A1_USED
@@ -308,7 +394,6 @@ module InterruptUnit(
        assign REQ_from_eUSCI_A1 = REQ_from_eUSCI_B1;
        assign IntAddr_from_eUSCI_A1 = IntAddr_from_eUSCI_B1;
        assign INTACK_from_eUSCI_A1 = INTACK_from_Timer0A1;
-       assign Module_50_clr = 1'b0;
    `endif
    
    `ifdef IVT_eUSCI_B1_USED
@@ -324,7 +409,6 @@ module InterruptUnit(
        assign REQ_from_eUSCI_B1 = REQ_from_DMA;
        assign IntAddr_from_eUSCI_B1 = IntAddr_from_DMA;
        assign INTACK_from_eUSCI_B1 = INTACK_from_eUSCI_A1;
-       assign Module_49_clr = 1'b0;
    `endif
    
    `ifdef IVT_DMA_USED
@@ -340,7 +424,6 @@ module InterruptUnit(
        assign REQ_from_DMA = REQ_from_Timer1A0;
        assign IntAddr_from_DMA = IntAddr_from_Timer1A0;
        assign INTACK_from_DMA = INTACK_from_eUSCI_B1;
-       assign Module_48_clr = 1'b0;
    `endif
    
    `ifdef IVT_Timer1A0_USED
@@ -356,7 +439,6 @@ module InterruptUnit(
        assign REQ_from_Timer1A0 = REQ_from_Timer1A1;
        assign IntAddr_from_Timer1A0 = IntAddr_from_Timer1A1;
        assign INTACK_from_Timer1A0 = INTACK_from_DMA;
-       assign Module_47_clr = 1'b0;
    `endif
    
    `ifdef IVT_Timer1A1_USED
@@ -372,7 +454,6 @@ module InterruptUnit(
        assign REQ_from_Timer1A1 = REQ_from_PORT1;
        assign IntAddr_from_Timer1A1 = IntAddr_from_PORT1;
        assign INTACK_from_Timer1A1 = INTACK_from_Timer1A0;
-       assign Module_46_clr = 1'b0;
    `endif
    
    `ifdef IVT_PORT1_USED
@@ -388,7 +469,6 @@ module InterruptUnit(
        assign REQ_from_PORT1 = REQ_from_Timer2A0;
        assign IntAddr_from_PORT1 = IntAddr_from_Timer2A0;
        assign INTACK_from_PORT1 = INTACK_from_Timer1A1;
-       assign Module_45_clr = 1'b0;
    `endif
    
    `ifdef IVT_Timer2A0_USED
@@ -404,7 +484,6 @@ module InterruptUnit(
        assign REQ_from_Timer2A0 = REQ_from_Timer2A1;
        assign IntAddr_from_Timer2A0 = IntAddr_from_Timer2A1;
        assign INTACK_from_Timer2A0 = INTACK_from_PORT1;
-       assign Module_44_clr = 1'b0;
    `endif
    
    `ifdef IVT_Timer2A1_USED
@@ -420,7 +499,6 @@ module InterruptUnit(
        assign REQ_from_Timer2A1 = REQ_from_PORT2;
        assign IntAddr_from_Timer2A1 = IntAddr_from_PORT2;
        assign INTACK_from_Timer2A1 = INTACK_from_Timer2A0;
-       assign Module_43_clr = 1'b0;
    `endif
    
    `ifdef IVT_PORT2_USED
@@ -436,7 +514,6 @@ module InterruptUnit(
        assign REQ_from_PORT2 = REQ_from_Timer3A0;
        assign IntAddr_from_PORT2 = IntAddr_from_Timer3A0;
        assign INTACK_from_PORT2 = INTACK_from_Timer2A1;
-       assign Module_42_clr = 1'b0;
    `endif
    
    `ifdef IVT_Timer3A0_USED
@@ -452,7 +529,6 @@ module InterruptUnit(
        assign REQ_from_Timer3A0 = REQ_from_Timer3A1;
        assign IntAddr_from_Timer3A0 = IntAddr_from_Timer3A1;
        assign INTACK_from_Timer3A0 = INTACK_from_PORT2;
-       assign Module_41_clr = 1'b0;
    `endif
    
    `ifdef IVT_Timer3A1_USED
@@ -468,7 +544,6 @@ module InterruptUnit(
        assign REQ_from_Timer3A1 = REQ_from_PORT3;
        assign IntAddr_from_Timer3A1 = IntAddr_from_PORT3;
        assign INTACK_from_Timer3A1 = INTACK_from_Timer3A0;
-       assign Module_40_clr = 1'b0;
    `endif
    
    `ifdef IVT_PORT3_USED
@@ -484,7 +559,6 @@ module InterruptUnit(
        assign REQ_from_PORT3 = REQ_from_PORT4;
        assign IntAddr_from_PORT3 = IntAddr_from_PORT4;
        assign INTACK_from_PORT3 = INTACK_from_Timer3A1;
-       assign Module_39_clr = 1'b0;
    `endif
    
    `ifdef IVT_PORT4_USED
@@ -500,7 +574,6 @@ module InterruptUnit(
        assign REQ_from_PORT4 = REQ_from_LCD_C;
        assign IntAddr_from_PORT4 = IntAddr_from_LCD_C;
        assign INTACK_from_PORT4 = INTACK_from_PORT3;
-       assign Module_38_clr = 1'b0;
    `endif
    
    `ifdef IVT_LCD_C_USED
@@ -516,7 +589,6 @@ module InterruptUnit(
        assign REQ_from_LCD_C = REQ_from_RTC_C;
        assign IntAddr_from_LCD_C = IntAddr_from_RTC_C;
        assign INTACK_from_LCD_C = INTACK_from_PORT4;
-       assign Module_37_clr = 1'b0;
    `endif
    
    `ifdef IVT_RTC_C_USED
@@ -532,7 +604,6 @@ module InterruptUnit(
        assign REQ_from_RTC_C = REQ_from_AES;
        assign IntAddr_from_RTC_C = IntAddr_from_AES;
        assign INTACK_from_RTC_C = INTACK_from_LCD_C;
-       assign Module_36_clr = 1'b0;
    `endif
    
    `ifdef IVT_AES_USED
@@ -540,15 +611,14 @@ module InterruptUnit(
            .INDEX(IVT_AES)
            ) Int_AES (
            .INT(Module_35_int), .INTACKin(INTACK_from_RTC_C),
-           .REQthru(1'b0), .IntAddrthru(6'b0),
+           .REQthru(1'b0), .IntAddrthru(IVT_RESET),
            .CLR(Module_35_clr), .INTACKthru(INTACK_from_AES),
            .REQout(REQ_from_AES), .IntAddrout(IntAddr_from_AES) 
        );
     `else
        assign REQ_from_AES = 1'b0;
-       assign IntAddr_from_AES = 6'b0;
+       assign IntAddr_from_AES = IVT_RESET; // default INTADDR when none active
        assign INTACK_from_AES = INTACK_from_RTC_C;
-       assign Module_35_clr = 1'b0;
    `endif
    
 endmodule

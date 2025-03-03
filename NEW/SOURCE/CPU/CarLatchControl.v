@@ -17,6 +17,7 @@
         CARnext - Next CAR index in uSeq
 
 --------------------------------------------------------*/
+`timescale 100ns/100ns
 
 module CarLatchControl(
     input rst, INTREQ, IF, Br,
