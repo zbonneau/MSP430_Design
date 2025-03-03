@@ -26,8 +26,8 @@ initial begin
 end
 
 CCM #(
-    .CCRx(TA0CCR1),
-    .CCTLx(TA0CCTL1)
+    .CCRn_OFFSET(TA0CCR1),
+    .CCTLn_OFFSET(TA0CCTL1)
     )uut(
     .MCLK(MCLK), .TimerClock(TimerClock), .reset(reset), 
     .MAB(MAB), .MDBwrite(MDBwrite), .MW(MW), .BW(BW), 
