@@ -8,4 +8,10 @@
 
 `define PULSEn(thing) begin thing = 0; #10; thing = 1; end
 
+`define TEST(test, i) begin \
+    $display("Test %2d started  @%6d uS", i, $time/10); \
+    test; \
+    $display("Test %2d finished @%6d uS", i, $time/10); \
+    i = i + 1; \
+end
 `endif // MACROS

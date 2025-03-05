@@ -23,7 +23,7 @@ module TimerA#(
     input TAxCLR0,
     input [CCM_COUNT-1:0] CCInA, CCInB,
 
-    output [15:0] MDBread,
+    output wor [15:0] MDBread,
     output TAxINT1, TAxINT0,
     output [CCM_COUNT-1:0] OUTn
  );
@@ -39,10 +39,10 @@ module TimerA#(
     wire [3:0] TAxIV;
 
     /* Continuous Logic Assignments */
-    assign MDBread = (MAB == START + TAxIV) ?    {12'h000, TAxIV} :
-                     (BW & (MAB == START + TAxIV + 1)) ? 16'h0000 :
+    assign MDBread = (MAB == START + TAnIV) ?    {12'h000, TAxIV} :
+                     (BW & (MAB == START + TAnIV + 1)) ? 16'h0000 :
                                                         {16{1'bz}};
-    assign TAxIVread = (MAB & ~1 == START + TAxIV);
+    assign TAxIVread = ((MAB & ~1) == (START + TAnIV));
 
     /* Sequential Logic Assignments */
 
@@ -79,8 +79,8 @@ module TimerA#(
     generate
         for (i = 0; i < CCM_COUNT; i = i + 1) begin
             CCM #(
-                .CCRn_OFFSET(START + TAnCCR0 + i<<1),
-                .CCTLn_OFFSET(START + TAnCCTL0 + i<<1)
+                .CCRn_OFFSET(START + TAnCCR0 + (i<<1)),
+                .CCTLn_OFFSET(START + TAnCCTL0 + (i<<1))
                 )CCM_mod(
                 .MCLK(MCLK), .TimerClock(TimerClock), .reset(reset), 
                 .MAB(MAB), .MDBwrite(MDBwrite), .MW(MW), .BW(BW), 
