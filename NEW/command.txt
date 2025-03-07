@@ -4,6 +4,7 @@
 -y NEW/SOURCE/InterruptUnit
 -y NEW/SOURCE/MemoryMap
 -y NEW/SOURCE/TimerA
+-y NEW/SOURCE/CLOCK
 
 +timescale+100ns/100ns
 
