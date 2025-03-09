@@ -23,17 +23,18 @@
 // `define IVT_eUSCI_A1_USED   
 // `define IVT_eUSCI_B1_USED   
 // `define IVT_DMA_USED        
-// `define IVT_Timer1A0_USED   
-// `define IVT_Timer1A1_USED   
+`define IVT_Timer1A0_USED   
+`define IVT_Timer1A1_USED   
 `define IVT_PORT1_USED      
 // `define IVT_Timer2A0_USED   
 // `define IVT_Timer2A1_USED   
 `define IVT_PORT2_USED      
 // `define IVT_Timer3A0_USED   
 // `define IVT_Timer3A1_USED   
-// `define IVT_PORT3_USED      
-// `define IVT_PORT4_USED      
+`define IVT_PORT3_USED      
+`define IVT_PORT4_USED      
 // `define IVT_LCD_C_USED      
 // `define IVT_RTC_C_USED      
-// `define IVT_AES_USED        
+// `define IVT_AES_USED       
+
 

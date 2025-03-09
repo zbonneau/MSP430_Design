@@ -1,4 +1,5 @@
 -y NEW
+-y NEW/SOURCE
 -y NEW/SOURCE/CPU
 -y NEW/SOURCE/GPIO
 -y NEW/SOURCE/InterruptUnit
@@ -10,3 +11,4 @@
 
 NEW/MACROS.v
 NEW/SYNTHESIS.v
+

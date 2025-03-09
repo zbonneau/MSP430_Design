@@ -418,4 +418,85 @@
         TA0IV           = MAP_TIMER_TA0 + 8'h2E,
         TA0EX0          = MAP_TIMER_TA0 + 8'h20;
 
+    // defines for TIMER A1
+    localparam
+        TA1_CCM_COUNT   = 3,
+        TA1CTL          = MAP_TIMER_TA1,
+        TA1CCTL0        = MAP_TIMER_TA1 + 8'h02,
+        TA1CCTL1        = MAP_TIMER_TA1 + 8'h04,
+        TA1CCTL2        = MAP_TIMER_TA1 + 8'h06,
+        TA1R            = MAP_TIMER_TA1 + 8'h10,
+        TA1CCR0         = MAP_TIMER_TA1 + 8'h12,
+        TA1CCR1         = MAP_TIMER_TA1 + 8'h14,
+        TA1CCR2         = MAP_TIMER_TA1 + 8'h16,
+        TA1IV           = MAP_TIMER_TA1 + 8'h2E,
+        TA1EX0          = MAP_TIMER_TA1 + 8'h20;
+
+    // defines for TIMER A2
+    localparam
+        TA2_CCM_COUNT   = 3,
+        TA2CTL          = MAP_TIMER_TA2,
+        TA2CCTL0        = MAP_TIMER_TA2 + 8'h02,
+        TA2CCTL1        = MAP_TIMER_TA2 + 8'h04,
+        TA2CCTL2        = MAP_TIMER_TA2 + 8'h06,
+        TA2R            = MAP_TIMER_TA2 + 8'h10,
+        TA2CCR0         = MAP_TIMER_TA2 + 8'h12,
+        TA2CCR1         = MAP_TIMER_TA2 + 8'h14,
+        TA2CCR2         = MAP_TIMER_TA2 + 8'h16,
+        TA2IV           = MAP_TIMER_TA2 + 8'h2E,
+        TA2EX0          = MAP_TIMER_TA2 + 8'h20;
+
+    // defines for TIMER A3
+    localparam
+        TA3_CCM_COUNT   = 5,
+        TA3CTL          = MAP_TIMER_TA3,
+        TA3CCTL0        = MAP_TIMER_TA3 + 8'h02,
+        TA3CCTL1        = MAP_TIMER_TA3 + 8'h04,
+        TA3CCTL2        = MAP_TIMER_TA3 + 8'h06,
+        TA3CCTL3        = MAP_TIMER_TA3 + 8'h08,
+        TA3CCTL4        = MAP_TIMER_TA3 + 8'h0A,
+        TA3R            = MAP_TIMER_TA3 + 8'h10,
+        TA3CCR0         = MAP_TIMER_TA3 + 8'h12,
+        TA3CCR1         = MAP_TIMER_TA3 + 8'h14,
+        TA3CCR2         = MAP_TIMER_TA3 + 8'h16,
+        TA3CCR3         = MAP_TIMER_TA3 + 8'h18,
+        TA3CCR4         = MAP_TIMER_TA3 + 8'h1A,
+        TA3IV           = MAP_TIMER_TA3 + 8'h2E,
+        TA3EX0          = MAP_TIMER_TA3 + 8'h20;
+
+    localparam
+        GPIO1_0 = 0,
+        GPIO1_1 = 1,
+        GPIO1_2 = 2,
+        GPIO1_3 = 3,
+        GPIO1_4 = 4,
+        GPIO1_5 = 5,
+        GPIO1_6 = 6,
+        GPIO1_7 = 7,
+        GPIO2_0 = 8,
+        GPIO2_1 = 9,
+        GPIO2_2 = 10,
+        GPIO2_3 = 11,
+        GPIO2_4 = 12,
+        GPIO2_5 = 13,
+        GPIO2_6 = 14,
+        GPIO2_7 = 15,
+        GPIO3_0 = 45,
+        GPIO3_1 = 44,
+        GPIO3_2 = 43,
+        GPIO3_3 = 42,
+        GPIO3_4 = 41,
+        GPIO3_5 = 40,
+        GPIO3_6 = 39,
+        GPIO3_7 = 38,
+        GPIO4_0 = 37,
+        GPIO4_1 = 36,
+        GPIO4_2 = 35,
+        GPIO4_3 = 34,
+        GPIO4_4 = 33,
+        GPIO4_5 = 32,
+        GPIO4_6 = 31,
+        GPIO4_7 = 30,
+        GPIO_RST = 23;
+
 // `endif 
