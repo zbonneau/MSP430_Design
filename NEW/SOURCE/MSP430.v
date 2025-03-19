@@ -19,7 +19,7 @@
 
 module MSP430(
     input SysClock,
-    inout [45:0] gpio,
+    inout [43:0] gpio,
     inout [7:0] pmod,
     input btn1, btn2,
     output led1, led2,

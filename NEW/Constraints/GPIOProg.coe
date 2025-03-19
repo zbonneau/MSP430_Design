@@ -1,0 +1,5 @@
+memory_initialization_radix = 16;
+memory_initialization_vector = 
+4031, 2400, 40B0, 02C0, BF38, 43A0, BF54, 40B2, 7A12, 0352, 40B2, 0010, 0342, D2A0, 
+BF24, D0B0, 0010, BF1E, 43F0, BDDE, 43C0, BDD8, 3FFF, 4303, E3D0, BDD0, 1300, D032, 
+0010, 3FFD, 4303;

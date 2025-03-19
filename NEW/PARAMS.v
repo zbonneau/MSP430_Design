@@ -465,7 +465,7 @@
         TA3EX0          = MAP_TIMER_TA3 + 8'h20;
 
     localparam
-        GPIO1_0 = 0,
+        GPIO1_0 = 0,  // maps to dip 1
         GPIO1_1 = 1,
         GPIO1_2 = 2,
         GPIO1_3 = 3,
@@ -479,24 +479,24 @@
         GPIO2_3 = 11,
         GPIO2_4 = 12,
         GPIO2_5 = 13,
-        GPIO2_6 = 14,
-        GPIO2_7 = 15,
-        GPIO3_0 = 45,
-        GPIO3_1 = 44,
-        GPIO3_2 = 43,
-        GPIO3_3 = 42,
-        GPIO3_4 = 41,
-        GPIO3_5 = 40,
-        GPIO3_6 = 39,
-        GPIO3_7 = 38,
-        GPIO4_0 = 37,
-        GPIO4_1 = 36,
-        GPIO4_2 = 35,
-        GPIO4_3 = 34,
-        GPIO4_4 = 33,
-        GPIO4_5 = 32,
-        GPIO4_6 = 31,
-        GPIO4_7 = 30,
-        GPIO_RST = 23;
+        GPIO2_6 = 14, // maps to dip 17
+        GPIO2_7 = 15, 
+        GPIO3_0 = 43, // maps to dip 48
+        GPIO3_1 = 42,
+        GPIO3_2 = 41,
+        GPIO3_3 = 40,
+        GPIO3_4 = 39,
+        GPIO3_5 = 38,
+        GPIO3_6 = 37,
+        GPIO3_7 = 36,
+        GPIO4_0 = 35,
+        GPIO4_1 = 34,
+        GPIO4_2 = 33,
+        GPIO4_3 = 32,
+        GPIO4_4 = 31,
+        GPIO4_5 = 30,
+        GPIO4_6 = 29,
+        GPIO4_7 = 28,  // maps to dip 33
+        GPIO_RST = 20; // maps to dip 23
 
 // `endif 
