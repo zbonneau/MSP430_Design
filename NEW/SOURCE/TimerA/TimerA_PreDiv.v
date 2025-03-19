@@ -45,14 +45,8 @@ module TimerA_PreDiv(
     always @(clockSelect or posedge (reset | wTACLR)) begin
         if (reset | wTACLR) begin
             divClock <= 0;
-            case(ID)
-                ID__1: divCounter <= 0; 
-                ID__2: divCounter <= 1; 
-                ID__4: divCounter <= 3; 
-                ID__8: divCounter <= 7; 
-            endcase
+            divCounter <= 0;
         end else begin
-            divCounter <= divCounter - 1;
             if (divCounter == 0) begin
                 divClock <= ~divClock;
                 case(ID)
@@ -61,6 +55,8 @@ module TimerA_PreDiv(
                 ID__4: divCounter <= 3; 
                 ID__8: divCounter <= 7; 
                 endcase
+            end else begin
+            divCounter <= divCounter - 1;
             end
         end
     end
@@ -69,13 +65,14 @@ module TimerA_PreDiv(
     always @(divClock or posedge (reset | wTACLR)) begin
         if (reset | wTACLR) begin
             TimerClock   <= 0;
-            exDivCounter <= IDEX;
+            exDivCounter <= 0;
         end else begin
-            exDivCounter <= exDivCounter - 1;
             if (exDivCounter == 0) begin
                 TimerClock <= ~TimerClock;
                 exDivCounter <= IDEX;
-            end 
+            end else begin
+                exDivCounter <= exDivCounter - 1;
+            end
         end
     end
 

@@ -48,7 +48,7 @@ module TimerACount(
         endcase 
     end
     /* Sequential Logic Assignments */
-    always @(posedge TimerClock or posedge (wTACLR | reset)) begin
+    always @(posedge TimerClock or posedge wTACLR or posedge reset) begin
         if (reset | wTACLR)
             UpDownFF <= 0;
         else if (EQU0 && (MC == MC__UPDOWN))

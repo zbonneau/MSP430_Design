@@ -49,9 +49,10 @@ module RegisterFile(
 
     /* Internal signal definitions */
     reg [15:0] Registers[15:0];
+    integer i;
 
     initial begin 
-        for (integer i = 0; i < 16; i = i + 1) 
+        for (i = 0; i < 16; i = i + 1) 
             Registers[i] = 0;
      end
 
@@ -73,8 +74,8 @@ module RegisterFile(
     /* Sequential Logic Assignments */
     always @(posedge clk) begin
         if (rst) begin
-            for (integer i = 0; i < 16; i = i + 1) 
-                Registers[i] = 0;
+            for (i = 0; i < 16; i = i + 1) 
+                Registers[i] <= 0;
         end
         else begin
             /* Handle PC */

@@ -39,7 +39,7 @@ module TimerABase#(
     wire [15:0] TAxRnew;
     wire TAIFGset;
 
-    // Register Bit assignements
+    // Register Bit assignments
     wire [1:0] TASSEL, ID, MC;
     wire wTACLR;
     wire [2:0] IDEX;
@@ -53,11 +53,10 @@ module TimerABase#(
     assign wTACLR = TAxCTL[TACLR];
     assign wTAIE = TAxCTL[TAIE];
     assign wTAIFG = TAxCTL[TAIFG];
-
     assign IDEX = TAxEX0[TAIDEX2:TAIDEX0];
     assign TAxRcurrent = TAxR;
 
-    // handle MR
+    // Handle memory reads
     always @(*) begin
         if (BW) begin
             case(MAB)
@@ -74,7 +73,7 @@ module TimerABase#(
                 TAnCTL_OFFSET:     MDBread = TAxCTL;
                 TAnR_OFFSET:       MDBread = TAxR;
                 TAnEX0_OFFSET:     MDBread = TAxEX0;
-                default:    MDBread =  {16{1'bz}};
+                default:           MDBread = {16{1'bz}};
             endcase
         end
     end
@@ -106,7 +105,7 @@ module TimerABase#(
                 endcase
             end
 
-            // TACLR autoclears after resetting device. Do it on next MCLK
+            // TACLR autoclears
             if (TAxCTL[TACLR])
                 TAxCTL[TACLR] <= 1'b0;
 

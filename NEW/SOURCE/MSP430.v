@@ -26,25 +26,31 @@ module MSP430(
     output [2:0] RGB
  );
 
+    `include "PARAMS.v" // global parameter defines
+
     /* Internal signal definitions */
     wire MCLK, SMCLK, ACLK, reset, RSTn;
 
-    wire [15:0] MAB, MDBwrite, MDBread;
+    wire [15:0] MAB, MDBwrite; // MDBread;
+    wor  [15:0] MDBread;
     wire MW, BW;
 
     wire NMI, INT, INTACK;
     wire [5:0] IntAddrLSBs;
 
     `ifdef IVT_Timer0A0_USED
-        wire TA0CLK, TA0CLR0, TA0INT0, TA0INT1;
+        wor  TA0CLK;
+        wire TA0CLR0, TA0INT0, TA0INT1;
         wire [TA0_CCM_COUNT-1:0] CCI0A, CCI0B, OUTA0;
 
+        assign CCI0B[0] = 0;
         assign CCI0B[1] = 0;
         assign CCI0B[2] = ACLK;
     `endif 
 
     `ifdef IVT_Timer1A0_USED
-        wire TA1CLK, TA1CLR0, TA1INT0, TA1INT1;
+        wor TA1CLK;
+        wire TA1CLR0, TA1INT0, TA1INT1;
         wire [TA1_CCM_COUNT-1:0] CCI1A, CCI1B, OUTA1;
 
         assign CCI1B[1] = 0;
@@ -63,10 +69,13 @@ module MSP430(
     
     // initial begin {} = 0; end
 
-    `include "NEW/PARAMS.v" // global parameter defines
-
     /* Continuous Logic Assignments */
-    assign RSTn = gpio[GPIO_RST];
+//    assign gpio[GPIO1_1] = btn1;
+//    assign gpio[GPIO1_2] = btn2;
+     assign led1 = pain[0];
+     assign led2 = pbin[10];
+     assign RGB = pain[7:5];
+    
     /* Sequential Logic Assignments */
 
     /* Submodule Instantiations */
@@ -139,7 +148,7 @@ module MSP430(
             .MAB(MAB), .MDBwrite(MDBwrite), .MDBread(MDBread),
             .MW(MW), .BW(BW), 
             .TAxCLR0(TA0CLR0), .TAxINT0(TA0INT0), .TAxINT1(TA0INT1),
-            .CCInA(CCI0A), .CCInB(CCI0B)
+            .CCInA(CCI0A), .CCInB(CCI0B), .OUTn(OUTA0)
         );
     `endif
 
@@ -153,7 +162,7 @@ module MSP430(
             .MAB(MAB), .MDBwrite(MDBwrite), .MDBread(MDBread),
             .MW(MW), .BW(BW), 
             .TAxCLR0(TA1CLR0), .TAxINT0(TA1INT0), .TAxINT1(TA1INT1),
-            .CCInA(CCI1A), .CCInB(CCI1B)
+            .CCInA(CCI1A), .CCInB(CCI1B), .OUTn(OUTA1)
         );
     `endif
 
@@ -168,7 +177,7 @@ module MSP430(
             .PxIN(pain[7:0]), .PyIN(pain[15:8]),
             .PxOUT(paout[7:0]), .PyOUT(paout[15:8]),
             .PxDIR(padir[7:0]), .PyDIR(padir[15:8]),
-            .PxREN(paren[7:0]), .PyREN(padir[15:8]),
+            .PxREN(paren[7:0]), .PyREN(paren[15:8]),
             .PxSEL0(pasel0[7:0]), .PySEL0(pasel0[15:8]),
             .PxSEL1(pasel1[7:0]), .PySEL1(pasel1[15:8])
         );
@@ -191,7 +200,7 @@ module MSP430(
             .Px_m(gpio[GPIO1_2]), .PxOUTm(paout[2]), .PxDIRm(padir[2]), .PxRENm(paren[2]), 
             .PxINm(pain[2]), .PxSELm({pasel1[2], pasel0[2]}), 
             .OUT_1(OUTA1[1]), .DIR_1(padir[2]), .IN_1(CCI1A[1]), 
-            .OUT_2(1'b0), .DIR_2(padir[2]), .IN_2(TA1CLK),
+            .OUT_2(1'b0), .DIR_2(padir[2]), .IN_2(TA0CLK),
             .OUT_3(1'b0), .DIR_3(1'b0), .IN_3()
         );
         PIN PinA3(
@@ -298,7 +307,7 @@ module MSP430(
             .PxIN(pbin[7:0]), .PyIN(pbin[15:8]),
             .PxOUT(pbout[7:0]), .PyOUT(pbout[15:8]),
             .PxDIR(pbdir[7:0]), .PyDIR(pbdir[15:8]),
-            .PxREN(pbren[7:0]), .PyREN(pbdir[15:8]),
+            .PxREN(pbren[7:0]), .PyREN(pbren[15:8]),
             .PxSEL0(pbsel0[7:0]), .PySEL0(pbsel0[15:8]),
             .PxSEL1(pbsel1[7:0]), .PySEL1(pbsel1[15:8])
         );
