@@ -14,10 +14,6 @@
 
 --------------------------------------------------------*/
 
-`ifdef __ICARUS__
-`include "NEW/SIMULATION/IOBUF.v"
-`endif 
-
 `timescale 1ns/1ps
 
 module PIN(

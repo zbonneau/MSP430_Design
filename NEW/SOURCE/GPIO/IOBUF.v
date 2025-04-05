@@ -12,6 +12,8 @@
         IO - IO bi-driectional pin from external
 
 --------------------------------------------------------*/
+
+`ifdef __ICARUS__
 `timescale 100ns/100ns
 
 module IOBUF(
@@ -19,11 +21,10 @@ module IOBUF(
     output O,
     inout IO
  );
-    `include "NEW/PARAMS.v" // global parameter defines
-
     /* Continuous Logic Assignments */
     assign O = IO;
     assign IO = (T) ? 1'bz : I;
 
 endmodule
 
+`endif // __ICARUS__

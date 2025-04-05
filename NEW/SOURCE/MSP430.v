@@ -20,16 +20,19 @@
 module MSP430(
     input SysClock,
     inout [43:0] gpio,
-    inout [7:0] pmod,
-    input btn1, btn2,
+    // inout [7:0] pmod,
+    // input btn1, btn2,
+    input RST,
     output led1, led2,
     output [2:0] RGB
  );
-
+ 
     `include "PARAMS.v" // global parameter defines
 
     /* Internal signal definitions */
     wire MCLK, SMCLK, ACLK, reset, RSTn;
+    assign RSTn = ~RST;
+    assign led2 = RST;
 
     wire [15:0] MAB, MDBwrite; // MDBread;
     wor  [15:0] MDBread;
@@ -70,19 +73,35 @@ module MSP430(
     // initial begin {} = 0; end
 
     /* Continuous Logic Assignments */
-//    assign gpio[GPIO1_1] = btn1;
-//    assign gpio[GPIO1_2] = btn2;
-     assign led1 = pain[0];
-     assign led2 = pbin[10];
-     assign RGB = pain[7:5];
+    // assign gpio[GPIO1_1] = btn1;
+    // assign gpio[GPIO1_2] = btn2;
+    assign led1 = pain[0];
+    //  assign led2 = pbin[10];
+    assign RGB = ~pain[7:5];
     
     /* Sequential Logic Assignments */
 
     /* Submodule Instantiations */
-    ClockSystem CS(
-        .sysOsc(SysClock), .reset(reset),
-        .MCLK(MCLK), .SMCLK(SMCLK), .ACLK(ACLK)
-    );
+    `ifndef RUN_SIMULATION
+        ClockSystem CS(
+            .sysOsc(SysClock), .reset(reset),
+            .MCLK(MCLK), .SMCLK(SMCLK), .ACLK(ACLK)
+        );
+    `else
+        // If Simulation, MCLK, SMCLK = sysOsc = 1 MHz
+        reg ACLKr = 0;
+        assign MCLK  = SysClock;
+        assign SMCLK = SysClock;
+        assign ACLK  = ACLKr;
+        integer ACLK_div = 0;
+        always @(posedge SysClock) begin
+            if (ACLK_div == 16) begin
+                ACLK_div <= 0;
+                ACLKr <= ~ACLK;
+            end
+            else ACLK_div = ACLK_div + 1;
+        end
+    `endif
 
     CPU CPUv1(
         .MCLK(MCLK), .reset(reset),
@@ -91,37 +110,11 @@ module MSP430(
         .MW(MW), .BW(BW),
         .INTACK(INTACK)
     );
-
-    MEMORY #(
-        .START(RAM_START),
-        .DEPTH(RAM_LEN)
-     )RAM(
-        .MCLK(MCLK), .reset(reset),
-        .MAB(MAB), .MDBwrite(MDBwrite),
-        .MDBread(MDBread),
+      
+    BlockMemInterface memInst(
+        .MCLK(MCLK),
+        .MAB(MAB), .MDBwrite(MDBwrite), .MDBread(MDBread),
         .MW(MW), .BW(BW)
-    );
-
-    MEMORY #(
-        .START(FRAM_START),
-        .DEPTH(FRAM_LEN),
-        .INITVAL(16'hFFFE)
-     )FRAM(
-        .MCLK(MCLK), .reset(1'b0),  
-        .MAB(MAB), .MDBwrite(MDBwrite),
-        .MW(MW), .BW(BW),
-        .MDBread(MDBread)
-    );
-
-    MEMORY #(
-        .START(IVT_START), 
-        .DEPTH(IVT_LEN),
-        .INITVAL(16'h4400) // RESET ISR
-     )IVT(
-        .MCLK(MCLK), .reset(1'b0), // IVT not reset by POR
-        .MAB(MAB), .MDBwrite(MDBwrite),
-        .MW(MW), .BW(BW),
-        .MDBread(MDBread)
     );
 
     InterruptUnit IntUnit(
