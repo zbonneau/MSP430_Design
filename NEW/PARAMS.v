@@ -464,6 +464,161 @@
         TA3IV           = MAP_TIMER_TA3 + 8'h2E,
         TA3EX0          = MAP_TIMER_TA3 + 8'h20;
 
+    //-------------------------------------------------------------------------
+    // Register defines for eUSCI_A
+    localparam                   // reset | Protected
+        UCAnCTLW0       = 8'h00, // 0001  | 15-6
+        UCAnCTL0        = 8'h01,
+        UCAnCTL1        = 8'h00,
+        UCAnCTLW1       = 8'h02, // 0003  |
+        UCAnBRW         = 8'h06, //       | 15-0  
+        UCAnBR0         = 8'h06,
+        UCAnBR1         = 8'h07,
+        UCAnMCTLW       = 8'h08, //       | 15-0
+        UCAnSTATW       = 8'h0A, //       | 7
+        UCAnRXBUF       = 8'h0C, // 
+        UCAnTXBUF       = 8'h0E, // 
+        UCAnABCTL       = 8'h10, //       | 5-4, 0
+        UCAnIRCTL       = 8'h12, //       | 15-0
+        UCAnIRTCTL      = 8'h12,
+        UCAnIRRCTL      = 8'h13,
+        UCAnIE          = 8'h1A, 
+        UCAnIFG         = 8'h1C, // 0002
+        UCAnIV          = 8'h1E;
+
+    // bit defines for UCAnCTLW0
+    localparam
+        UCPEN           = 15, // -->
+        UCPAR           = 14, // writable only when
+        UCMSB           = 13, // UCSWRST == 1
+        UC7BIT          = 12,
+        UCSPB           = 11,
+        UCMODEx1        = 10,
+        UCMODEx0        = 9,
+        UCSYNC          = 8,
+        UCSSELx1        = 7,
+        UCSSELx0        = 6, // <-- 
+        UCRXEIE         = 5,
+        UCBRKIE         = 4,
+        UCDORM          = 3,
+        UCTXADDR        = 2,
+        UCTXBRK         = 1,
+        UCSWRST         = 0;
+
+    // bit defines for UCAnCTLW1
+    localparam          // 15-2 : r-0
+        UCGLITx1        = 1, // rw-1
+        UCGLITx0        = 0; // rw-1
+    
+    // bit defines for UCAnMCTLW
+    localparam
+        UCBRSx7         = 15,
+        UCBRSx6         = 14,
+        UCBRSx5         = 13,
+        UCBRSx4         = 12,
+        UCBRSx3         = 11,
+        UCBRSx2         = 10,
+        UCBRSx1         = 9,
+        UCBRSx0         = 8,
+        UCBRFx3         = 7,
+        UCBRFx2         = 6,
+        UCBRFx1         = 5,
+        UCBRFx0         = 4,
+                        // 3-1 : r-0
+        UCOS16          = 0;
+
+    // bit defines for UCAnSTATW
+    localparam
+                        // 15-8 : r0
+        UCLISTEN        = 7, // protected
+        UCFE            = 6,
+        UCOE            = 5,
+        UCPE            = 4,
+        UCBRK           = 3,
+        UCRXERR         = 2,
+        UCADDR          = 1,
+        UCIDLE          = 1,
+        UCBUSY          = 0; // r-0
+
+    // bit defines for UCAnRXBUF
+    localparam
+                        // 15-8 : r-0
+        UCRXBUF7        = 7, // r-0
+        UCRXBUF6        = 6, // r-0
+        UCRXBUF5        = 5, // r-0
+        UCRXBUF4        = 4, // r-0
+        UCRXBUF3        = 3, // r-0
+        UCRXBUF2        = 2, // r-0
+        UCRXBUF1        = 1, // r-0
+        UCRXBUF0        = 0; // r-0
+    
+    // bit defines for UCAnTXBUF
+    localparam
+                        // 15-8 : r-0
+        UCTXBUF7        = 7,
+        UCTXBUF6        = 6, 
+        UCTXBUF5        = 5,
+        UCTXBUF4        = 4,
+        UCTXBUF3        = 3,
+        UCTXBUF2        = 2,
+        UCTXBUF1        = 1,
+        UCTXBUF0        = 0;
+
+    // bit defines for UCAnABCTL
+    localparam
+                        // 15-6 : r-0
+        UCDELIM1        = 5, // protected
+        UCDELIM0        = 4, // protected
+        UCSTOE          = 3,
+        UCBTOE          = 2,
+                        // 1 : r-0
+        UCABDEN         = 0; // protected
+    
+    // bit defines for UCAIRCTL
+    localparam
+        UCIRRXFL5       = 15, // ALL bits protected
+        UCIRRXFL4       = 14,
+        UCIRRXFL3       = 13,
+        UCIRRXFL2       = 12,
+        UCIRRXFL1       = 11,
+        UCIRRXFL0       = 10,
+        UCIRRXPL        = 9,
+        UCIRRXFE        = 8,
+        UCIRTXPL5       = 7,
+        UCIRTXPL4       = 6,
+        UCIRTXPL3       = 5,
+        UCIRTXPL2       = 4,
+        UCIRTXPL1       = 3,
+        UCIRTXPL0       = 2,
+        UCIRTXCLK       = 1,
+        UCIREN          = 0;
+
+    // bit defines for UCAnIE
+    localparam
+                        // 15-4 : r-0
+        UCTXCPTIE       = 3,
+        UCSTTIE         = 2,
+        UCTXIE          = 1,
+        UCRXIE          = 0;
+    
+    // bit defines for UCAnIFG
+    localparam
+                        // 15-4 : r-0
+        UCTXCPTIFG      = 3,
+        UCSTTIFG        = 2,
+        UCTXIFG         = 1, // rw-1
+        UCRXIFG         = 0;
+    
+    // bit defines for UCAnIV
+    localparam
+                        // 15-4 : r0
+        UCIV3           = 3, // r-(0)
+        UCIV2           = 2, // r-(0)
+        UCIV1           = 1; // r-(0)
+                        // 0 : r0
+
+    //-------------------------------------------------------------------------
+    // pin mappings
     localparam
         GPIO1_0 = 0,  // maps to dip 1
         GPIO1_1 = 1,
