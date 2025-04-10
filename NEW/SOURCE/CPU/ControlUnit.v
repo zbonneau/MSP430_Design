@@ -109,10 +109,10 @@ module ControlUnit(
             CAR_RETI1     : begin ControlWord = 12'h180; dstA = SR; end
             CAR_RETI2     : begin ControlWord = 12'h2C8; srcA = SP; As = 2'b11; dstA = PC; end
             CAR_RETI3     : begin ControlWord = 12'h180; dstA = PC; end
-            CAR_INT0      : begin ControlWord = 12'h010; srcA = SP; dstA = PC; end
-            CAR_INT1      : begin ControlWord = 12'h324; srcA = SP; dstA = PC; IW = PUSH; end
-            CAR_INT2      : begin ControlWord = 12'h010; srcA = SP; dstA = SR; end
-            CAR_INT3      : begin ControlWord = 12'h324; srcA = SP; dstA = SR; IW = PUSH; end
+            CAR_INT0      : begin ControlWord = 12'h010; srcA = SP; As = 0; Ad = 0; dstA = PC; end
+            CAR_INT1      : begin ControlWord = 12'h324; BW = 0;    As = 0; Ad = 0; srcA = SP; dstA = PC; IW = PUSH; end
+            CAR_INT2      : begin ControlWord = 12'h010; srcA = SP; As = 0; Ad = 0; dstA = SR; end
+            CAR_INT3      : begin ControlWord = 12'h324; BW = 0;    As = 0; Ad = 0; srcA = SP; dstA = SR; IW = PUSH; end
             CAR_INT4      : begin ControlWord = 12'h000; end
             CAR_JMP0      : begin ControlWord = 12'h100; BW = 0;    dstA = PC; end
             default: ControlWord = 12'h000;

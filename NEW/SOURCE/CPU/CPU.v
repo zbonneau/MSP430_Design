@@ -75,12 +75,21 @@ module CPU(
     wire [3:0] SRcurrent;
     wire GIE;
 
+    /* Blank Detect */
+    wire Blank;
+
     initial begin {InstructionReg, CAR} <= 0; end
 
     /* Continuous Logic Assignments */
     assign INTREQ = NMI | INT & GIE;
     assign IntAddr = {9'b1111_1111_1, IntAddrLSBs, 1'b0};
     assign Br = INTACK | (~Mem & Ex & (dstA == PC));
+
+    assign Blank = (CAR == CAR_PUSH_REG0 || CAR == CAR_CALL_REG0 ||
+                    CAR == CAR_CALL_IND2 || CAR == CAR_CALL_IDX3 ||
+                    CAR == CAR_INT0 || CAR == CAR_INT2 || 
+                    CAR == CAR_RETI1 || CAR == CAR_RETI3 ||
+                    CAR == CAR_JMP0);
 
     /* Sequential Logic Assignments */
     always @(posedge MCLK) begin
@@ -151,7 +160,7 @@ module CPU(
 
     SystemBusControl BusCtl(
         .IdxF(IdxF), .IF(IF), .Mem(Mem), .Ex(Ex), .INTACK(INTACK), .IW6(CtlBW),
-        .PCnt(RegPC), .Addr(OpAddr), .IntAddr(IntAddr), .result(result),
+        .PCnt(RegPC), .Addr((Blank) ? 16'b0 : OpAddr), .IntAddr(IntAddr), .result(result),
         .MAB(MAB), .MDBout(MDBout), .BW(BW), .MW(MW)
     );
 
