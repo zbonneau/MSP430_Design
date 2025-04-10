@@ -14,4 +14,7 @@
     $display("Test %2d finished @%6d uS", i, $time/10); \
     i = i + 1; \
 end
+
+`define timeLog(str) begin $display("%5d uS: %s", $time/10, str); end
+
 `endif // MACROS

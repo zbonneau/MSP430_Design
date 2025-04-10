@@ -478,32 +478,41 @@
         UCAnSTATW       = 8'h0A, //       | 7
         UCAnRXBUF       = 8'h0C, // 
         UCAnTXBUF       = 8'h0E, // 
-        UCAnABCTL       = 8'h10, //       | 5-4, 0
-        UCAnIRCTL       = 8'h12, //       | 15-0
-        UCAnIRTCTL      = 8'h12,
-        UCAnIRRCTL      = 8'h13,
+        // UCAnABCTL       = 8'h10, //       | 5-4, 0
+        // UCAnIRCTL       = 8'h12, //       | 15-0
+        // UCAnIRTCTL      = 8'h12,
+        // UCAnIRRCTL      = 8'h13,
         UCAnIE          = 8'h1A, 
         UCAnIFG         = 8'h1C, // 0002
         UCAnIV          = 8'h1E;
 
     // bit defines for UCAnCTLW0
-    localparam
-        UCPEN           = 15, // -->
-        UCPAR           = 14, // writable only when
-        UCMSB           = 13, // UCSWRST == 1
-        UC7BIT          = 12,
-        UCSPB           = 11,
-        UCMODEx1        = 10,
-        UCMODEx0        = 9,
-        UCSYNC          = 8,
-        UCSSELx1        = 7,
-        UCSSELx0        = 6, // <-- 
-        UCRXEIE         = 5,
-        UCBRKIE         = 4,
-        UCDORM          = 3,
-        UCTXADDR        = 2,
-        UCTXBRK         = 1,
-        UCSWRST         = 0;
+    localparam                // Protected ?
+        UCPEN           = 15, // Y | Parity Enable 
+        UCPAR           = 14, // Y | Parity     0:odd   / 1:even
+        UCMSB           = 13, // Y | MSB first  0:LSB   / 1: MSB
+        UC7BIT          = 12, // Y | Data len   0:8-bit / 1:7-bit
+        UCSPB           = 11, // Y | Stop len   0:one   / 1:two
+        UCMODEx1        = 10, // Y | RESERVED
+        UCMODEx0        = 9,  // Y | RESERVED
+        UCSYNC          = 8,  // Y | RESERVED
+        UCSSELx1        = 7,  // Y | Clock Source Select 1
+        UCSSELx0        = 6,  // Y | Clock Source Select 2
+        UCRXEIE         = 5,  //   | Rx Error Interrupt Enable
+        UCBRKIE         = 4,  //   | Break Interrupt Enable
+        UCDORM          = 3,  //   | RESERVED
+        UCTXADDR        = 2,  //   | RESERVED
+        UCTXBRK         = 1,  //   | RESERVED
+        UCSWRST         = 0;  //   | Software Reset. Default 1
+
+    localparam [1:0]
+        UCSSEL_0        = 0,
+        UCSSEL_1        = 1,
+        UCSSEL_2        = 2,
+        UCSSEL_3        = 3,
+        UCSSEL__UCLK    = 0,
+        UCSSEL__ACLK    = 1,
+        UCSSEL__SMCLK   = 2;
 
     // bit defines for UCAnCTLW1
     localparam          // 15-2 : r-0
