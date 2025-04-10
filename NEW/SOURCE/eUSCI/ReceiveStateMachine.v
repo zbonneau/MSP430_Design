@@ -11,10 +11,11 @@
 
 module ReceiveStateMachine(
     input MCLK, BITCLK, reset,
-    input wUCPEN, wUCPAR, wUCMSB, wUC7BIT, wUCSPB, wUCRXEIE,
+    input wUCPEN, wUCPAR, wUCMSB, wUC7BIT, wUCSPB, wUCRXEIE, wUCBRKIE,
     input Rx, RxIFG, // current IFG value. Used for UCOE
 
     output reg RxBEN, rUCPE, rUCFE, rUCOE, rUCBRK, rSetRxIFG,
+    output oUCRXERR,
 
     output reg [7:0] RxData,
     output reg RxBusy
@@ -47,6 +48,7 @@ module ReceiveStateMachine(
     `include "NEW/PARAMS.v" // global parameter defines
 
     /* Continuous Logic Assignments */
+    assign oUCRXERR = rUCPE | rUCFE | rUCOE;
     always @(*) begin
         case(state)
             sIDLE: begin 
@@ -202,7 +204,8 @@ module ReceiveStateMachine(
                     if (wUCRXEIE || {rUCPE, rUCFE | ~Rx, RxIFG} == 0) begin
                         // If Receive erroneous char enabled OR no errors
                         // Set RxIFG
-                        rSetRxIFG <= 1;
+                        rSetRxIFG <= wUCBRKIE | (data != 0);
+
                         // Receive character
                         case({wUCMSB, wUC7BIT})
                             2'b00: RxData <= data[7:0]; 
@@ -212,7 +215,6 @@ module ReceiveStateMachine(
                         endcase
                     end
                 end
-                
                 default: begin end
             endcase
         end 

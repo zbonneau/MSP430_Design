@@ -26,9 +26,10 @@
 
 module tb_ReceiveStateMachine;
 reg MCLK, BITCLK, reset;
-reg wUCPEN, wUCPAR, wUCMSB, wUC7BIT, wUCSPB, wUCRXEIE;
+reg wUCPEN, wUCPAR, wUCMSB, wUC7BIT, wUCSPB, wUCRXEIE, wUCBRKIE;
 reg Rx, RxIFG; // current IFG value. Used for UCOE
 wire RxBEN, rUCPE, rUCFE, rUCOE, rUCBRK, rSetRxIFG;
+wire oUCRXERR;
 wire [7:0] RxData;
 wire RxBusy;
 
@@ -52,10 +53,11 @@ ReceiveStateMachine uut
     .wUCPEN(wUCPEN), .wUCPAR(wUCPAR), 
     .wUCMSB(wUCMSB), .wUC7BIT(wUC7BIT), 
     .wUCSPB(wUCSPB), .wUCRXEIE(wUCRXEIE),
+    .wUCBRKIE(wUCBRKIE), 
     .Rx(Rx), .RxIFG(RxIFG), 
     .RxBEN(RxBEN), 
     .rUCPE(rUCPE), .rUCFE(rUCFE), .rUCOE(rUCOE), .rUCBRK(rUCBRK), 
-    .rSetRxIFG(rSetRxIFG), 
+    .rSetRxIFG(rSetRxIFG), .oUCRXERR(oUCRXERR),
     .RxData(RxData), .RxBusy(RxBusy)  
 );
 
@@ -103,7 +105,7 @@ task transmitFrame; //(data, bits, MSB);
 endtask
 
 task test1;
-    /*  Test 1: 8-bit data, LSB first, no parity, 1 stop bit, RXEIE = 0
+    /*  Test 1: 8-bit data, LSB first, no parity, 1 stop bit, RXEIE = 0, BRKIE = 0
         Test procedure:
             - Setup
                 - device starts in SWRST condition
@@ -133,7 +135,7 @@ task test1;
         wUC7BIT = 0; 
         wUCPEN = 0; wUCPAR = 0; 
         wUCMSB = 0; wUCSPB = 0; 
-        wUCRXEIE = 0; 
+        wUCRXEIE = 0; wUCBRKIE = 0;
         #CLK_PERIOD;
         reset = 0; #CLK_PERIOD;
 
@@ -164,7 +166,7 @@ task test1;
         `subTest(
             "1d - BRK", 
             {STOPBIT, 8'h00, STARTBIT}, 4'd10, 1'b0,
-            (rSetRxIFG && RxData == 8'h00 && rUCBRK)
+            (~rSetRxIFG && RxData == 8'h00 && rUCBRK)
             )
         
         #(3*BITCLK_PERIOD);
@@ -178,7 +180,7 @@ task test1;
 endtask
 
 task test2;
-    /*  Test 2: 8-bit data, LSB first, odd parity, 2 stop bits, RXEIE = 1
+    /*  Test 2: 8-bit data, LSB first, odd parity, 2 stop bits, RXEIE = 1, BRKIE = 1
         Test Procedure:
             - Setup
                 - device SWRT set
@@ -209,7 +211,7 @@ task test2;
         wUC7BIT = 0; 
         wUCPEN = 1; wUCPAR = 0; 
         wUCMSB = 0; wUCSPB = 1; 
-        wUCRXEIE = 1; 
+        wUCRXEIE = 1; wUCBRKIE = 1;
         #CLK_PERIOD;
         reset = 0; #CLK_PERIOD;
 
@@ -262,7 +264,7 @@ task test2;
 endtask
 
 task test3;
-    /*  Test 3: 8-bit data, MSB first, even parity, 1 stop, RXEIE = 0
+    /*  Test 3: 8-bit data, MSB first, even parity, 1 stop, RXEIE = 0, BRKIE = 1 
         Test Procedure:
             - Configure
                 - SWRST set
@@ -282,7 +284,7 @@ task test3;
         wUC7BIT = 0; 
         wUCPEN = 1; wUCPAR = 1; 
         wUCMSB = 1; wUCSPB = 0; 
-        wUCRXEIE = 0; 
+        wUCRXEIE = 0; wUCBRKIE = 1;
         #CLK_PERIOD;
         reset = 0; #CLK_PERIOD;
 
@@ -295,7 +297,7 @@ task test3;
 
         // Error 1
         `subTest(
-            "3b - PE",
+            "3b - PE + BRK",
             {STARTBIT, 8'h00, 1'b1, STOPBIT}, 4'd11, 1'b1,
             (~rSetRxIFG && RxData == 8'h34 && {rUCFE, rUCOE, rUCPE, rUCBRK} == 4'b0011)
             )   
@@ -312,7 +314,7 @@ task test3;
 endtask
 
 task test4;
-    /*  Test 4: 8-bit data, MSB first, no Parity, 2 stop, RXEIE = 1
+    /*  Test 4: 8-bit data, MSB first, no Parity, 2 stop, RXEIE = 1, BRKIE = 0
         Test Procedure:
             - Setup
             - Ideal
@@ -333,7 +335,7 @@ task test4;
         wUC7BIT = 0; 
         wUCPEN = 0; wUCPAR = 0; 
         wUCMSB = 1; wUCSPB = 1; 
-        wUCRXEIE = 1; 
+        wUCRXEIE = 1; wUCBRKIE = 0;
         #CLK_PERIOD;
         reset = 0; #CLK_PERIOD;
 
@@ -346,9 +348,9 @@ task test4;
         
         // Error 1
         `subTest(
-            "4b - FE 2",
+            "4b - FE 2 + BRK",
             {STARTBIT, 8'h00, STARTBIT, STOPBIT}, 4'd11, 1'b1,
-            (rSetRxIFG && RxData == 8'h00 && {rUCFE, rUCOE, rUCPE, rUCBRK} == 4'b1001)
+            (~rSetRxIFG && RxData == 8'h00 && {rUCFE, rUCOE, rUCPE, rUCBRK} == 4'b1001)
             )
 
         // Error 2
@@ -370,7 +372,7 @@ task test4;
 endtask
 
 task test5;
-    /*  Test5: 7-bit data, LSB, no parity, 1 stop, RXEIE = 0
+    /*  Test5: 7-bit data, LSB, no parity, 1 stop, RXEIE = 0, BRKIE = 1
         Test Procedure:
             - Setup
             - Test 1: Ideal
@@ -390,7 +392,7 @@ task test5;
         wUC7BIT = 1; 
         wUCPEN = 0; wUCPAR = 0; 
         wUCMSB = 0; wUCSPB = 0; 
-        wUCRXEIE = 0; 
+        wUCRXEIE = 0; wUCBRKIE = 1;
         #CLK_PERIOD;
         reset = 0; #CLK_PERIOD;
 
@@ -436,7 +438,7 @@ task test5;
 endtask
 
 task test6;
-    /*  Test6: 7-bit data, MSB, Odd Parity, 2 stop, RXEIE = 1
+    /*  Test6: 7-bit data, MSB, Odd Parity, 2 stop, RXEIE = 1, BRKIE = 0
         Test Procedure:
             - Setup
             - Test 1: Ideal
@@ -451,7 +453,7 @@ task test6;
         wUC7BIT = 1; 
         wUCPEN = 1; wUCPAR = 0; 
         wUCMSB = 1; wUCSPB = 1; 
-        wUCRXEIE = 1; 
+        wUCRXEIE = 1; wUCBRKIE = 0;
         #CLK_PERIOD;
         reset = 0; #CLK_PERIOD;
 
@@ -480,7 +482,7 @@ task test6;
         `subTest(
             "6d - PAR + BRK",
             {STARTBIT, 7'h00, 1'b0, STOPBIT, STOPBIT}, 4'd11, 1'b1,
-            (rSetRxIFG && RxData == 8'h00 && {rUCFE, rUCOE, rUCPE, rUCBRK} == 4'b0011)
+            (~rSetRxIFG && RxData == 8'h00 && {rUCFE, rUCOE, rUCPE, rUCBRK} == 4'b0011)
         )
 
         // End Task
