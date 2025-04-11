@@ -26,9 +26,9 @@
 
 module tb_ReceiveStateMachine;
 reg MCLK, BITCLK, reset;
-reg wUCPEN, wUCPAR, wUCMSB, wUC7BIT, wUCSPB, wUCRXEIE, wUCBRKIE;
+reg wUCPEN, wUCPAR, wUCMSB, wUC7BIT, wUCSPB, wUCRXEIE;
 reg Rx, RxIFG; // current IFG value. Used for UCOE
-wire RxBEN, rUCPE, rUCFE, rUCOE, rUCBRK, rSetRxIFG;
+wire RxBEN, rUCPE, rUCFE, rUCOE, rSetRxIFG;
 wire oUCRXERR;
 wire [7:0] RxData;
 wire RxBusy;
@@ -53,10 +53,9 @@ ReceiveStateMachine uut
     .wUCPEN(wUCPEN), .wUCPAR(wUCPAR), 
     .wUCMSB(wUCMSB), .wUC7BIT(wUC7BIT), 
     .wUCSPB(wUCSPB), .wUCRXEIE(wUCRXEIE),
-    .wUCBRKIE(wUCBRKIE), 
     .Rx(Rx), .RxIFG(RxIFG), 
     .RxBEN(RxBEN), 
-    .rUCPE(rUCPE), .rUCFE(rUCFE), .rUCOE(rUCOE), .rUCBRK(rUCBRK), 
+    .rUCPE(rUCPE), .rUCFE(rUCFE), .rUCOE(rUCOE), 
     .rSetRxIFG(rSetRxIFG), .oUCRXERR(oUCRXERR),
     .RxData(RxData), .RxBusy(RxBusy)  
 );
@@ -105,7 +104,7 @@ task transmitFrame; //(data, bits, MSB);
 endtask
 
 task test1;
-    /*  Test 1: 8-bit data, LSB first, no parity, 1 stop bit, RXEIE = 0, BRKIE = 0
+    /*  Test 1: 8-bit data, LSB first, no parity, 1 stop bit, RXEIE = 0,
         Test procedure:
             - Setup
                 - device starts in SWRST condition
@@ -123,10 +122,6 @@ task test1;
                 - feed valid frame
                 - confirm RxData is unchanged
                 - confirm UCOE
-            - Break Condition
-                - clear RxIFG
-                - feed break
-                - confirm break, RxData, SetRxIFG
      */
     begin
         `timeLog("Start Task 1")
@@ -135,7 +130,7 @@ task test1;
         wUC7BIT = 0; 
         wUCPEN = 0; wUCPAR = 0; 
         wUCMSB = 0; wUCSPB = 0; 
-        wUCRXEIE = 0; wUCBRKIE = 0;
+        wUCRXEIE = 0;
         #CLK_PERIOD;
         reset = 0; #CLK_PERIOD;
 
@@ -159,15 +154,8 @@ task test1;
             "1c - OE",
             {STOPBIT, 8'h6C, STARTBIT}, 4'd10, 1'b0, 
             (~rSetRxIFG && RxData == 8'ha5 && rUCOE) 
-            )
-
-        // Break 
+        )
         RxIFG = 0;
-        `subTest(
-            "1d - BRK", 
-            {STOPBIT, 8'h00, STARTBIT}, 4'd10, 1'b0,
-            (~rSetRxIFG && RxData == 8'h00 && rUCBRK)
-            )
         
         #(3*BITCLK_PERIOD);
         reset = 1;
@@ -180,7 +168,7 @@ task test1;
 endtask
 
 task test2;
-    /*  Test 2: 8-bit data, LSB first, odd parity, 2 stop bits, RXEIE = 1, BRKIE = 1
+    /*  Test 2: 8-bit data, LSB first, odd parity, 2 stop bits, RXEIE = 1,
         Test Procedure:
             - Setup
                 - device SWRT set
@@ -211,7 +199,7 @@ task test2;
         wUC7BIT = 0; 
         wUCPEN = 1; wUCPAR = 0; 
         wUCMSB = 0; wUCSPB = 1; 
-        wUCRXEIE = 1; wUCBRKIE = 1;
+        wUCRXEIE = 1;
         #CLK_PERIOD;
         reset = 0; #CLK_PERIOD;
 
@@ -219,28 +207,28 @@ task test2;
         `subTest(
             "2a - Ideal", 
             {STOPBIT, STOPBIT, 1'b1, 8'h55, STARTBIT}, 4'd12, 1'b0,
-            (rSetRxIFG && RxData == 8'h55 && {rUCFE, rUCOE, rUCPE, rUCBRK} == 0) 
+            (rSetRxIFG && RxData == 8'h55 && {rUCFE, rUCOE, rUCPE} == 0) 
             )
 
         // Error 1 - Frame Error
         `subTest(
             "2b - FE2", 
             {STOPBIT, STARTBIT, 1'b0, 8'h3E, STARTBIT}, 4'd12, 1'b0,
-            (rSetRxIFG && RxData == 8'h3E && {rUCFE, rUCOE, rUCPE, rUCBRK} == 4'b1000)
+            (rSetRxIFG && RxData == 8'h3E && {rUCFE, rUCOE, rUCPE} == 3'b100)
             )
         
         // Error 2 - Frame Error
         `subTest(
             "2c - FE1", 
             {STARTBIT, STOPBIT, 1'b1, 8'h00, STARTBIT}, 4'd12, 1'b0,
-            (rSetRxIFG && RxData == 8'h00 && {rUCFE, rUCOE, rUCPE, rUCBRK} == 4'b1001)
+            (rSetRxIFG && RxData == 8'h00 && {rUCFE, rUCOE, rUCPE} == 3'b100)
             )
                     
         // Error 3 - Parity Error
         `subTest(
             "2d - PE", 
             {STOPBIT, STOPBIT, 1'b1, 8'hA4, STARTBIT}, 4'd12, 1'b0, 
-            (rSetRxIFG && RxData == 8'hA4 && {rUCFE, rUCOE, rUCPE, rUCBRK} == 4'b0010)
+            (rSetRxIFG && RxData == 8'hA4 && {rUCFE, rUCOE, rUCPE} == 3'b001)
             )
 
         // Error 4 - Parity Error and Overrun Error
@@ -248,7 +236,7 @@ task test2;
         `subTest(
             "2e - PE & OE", 
             {STOPBIT, STOPBIT, 1'b0, 8'hA5, STARTBIT}, 4'd12, 1'b0,
-            (rSetRxIFG && RxData == 8'hA5 && {rUCFE, rUCOE, rUCPE, rUCBRK} == 4'b0110)
+            (rSetRxIFG && RxData == 8'hA5 && {rUCFE, rUCOE, rUCPE} == 3'b011)
             )
                     
         // Reset device and End Task
@@ -264,7 +252,7 @@ task test2;
 endtask
 
 task test3;
-    /*  Test 3: 8-bit data, MSB first, even parity, 1 stop, RXEIE = 0, BRKIE = 1 
+    /*  Test 3: 8-bit data, MSB first, even parity, 1 stop, RXEIE = 0
         Test Procedure:
             - Configure
                 - SWRST set
@@ -284,7 +272,7 @@ task test3;
         wUC7BIT = 0; 
         wUCPEN = 1; wUCPAR = 1; 
         wUCMSB = 1; wUCSPB = 0; 
-        wUCRXEIE = 0; wUCBRKIE = 1;
+        wUCRXEIE = 0;
         #CLK_PERIOD;
         reset = 0; #CLK_PERIOD;
 
@@ -292,14 +280,14 @@ task test3;
         `subTest(
             "3a - Ideal",
             {STARTBIT, 8'h34, 1'b1, STOPBIT}, 4'd11, 1'b1,
-            (rSetRxIFG && RxData == 8'h34 && {rUCFE, rUCOE, rUCPE, rUCBRK} == 4'b0000)
+            (rSetRxIFG && RxData == 8'h34 && {rUCFE, rUCOE, rUCPE} == 3'b000)
             )
 
         // Error 1
         `subTest(
-            "3b - PE + BRK",
-            {STARTBIT, 8'h00, 1'b1, STOPBIT}, 4'd11, 1'b1,
-            (~rSetRxIFG && RxData == 8'h34 && {rUCFE, rUCOE, rUCPE, rUCBRK} == 4'b0011)
+            "3b - PE",
+            {STARTBIT, 8'h53, 1'b1, STOPBIT}, 4'd11, 1'b1,
+            (~rSetRxIFG && RxData == 8'h34 && {rUCFE, rUCOE, rUCPE} == 3'b001)
             )   
 
         // Reset device and End Task
@@ -314,7 +302,7 @@ task test3;
 endtask
 
 task test4;
-    /*  Test 4: 8-bit data, MSB first, no Parity, 2 stop, RXEIE = 1, BRKIE = 0
+    /*  Test 4: 8-bit data, MSB first, no Parity, 2 stop, RXEIE = 1
         Test Procedure:
             - Setup
             - Ideal
@@ -335,7 +323,7 @@ task test4;
         wUC7BIT = 0; 
         wUCPEN = 0; wUCPAR = 0; 
         wUCMSB = 1; wUCSPB = 1; 
-        wUCRXEIE = 1; wUCBRKIE = 0;
+        wUCRXEIE = 1;
         #CLK_PERIOD;
         reset = 0; #CLK_PERIOD;
 
@@ -343,21 +331,21 @@ task test4;
         `subTest(
             "4a - Ideal",
             {STARTBIT, 8'h1F, STOPBIT, STOPBIT}, 4'd11, 1'b1,
-            (rSetRxIFG && RxData == 8'h1F && {rUCFE, rUCOE, rUCPE, rUCBRK} == 4'b0000)
+            (rSetRxIFG && RxData == 8'h1F && {rUCFE, rUCOE, rUCPE} == 3'b000)
             )
         
         // Error 1
         `subTest(
-            "4b - FE 2 + BRK",
+            "4b - FE 2",
             {STARTBIT, 8'h00, STARTBIT, STOPBIT}, 4'd11, 1'b1,
-            (~rSetRxIFG && RxData == 8'h00 && {rUCFE, rUCOE, rUCPE, rUCBRK} == 4'b1001)
+            (rSetRxIFG && RxData == 8'h00 && {rUCFE, rUCOE, rUCPE} == 3'b100)
             )
 
         // Error 2
         `subTest(
             "4b - FE 1",
             {STARTBIT, 8'hFF, STOPBIT, STARTBIT}, 4'd11, 1'b1,
-            (rSetRxIFG && RxData == 8'hFF && {rUCFE, rUCOE, rUCPE, rUCBRK} == 4'b1000)
+            (rSetRxIFG && RxData == 8'hFF && {rUCFE, rUCOE, rUCPE} == 3'b100)
             )
 
         // Reset device and End Task
@@ -372,7 +360,7 @@ task test4;
 endtask
 
 task test5;
-    /*  Test5: 7-bit data, LSB, no parity, 1 stop, RXEIE = 0, BRKIE = 1
+    /*  Test5: 7-bit data, LSB, no parity, 1 stop, RXEIE = 0
         Test Procedure:
             - Setup
             - Test 1: Ideal
@@ -382,8 +370,6 @@ task test5;
             - Test 3: Overrun Error
                 - set RxIFG
                 - send valid frame
-            - Test 4: Break
-                - send break
      */
     begin
         `timeLog("Start Task 5")
@@ -392,7 +378,7 @@ task test5;
         wUC7BIT = 1; 
         wUCPEN = 0; wUCPAR = 0; 
         wUCMSB = 0; wUCSPB = 0; 
-        wUCRXEIE = 0; wUCBRKIE = 1;
+        wUCRXEIE = 0;
         #CLK_PERIOD;
         reset = 0; #CLK_PERIOD;
 
@@ -400,14 +386,14 @@ task test5;
         `subTest(
             "5a - Ideal",
             {STOPBIT, 7'h5A, STARTBIT}, 4'd9, 1'b0,
-            (rSetRxIFG && RxData == 8'h5A && {rUCFE, rUCOE, rUCPE, rUCBRK} == 4'b0000)
+            (rSetRxIFG && RxData == 8'h5A && {rUCFE, rUCOE, rUCPE} == 3'b000)
         )
 
         // Error 1
         `subTest(
             "5b - FE",
             {STARTBIT, 7'h34, STARTBIT}, 4'd9, 1'b0,
-            (~rSetRxIFG && RxData == 8'h5A && {rUCFE, rUCOE, rUCPE, rUCBRK} == 4'b1000)
+            (~rSetRxIFG && RxData == 8'h5A && {rUCFE, rUCOE, rUCPE} == 3'b100)
         )
 
         // Error 2
@@ -415,16 +401,9 @@ task test5;
         `subTest(
             "5c - OE",
             {STOPBIT, 7'h76, STARTBIT}, 4'd9, 1'b0,
-            (~rSetRxIFG && RxData == 8'h5A && {rUCFE, rUCOE, rUCPE, rUCBRK} == 4'b0100)
+            (~rSetRxIFG && RxData == 8'h5A && {rUCFE, rUCOE, rUCPE} == 3'b010)
         )
         RxIFG = 0;
-
-        // Test 4 - Break
-        `subTest(
-            "5d - BRK",
-            {STOPBIT, 7'h00, STARTBIT}, 4'd9, 1'b0,
-            (rSetRxIFG && RxData == 8'h00 && {rUCFE, rUCOE, rUCPE, rUCBRK} == 4'b0001)
-        )
 
         // Reset device and End Task
         #(3*BITCLK_PERIOD);
@@ -438,13 +417,13 @@ task test5;
 endtask
 
 task test6;
-    /*  Test6: 7-bit data, MSB, Odd Parity, 2 stop, RXEIE = 1, BRKIE = 0
+    /*  Test6: 7-bit data, MSB, Odd Parity, 2 stop, RXEIE = 1
         Test Procedure:
             - Setup
             - Test 1: Ideal
             - Test 2: Frame Error 2
             - Test 3: Frame Error 1
-            - Test 4: Parity Error + Break
+            - Test 4: Parity Error
      */
     begin
         `timeLog("Start Task 6")
@@ -453,7 +432,7 @@ task test6;
         wUC7BIT = 1; 
         wUCPEN = 1; wUCPAR = 0; 
         wUCMSB = 1; wUCSPB = 1; 
-        wUCRXEIE = 1; wUCBRKIE = 0;
+        wUCRXEIE = 1;
         #CLK_PERIOD;
         reset = 0; #CLK_PERIOD;
 
@@ -461,28 +440,28 @@ task test6;
         `subTest(
             "6a - Ideal",
             {STARTBIT, 7'h35, 1'b1, STOPBIT, STOPBIT}, 4'd11, 1'b1,
-            (rSetRxIFG && RxData == 8'h35 && {rUCFE, rUCOE, rUCPE, rUCBRK} == 4'b0000)
+            (rSetRxIFG && RxData == 8'h35 && {rUCFE, rUCOE, rUCPE} == 3'b000)
         )
 
         // Frame Error
         `subTest(
             "6b - FE 2",
             {STARTBIT, 7'h5E, 1'b0, STARTBIT, STOPBIT}, 4'd11, 1'b1,
-            (rSetRxIFG && RxData == 8'h5E && {rUCFE, rUCOE, rUCPE, rUCBRK} == 4'b1000)
+            (rSetRxIFG && RxData == 8'h5E && {rUCFE, rUCOE, rUCPE} == 3'b100)
         )
 
         // Frame Error
         `subTest(
             "6c - FE 1",
             {STARTBIT, 7'h12, 1'b1, STOPBIT, STARTBIT}, 4'd11, 1'b1,
-            (rSetRxIFG && RxData == 8'h12 && {rUCFE, rUCOE, rUCPE, rUCBRK} == 4'b1000)
+            (rSetRxIFG && RxData == 8'h12 && {rUCFE, rUCOE, rUCPE} == 3'b100)
         )
 
         // Parity Error
         `subTest(
-            "6d - PAR + BRK",
+            "6d - PAR",
             {STARTBIT, 7'h00, 1'b0, STOPBIT, STOPBIT}, 4'd11, 1'b1,
-            (~rSetRxIFG && RxData == 8'h00 && {rUCFE, rUCOE, rUCPE, rUCBRK} == 4'b0011)
+            (rSetRxIFG && RxData == 8'h00 && {rUCFE, rUCOE, rUCPE} == 3'b001)
         )
 
         // End Task

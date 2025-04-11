@@ -11,10 +11,10 @@
 
 module ReceiveStateMachine(
     input MCLK, BITCLK, reset,
-    input wUCPEN, wUCPAR, wUCMSB, wUC7BIT, wUCSPB, wUCRXEIE, wUCBRKIE,
+    input wUCPEN, wUCPAR, wUCMSB, wUC7BIT, wUCSPB, wUCRXEIE,
     input Rx, RxIFG, // current IFG value. Used for UCOE
 
-    output reg RxBEN, rUCPE, rUCFE, rUCOE, rUCBRK, rSetRxIFG,
+    output reg RxBEN, rUCPE, rUCFE, rUCOE, rSetRxIFG,
     output oUCRXERR,
 
     output reg [7:0] RxData,
@@ -26,7 +26,7 @@ module ReceiveStateMachine(
     reg [7:0] data;
 
     initial begin 
-        {RxBEN, rUCPE, rUCFE, rUCOE, rUCBRK, rSetRxIFG, RxData, RxBusy} = 0; 
+        {RxBEN, rUCPE, rUCFE, rUCOE, rSetRxIFG, RxData, RxBusy} = 0; 
         {state, nextState, data} = 0;
     end
 
@@ -198,13 +198,12 @@ module ReceiveStateMachine(
                 sSTOP1: begin 
                     rUCFE  <= rUCFE | ~Rx;
                     rUCOE  <= RxIFG; // UCOE = 1 when previous read incomplete
-                    rUCBRK <= (data == 0);
                     RxBusy <= 0;
                                  // old flags and current conditions
                     if (wUCRXEIE || {rUCPE, rUCFE | ~Rx, RxIFG} == 0) begin
                         // If Receive erroneous char enabled OR no errors
                         // Set RxIFG
-                        rSetRxIFG <= wUCBRKIE | (data != 0);
+                        rSetRxIFG <= 1;
 
                         // Receive character
                         case({wUCMSB, wUC7BIT})
