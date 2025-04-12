@@ -14,8 +14,8 @@ module ReceiveStateMachine(
     input wUCPEN, wUCPAR, wUCMSB, wUC7BIT, wUCSPB, wUCRXEIE,
     input Rx, RxIFG, // current IFG value. Used for UCOE
 
-    output reg RxBEN, rUCPE, rUCFE, rUCOE, rSetRxIFG,
-    output oUCRXERR,
+    output reg RxBEN, rUCPE, rUCFE, rUCOE, rSetRxIFG, 
+    output oUCRXERR, oSetSTTIFG,
 
     output reg [7:0] RxData,
     output reg RxBusy
@@ -49,6 +49,7 @@ module ReceiveStateMachine(
 
     /* Continuous Logic Assignments */
     assign oUCRXERR = rUCPE | rUCFE | rUCOE;
+    assign oSetSTTIFG = (state == sSTART);
     always @(*) begin
         case(state)
             sIDLE: begin 

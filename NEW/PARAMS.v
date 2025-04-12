@@ -470,7 +470,7 @@
         UCAnCTLW0       = 8'h00, // 0001  | 15-6
         UCAnCTL0        = 8'h01,
         UCAnCTL1        = 8'h00,
-        UCAnCTLW1       = 8'h02, // 0003  |
+        // UCAnCTLW1       = 8'h02, // 0003  |
         UCAnBRW         = 8'h06, //       | 15-0  
         UCAnBR0         = 8'h06,
         UCAnBR1         = 8'h07,
@@ -486,6 +486,27 @@
         UCAnIFG         = 8'h1C, // 0002
         UCAnIV          = 8'h1E;
 
+    localparam
+        UCAnCTLW0_L     = UCAnCTLW0,
+        UCAnCTLW0_H     = UCAnCTLW0+1,
+        UCAnBRW_L       = UCAnBRW,
+        UCAnBRW_H       = UCAnBRW+1,
+        UCAnMCTLW_L     = UCAnMCTLW,
+        UCAnMCTLW_H     = UCAnMCTLW+1,
+        UCAnSTATW_L     = UCAnSTATW,
+        UCAnSTATW_H     = UCAnSTATW+1,
+        UCAnRXBUF_L     = UCAnRXBUF,
+        UCAnRXBUF_H     = UCAnRXBUF+1,
+        UCAnTXBUF_L     = UCAnTXBUF,
+        UCAnTXBUF_H     = UCAnTXBUF+1,
+        UCAnIE_L        = UCAnIE,
+        UCAnIE_H        = UCAnIE+1,
+        UCAnIFG_L       = UCAnIFG,
+        UCAnIFG_H       = UCAnIFG+1,
+        UCAnIV_L        = UCAnIV,
+        UCAnIV_H        = UCAnIV+1;
+        
+
     // bit defines for UCAnCTLW0
     localparam                // Protected ?
         UCPEN           = 15, // Y | Parity Enable 
@@ -499,7 +520,7 @@
         UCSSELx1        = 7,  // Y | Clock Source Select 1
         UCSSELx0        = 6,  // Y | Clock Source Select 2
         UCRXEIE         = 5,  //   | Rx Error Interrupt Enable
-        UCBRKIE         = 4,  //   | Break Interrupt Enable
+        UCBRKIE         = 4,  //   | RESERVED
         UCDORM          = 3,  //   | RESERVED
         UCTXADDR        = 2,  //   | RESERVED
         UCTXBRK         = 1,  //   | RESERVED
@@ -516,8 +537,8 @@
 
     // bit defines for UCAnCTLW1
     localparam          // 15-2 : r-0
-        UCGLITx1        = 1, // rw-1
-        UCGLITx0        = 0; // rw-1
+        UCGLITx1        = 1, // RESERVED
+        UCGLITx0        = 0; // RESERVED
     
     // bit defines for UCAnMCTLW
     localparam
@@ -543,10 +564,10 @@
         UCFE            = 6,
         UCOE            = 5,
         UCPE            = 4,
-        UCBRK           = 3,
+        UCBRK           = 3, // RESERVED
         UCRXERR         = 2,
-        UCADDR          = 1,
-        UCIDLE          = 1,
+        UCADDR          = 1, // RESERVED
+        UCIDLE          = 1, // RESERVED
         UCBUSY          = 0; // r-0
 
     // bit defines for UCAnRXBUF

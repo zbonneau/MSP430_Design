@@ -29,7 +29,7 @@ reg MCLK, BITCLK, reset;
 reg wUCPEN, wUCPAR, wUCMSB, wUC7BIT, wUCSPB, wUCRXEIE;
 reg Rx, RxIFG; // current IFG value. Used for UCOE
 wire RxBEN, rUCPE, rUCFE, rUCOE, rSetRxIFG;
-wire oUCRXERR;
+wire oUCRXERR, oSetSTTIFG;
 wire [7:0] RxData;
 wire RxBusy;
 
@@ -57,6 +57,7 @@ ReceiveStateMachine uut
     .RxBEN(RxBEN), 
     .rUCPE(rUCPE), .rUCFE(rUCFE), .rUCOE(rUCOE), 
     .rSetRxIFG(rSetRxIFG), .oUCRXERR(oUCRXERR),
+    .oSetSTTIFG(oSetSTTIFG),
     .RxData(RxData), .RxBusy(RxBusy)  
 );
 
