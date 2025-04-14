@@ -12,15 +12,16 @@ module tb_TransmitStateMachine;
 reg BITCLK, reset;
 reg wUCPEN, wUCPAR, wUCMSB, wUC7BIT, wUCSPB;
 reg [7:0] TxData;
-reg TxBufRdy;
-wire TxBEN, setTXIFG, setTXCPTIFG, TxBusy, TxBufClr;
+reg iTXIFG;
+wire TxBEN, setTXIFG, setTXCPTIFG, TxBusy;
 wire Tx;
 
 `include "NEW/PARAMS.v"
 reg [15:0] outFrame;
 
 initial begin 
-    {BITCLK, reset, wUCPEN, wUCPAR, wUCMSB, wUC7BIT, wUCSPB, TxData, TxBufRdy, outFrame} = 0; 
+    {BITCLK, reset, wUCPEN, wUCPAR, wUCMSB, wUC7BIT, wUCSPB, TxData, iTXIFG, outFrame} = 0; 
+    iTXIFG = 1;
 end
 
 TransmitStateMachine uut
@@ -28,10 +29,10 @@ TransmitStateMachine uut
     .BITCLK(BITCLK), .reset(reset), 
     .wUCPEN(wUCPEN), .wUCPAR(wUCPAR), .wUCMSB(wUCMSB), .wUC7BIT(wUC7BIT), 
     .wUCSPB(wUCSPB), 
-    .TxData(TxData), .TxBufRdy(TxBufRdy), 
+    .TxData(TxData), .iTXIFG(iTXIFG), 
     .TxBEN(TxBEN), 
     .setTXIFG(setTXIFG), .setTXCPTIFG(setTXCPTIFG), 
-    .TxBusy(TxBusy), .TxBufClr(TxBufClr), 
+    .TxBusy(TxBusy),
     .Tx(Tx)
 );
 
@@ -75,7 +76,7 @@ task receiveFrame;
     begin
         @(negedge BITCLK);
         outFrame = 0;
-        TxData = data; TxBufRdy = 1; #CLK_PERIOD; TxBufRdy = 0;
+        TxData = data; iTXIFG = 0; #CLK_PERIOD; iTXIFG = 1;
         for (i=0; i < bits; i = i + 1) begin
             if(MSB)
                 outFrame[bits-i-1] = Tx;

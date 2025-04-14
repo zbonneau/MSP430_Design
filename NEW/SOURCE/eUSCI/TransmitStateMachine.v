@@ -13,9 +13,9 @@ module TransmitStateMachine(
     input BITCLK, reset,
     input wUCPEN, wUCPAR, wUCMSB, wUC7BIT, wUCSPB,
     input [7:0] TxData,
-    input TxBufRdy,
+    input iTXIFG,
 
-    output TxBEN, setTXIFG, setTXCPTIFG, TxBusy, TxBufClr,
+    output TxBEN, setTXIFG, setTXCPTIFG, TxBusy, 
     output reg Tx
  );
 
@@ -46,15 +46,14 @@ module TransmitStateMachine(
     `include "NEW/PARAMS.v" // global parameter defines
 
     /* Continuous Logic Assignments */
-    assign TxBEN        = TxBufRdy | TxBusy;
+    assign TxBEN        = ~iTXIFG | TxBusy;
     assign setTXIFG     = (state == sSTART);
     assign setTXCPTIFG  = (state == sSTOP1);
     assign TxBusy       = (state != sIDLE);
-    assign TxBufClr     = (state == sSTART);
     always @(*) begin
         case(state)
             sIDLE: begin 
-                nextState = TxBufRdy ? sSTART : sIDLE;
+                nextState = ~iTXIFG ? sSTART : sIDLE;
             end
 
             sSTART: begin 
@@ -111,7 +110,7 @@ module TransmitStateMachine(
             end
 
             sSTOP1: begin 
-                nextState = TxBufRdy ? sSTART : sIDLE;
+                nextState = ~iTXIFG ? sSTART : sIDLE;
             end
 
             default: begin 
