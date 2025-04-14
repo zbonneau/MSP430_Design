@@ -24,7 +24,8 @@ module eUSCI_A #(
     /* Internal signal definitions */
     reg [15:0] rUCAxCTLW0, rUCAxBRW, rUCAxMCTLW, rUCAxSTATW; 
     reg [15:0] rUCAxRXBUF, rUCAxTXBUF, rUCAxIE, rUCAxIFG, rUCAxIV;
-    reg rTxBufReady;
+
+    reg [3:0] syncFlags;
 
     initial begin 
         // Defined reset condition for MMRs
@@ -37,7 +38,7 @@ module eUSCI_A #(
         rUCAxIE     = 16'h0000;
         rUCAxIFG    = 16'h0002;
         rUCAxIV     = 0;
-        rTxBufReady = 0;     
+        syncFlags   = 0;     
     end
 
     // wires from UCAxCTLW0
@@ -71,7 +72,7 @@ module eUSCI_A #(
     wire BRCLK, RxBEN, RxCLK, TxBEN, TxCLK;
     wire wUCPE, wUCFE, wUCOE, wSetRXIFG, wUCRXERR, wSetSTTIFG;
     wire RxBusy, TxBusy;
-    wire wSetTXIFG, wSetTXCPTIFG, TxBufClear;
+    wire wSetTXIFG, wSetTXCPTIFG;
     wire [7:0] wRxData;
 
     `include "NEW/PARAMS.v" // global parameter defines
@@ -150,7 +151,7 @@ module eUSCI_A #(
             rUCAxIE     <= 16'h0000;
             rUCAxIFG    <= 16'h0002;
             rUCAxIV     <= 0;
-            rTxBufReady <= 0;
+            syncFlags   <= 0;
         end else begin
             if (MW & BW & wUCSWRST) begin
                 case(MAB - START)
@@ -263,22 +264,22 @@ module eUSCI_A #(
         end
     end
 
-    // Handle TxBUF Ready SR Latch && autoclear UCTXIFG
+    // Handle TxBUF autoclear UCTXIFG
     always @(posedge MCLK) begin
         if ((MAB - START == UCAnTXBUF) && MW && ~reset && ~wUCSWRST) begin
-            rTxBufReady <= 1; rUCAxIFG[UCTXIFG] <= 0;
+            rUCAxIFG[UCTXIFG] <= 0;
         end
-        else if (TxBufClear | reset | wUCSWRST)
-            rTxBufReady <= 0;
     end
 
     // Handle UCAxIFG flag sets
     always @(posedge MCLK) begin
         if (~reset) begin
-            if (wSetRXIFG)    rUCAxIFG[UCRXIFG]     <= 1;
-            if (wSetTXIFG)    rUCAxIFG[UCTXIFG]     <= 1;
-            if (wSetSTTIFG)   rUCAxIFG[UCSTTIFG]    <= 1;
-            if (wSetTXCPTIFG) rUCAxIFG[UCTXCPTIFG]  <= 1;
+            syncFlags <= {wSetRXIFG, wSetTXIFG, wSetSTTIFG, wSetTXCPTIFG};
+            // Look for rising edges
+            if (wSetRXIFG & ~syncFlags[3])    rUCAxIFG[UCRXIFG]     <= 1;
+            if (wSetTXIFG & ~syncFlags[2])    rUCAxIFG[UCTXIFG]     <= 1;
+            if (wSetSTTIFG & ~syncFlags[1])   rUCAxIFG[UCSTTIFG]    <= 1;
+            if (wSetTXCPTIFG & ~syncFlags[0]) rUCAxIFG[UCTXCPTIFG]  <= 1;
         end
     end
 
@@ -324,9 +325,10 @@ module eUSCI_A #(
         .BITCLK(TxCLK), .reset(reset | wUCSWRST),
         .wUCPEN(wUCPEN), .wUCPAR(wUCPAR), .wUCMSB(wUCMSB), .wUC7BIT(wUC7BIT), 
         .wUCSPB(wUCSPB),
-        .TxData(rUCAxTXBUF[7:0]), .TxBufRdy(rTxBufReady),
+        .TxData(rUCAxTXBUF[7:0]), 
+        .iTXIFG(wUCTXIFG),
         .TxBEN(TxBEN), .setTXIFG(wSetTXIFG), .setTXCPTIFG(wSetTXCPTIFG),
-        .TxBusy(TxBusy), .TxBufClr(TxBufClear),
+        .TxBusy(TxBusy), 
         .Tx(Tx)
     );
 

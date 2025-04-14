@@ -647,6 +647,18 @@
         UCIV1           = 1; // r-(0)
                         // 0 : r0
 
+    // MMR defines for eUSCI A0
+    localparam
+        UCA0CTLW0 = MAP_eUSCI_A0 + UCAnCTLW0,
+        UCA0BRW   = MAP_eUSCI_A0 + UCAnBRW,
+        UCA0MCTLW = MAP_eUSCI_A0 + UCAnMCTLW,
+        UCA0STATW = MAP_eUSCI_A0 + UCAnSTATW,
+        UCA0RXBUF = MAP_eUSCI_A0 + UCAnRXBUF,
+        UCA0TXBUF = MAP_eUSCI_A0 + UCAnTXBUF,
+        UCA0IE    = MAP_eUSCI_A0 + UCAnIE,
+        UCA0IFG   = MAP_eUSCI_A0 + UCAnIFG,
+        UCA0IV    = MAP_eUSCI_A0 + UCAnIV;
+
     //-------------------------------------------------------------------------
     // pin mappings
     localparam
