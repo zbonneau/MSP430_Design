@@ -27,7 +27,7 @@ module MSP430(
     output [2:0] RGB
  );
  
-    `include "PARAMS.v" // global parameter defines
+    `include "NEW/PARAMS.v" // global parameter defines
 
     /* Internal signal definitions */
     wire MCLK, SMCLK, ACLK, reset, RSTn;
@@ -40,6 +40,11 @@ module MSP430(
 
     wire NMI, INT, INTACK;
     wire [5:0] IntAddrLSBs;
+
+    `ifdef IVT_eUSCI_A0_USED
+        wire UCA0CLK, eUSCIA0_INT;
+        wor  RxA0, TxA0;
+    `endif 
 
     `ifdef IVT_Timer0A0_USED
         wor  TA0CLK;
@@ -111,15 +116,16 @@ module MSP430(
         .INTACK(INTACK)
     );
       
-    BlockMemInterface memInst(
-        .MCLK(MCLK),
-        .MAB(MAB), .MDBwrite(MDBwrite), .MDBread(MDBread),
-        .MW(MW), .BW(BW)
-    );
+    // BlockMemInterface memInst(
+    //     .MCLK(MCLK),
+    //     .MAB(MAB), .MDBwrite(MDBwrite), .MDBread(MDBread),
+    //     .MW(MW), .BW(BW)
+    // );
 
     InterruptUnit IntUnit(
         .MCLK(MCLK), .RSTn(RSTn), .INTACK(INTACK),
         .reset(reset), .NMI(NMI), .INT(INT),
+        .Module_55_int(eUSCIA0_INT), .Module_55_clr(),
         .Module_52_int(TA0INT0), .Module_52_clr(TA0CLR0), 
         .Module_51_int(TA0INT1), .Module_51_clr(), 
         .Module_47_int(TA1INT0), .Module_47_clr(TA1CLR0), 
@@ -130,6 +136,17 @@ module MSP430(
         .Module_38_int(P4INT), .Module_38_clr(), 
         .IntAddrLSBs(IntAddrLSBs)
     );
+
+    `ifdef IVT_eUSCI_A0_USED
+        eUSCI_A #(
+            .START(MAP_eUSCI_A0)
+        ) eUSCIA0(
+            .MCLK(MCLK), .UCxCLK(UCA0CLK), .ACLK(ACLK), .SMCLK(SMCLK), .reset(reset),
+            .Rx(RxA0), .Tx(TxA0), 
+            .MAB(MAB), .MDBwrite(MDBwrite), .MW(MW), .BW(BW), .MDBread(MDBread),
+            .INT1(eUSCIA0_INT)
+        );
+    `endif
 
     `ifdef IVT_Timer0A0_USED
         TimerA #(
@@ -214,7 +231,7 @@ module MSP430(
             .Px_m(gpio[GPIO1_5]), .PxOUTm(paout[5]), .PxDIRm(padir[5]), .PxRENm(paren[5]), 
             .PxINm(pain[5]), .PxSELm({pasel1[5], pasel0[5]}), 
             .OUT_1(1'b0), .DIR_1(1'b0), .IN_1(), 
-            .OUT_2(1'b0), .DIR_2(1'b0), .IN_2(),
+            .OUT_2(1'b0), .DIR_2(1'b0), .IN_2(UCA0CLK),
             .OUT_3(OUTA0[0]), .DIR_3(padir[5]), .IN_3(CCI0A[0])
         );
         PIN PinA6(
@@ -234,21 +251,21 @@ module MSP430(
         PIN PinA8(
             .Px_m(gpio[GPIO2_0]), .PxOUTm(paout[8]), .PxDIRm(padir[8]), .PxRENm(paren[8]), 
             .PxINm(pain[8]), .PxSELm({pasel1[8], pasel0[8]}), 
-            .OUT_1(1'b0), .DIR_1(1'b0), .IN_1(), 
+            .OUT_1(TxA0), .DIR_1(1'b1), .IN_1(), 
             .OUT_2(1'b0), .DIR_2(1'b0), .IN_2(),
             .OUT_3(1'b0), .DIR_3(1'b0), .IN_3()
         );
         PIN PinA9(
             .Px_m(gpio[GPIO2_1]), .PxOUTm(paout[9]), .PxDIRm(padir[9]), .PxRENm(paren[9]), 
             .PxINm(pain[9]), .PxSELm({pasel1[9], pasel0[9]}), 
-            .OUT_1(1'b0), .DIR_1(1'b0), .IN_1(), 
+            .OUT_1(1'b0), .DIR_1(1'b0), .IN_1(RxA0), 
             .OUT_2(1'b0), .DIR_2(1'b0), .IN_2(),
             .OUT_3(1'b0), .DIR_3(1'b0), .IN_3()
         );
         PIN PinA10(
             .Px_m(gpio[GPIO2_2]), .PxOUTm(paout[10]), .PxDIRm(padir[10]), .PxRENm(paren[10]), 
             .PxINm(pain[10]), .PxSELm({pasel1[10], pasel0[10]}), 
-            .OUT_1(1'b0), .DIR_1(1'b0), .IN_1(), 
+            .OUT_1(1'b0), .DIR_1(1'b0), .IN_1(UCA0CLK), 
             .OUT_2(1'b0), .DIR_2(1'b0), .IN_2(),
             .OUT_3(1'b0), .DIR_3(1'b0), .IN_3()
         );
@@ -378,14 +395,14 @@ module MSP430(
         PIN PinB10(
             .Px_m(gpio[GPIO4_2]), .PxOUTm(pbout[10]), .PxDIRm(pbdir[10]), .PxRENm(pbren[10]), 
             .PxINm(pbin[10]), .PxSELm({pbsel1[10], pbsel0[10]}), 
-            .OUT_1(1'b0), .DIR_1(1'b0), .IN_1(), 
+            .OUT_1(TxA0), .DIR_1(1'b1), .IN_1(), 
             .OUT_2(1'b0), .DIR_2(1'b0), .IN_2(),
             .OUT_3(1'b0), .DIR_3(1'b0), .IN_3()
         );
         PIN PinB11(
             .Px_m(gpio[GPIO4_3]), .PxOUTm(pbout[11]), .PxDIRm(pbdir[11]), .PxRENm(pbren[11]), 
             .PxINm(pbin[11]), .PxSELm({pbsel1[11], pbsel0[11]}), 
-            .OUT_1(1'b0), .DIR_1(1'b0), .IN_1(), 
+            .OUT_1(1'b0), .DIR_1(1'b0), .IN_1(RxA0), 
             .OUT_2(1'b0), .DIR_2(1'b0), .IN_2(),
             .OUT_3(1'b0), .DIR_3(1'b0), .IN_3()
         );

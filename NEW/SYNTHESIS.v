@@ -15,7 +15,7 @@
 // `define IVT_Timer0B1_USED   
 // `define IVT_WDT_USED        
 // `define IVT_ESI_USED        
-// `define IVT_eUSCI_A0_USED   
+`define IVT_eUSCI_A0_USED   
 // `define IVT_eUSCI_B0_USED   
 // `define IVT_ADC12_B_USED    
 `define IVT_Timer0A0_USED   
