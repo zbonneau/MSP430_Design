@@ -72,6 +72,7 @@ initial begin
     #(60*CLK_PERIOD);
     MW = 1; #CLK_PERIOD; MW = 0;
 
+    // Wait for second frame overrun
     while(!uut.wUCOE) #CLK_PERIOD;
 
     // Read RxBuf for autoclear

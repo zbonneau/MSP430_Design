@@ -8,8 +8,16 @@
 `default_nettype none
 `timescale 100ns/1ns
 
+`define runTest(BAUD, OS, BR, F, S, expected) begin \
+    runBRG(BR, F, S, OS, actual); \
+    error = ((expected) - actual) / (expected) * 100.0; \
+    // $display("actual: %f \nexpected: %f \nerror: %f", actual, expected, error); \
+    $display("%6d |    %b   | %4h |  %2d  |  %2h  | %.2f", BAUD, OS, BR, F, S, error); \
+end
+
 module tb_BaudRateGenerator;
-reg BRCLK, UCABEN;
+wire BRCLK;
+reg UCABEN;
 reg [15:0] wUC0BRx; // clock prescaler
 reg [3:0]  wUCBRFx; // first mod stage for BITCLK16
 reg [7:0]  wUCBRSx; // second mod stage for BITCLK
@@ -19,7 +27,7 @@ wire       BITCLK, MajorityClk;
 
 `include "NEW/PARAMS.v"
 
-initial begin {BRCLK, UCABEN, wUC0BRx, wUCBRFx, wUCBRSx, wUCOS16} = 0; end
+initial begin {UCABEN, wUC0BRx, wUCBRFx, wUCBRSx, wUCOS16} = 0; end
 
 BaudRateGenerator uut
 (
@@ -32,92 +40,66 @@ BaudRateGenerator uut
     .MajorityClk(MajorityClk)
 );
 
-localparam CLK_PERIOD = 305.18;
-always #(CLK_PERIOD/2) BRCLK = ~BRCLK;
+reg SMCLK = 0;
+reg ACLK = 0;
+reg SSEL = 0;
+localparam SMCLK_P = 10.00;
+localparam ACLK_P  = 305.18;
+always #(SMCLK_P/2) SMCLK = ~SMCLK;
+always #(ACLK_P/2) ACLK = ~ACLK;
+assign BRCLK = SSEL ? ACLK : SMCLK;
 
 initial begin
-    $dumpfile("BaudRateGenerator.vcd");
-    $dumpvars(0, tb_BaudRateGenerator);
+    // $dumpfile("BaudRateGenerator.vcd");
+    // $dumpvars(0, tb_BaudRateGenerator);
+    $display("  BAUD | UCOS16 | BRSx | BRFx | BRSx | error");
 end
 
-integer i=0;
-integer ACLKcount = 0;
-integer start, stop, diff;
-real expected, actual;
-
-always @(negedge BRCLK) ACLKcount <= ACLKcount + 1;
+realtime error, actual;
 
 initial begin
-    // // Configure Device while BEN = 0, as FUG describes
-    // // ACLK, 9600 BAUD, N=3, OSC16 = 0, F = -, S = 0x92
-    // wUC0BRx = 3;
-    // wUCBRFx = 0;
-    // wUCBRSx = 8'h92;
-    // wUCOS16 = 0;
+    // Configure Device for each row of FUG table 30-5
+
+    SSEL = 1;
+    `runTest(1200, 1'b1, 16'd1, 8'd11, 8'h25, 11.0/1200*10_000_000)
+    `runTest(2400, 1'b0, 16'd13, 8'd0, 8'hB6, 11.0/1200*10_000_000)
+    `runTest(4800, 1'b0, 16'd6, 8'd0, 8'hEE, 11.0/4800*10_000_000)
+    `runTest(9600, 1'b0, 16'd3, 8'd0, 8'h92, 11.0/9600*10_000_000)
+    SSEL = 0;
+    `runTest(9600, 1'b1, 16'd6, 8'd8, 8'h20, 11.0/9600*10_000_000)
+    `runTest(19200, 1'b1, 16'd3, 8'd4, 8'h02, 11.0/19200*10_000_000)
+    `runTest(38400, 1'b1, 16'd1, 8'd10, 8'h0, 11.0/38400*10_000_000)
+    `runTest(57600, 1'b0, 16'd17, 8'd0, 8'h4A, 11.0/57600*10_000_000)
+    `runTest(115200, 1'b0, 16'd8, 8'd0, 8'hD6, 11.0/115200*10_000_000)
     
-    // #(3.5*CLK_PERIOD);
-
-    // UCABEN = 1;
-
-    // for (i=0; i < 10; i = i + 1) 
-    //     @(negedge BITCLK);
-
-    // #(CLK_PERIOD)
-
-    // UCABEN = 0;
-    // #(1.5*CLK_PERIOD);
-    
-    // // Configure Device. SMCLK, BAUD 19200, N=3, F=4, S=0x02, OSC16 = 1
-    // wUC0BRx = 3;
-    // wUCBRFx = 4;
-    // wUCBRSx = 8'h02;
-    // wUCOS16 = 1;
-
-    // #(CLK_PERIOD);
-
-    // UCABEN = 1;
-
-    // @(negedge BRCLK);
-
-    // start = $time;
-    // for (i=0; i < 10; i = i+1)
-    //     @(negedge BITCLK);
-    
-    // stop = $time;
-    // diff = stop-start;
-
-    // expected = 1/19200.0 * 10; 
-    // actual = 1e-7 * diff;
-    // $display("expected: %f \nactual: %f", expected, actual);
-    // $display("error: %f %", (actual-expected)/actual * 100.0);
-
-    UCABEN = 0;
-    #(1.5*CLK_PERIOD);
-
-    // Configure device. ACLK, 1200 BAUD, OSC16=1, N=1, F=11, S=0x25
-    wUCOS16 = 1;
-    wUC0BRx = 1;
-    wUCBRFx = 11;
-    wUCBRSx = 8'h25;
-
-    #(CLK_PERIOD);
-    UCABEN = 1;
-
-    @(negedge BRCLK);
-    start = ACLKcount;
-
-    for (i=0; i < 10; i = i+1)
-        @(negedge BITCLK);
-
-    stop = ACLKcount;
-    diff = stop-start;
-    actual = diff / 32768.0;
-    expected = 1/1200.0  *10;
-    $display(diff);
-    $display("expected: %f \nactual: %f", expected, actual);
-    $display("error: %f ", (actual-expected)/actual * 100.0);
-
     $finish(0);
 end
+
+task runBRG;
+    input [15:0] BRx;
+    input [3:0] BRF;
+    input [7:0] BRS;
+    input       OS16;
+    output realtime TimeElapse;
+    integer i;
+    realtime Start, Stop;
+    begin
+        UCABEN = 0;
+        @(posedge BRCLK)
+        wUCOS16 = OS16;
+        wUC0BRx = BRx;
+        wUCBRFx = BRF;
+        wUCBRSx = BRS;
+        
+        @(posedge BRCLK) UCABEN = 1;
+
+        Start = $time;
+        // wait 11 bit times
+        for (i=0; i < 11; i = i + 1) @(negedge BITCLK);
+        UCABEN = 0;
+        Stop = $time;
+        TimeElapse = Stop - Start;
+    end
+endtask
 endmodule
 `default_nettype wire
