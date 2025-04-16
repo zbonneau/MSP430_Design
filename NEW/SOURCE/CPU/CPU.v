@@ -151,7 +151,7 @@ module CPU(
         .IW6(CtlBW), 
         .srcInc((AddrM == 2'b10) & (As == INDIRECT_AUTOINCREMENT_MODE)),
         .dstInc((AddrM == 2'b11) & (As == INDIRECT_AUTOINCREMENT_MODE)),
-        .RW(~Mem && Ex && (({IW[15:12], 12'b0} != CMP) || {IW[15:12], 12'b0} != BIT)),
+        .RW(~Mem && Ex && ({IW[15:12], 12'b0} != CMP) && ({IW[15:12], 12'b0} != BIT)),
         .result(result), .ISR(MDBin),
         .PCout(RegPC), .SPout(RegSP), .Rsrc(Rsrc), .Rdst(Rdst),
         .SRcurrent(SRcurrent),
@@ -159,7 +159,7 @@ module CPU(
     );
 
     SystemBusControl BusCtl(
-        .IdxF(IdxF), .IF(IF), .Mem(Mem), .Ex(Ex), .INTACK(INTACK), .IW6(CtlBW),
+        .IdxF(IdxF), .IF(IF), .Mem(Mem), .Ex(Ex && ({IW[15:12], 12'b0} != CMP) && ({IW[15:12], 12'b0} != BIT)), .INTACK(INTACK), .IW6(CtlBW),
         .PCnt(RegPC), .Addr((Blank) ? 16'b0 : OpAddr), .IntAddr(IntAddr), .result(result),
         .MAB(MAB), .MDBout(MDBout), .BW(BW), .MW(MW)
     );

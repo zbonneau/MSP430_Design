@@ -42,8 +42,8 @@ module MSP430(
     wire [5:0] IntAddrLSBs;
 
     `ifdef IVT_eUSCI_A0_USED
-        wire UCA0CLK, eUSCIA0_INT;
-        wor  RxA0, TxA0;
+        wire eUSCIA0_INT;
+        wor  UCA0CLK, RxA0, TxA0;
     `endif 
 
     `ifdef IVT_Timer0A0_USED

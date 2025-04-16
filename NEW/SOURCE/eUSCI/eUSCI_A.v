@@ -138,7 +138,6 @@ module eUSCI_A #(
 
     /* Sequential Logic Assignments */
 
-    // Handle System Bus Access
     always @(posedge MCLK) begin
         if (reset) begin
             // Defined reset condition for MMRs
@@ -150,9 +149,9 @@ module eUSCI_A #(
             rUCAxTXBUF  <= 16'h0000;
             rUCAxIE     <= 16'h0000;
             rUCAxIFG    <= 16'h0002;
-            rUCAxIV     <= 0;
             syncFlags   <= 0;
         end else begin
+            // Handle System Bus Access
             if (MW & BW & wUCSWRST) begin
                 case(MAB - START)
                     UCAnCTLW0_L: rUCAxCTLW0[7:0]  <= MDBwrite[7:0];
@@ -223,6 +222,50 @@ module eUSCI_A #(
                 default: begin end    
                 endcase
             end
+
+            // Handle UCSTATW bit sets
+            if (wUCFE) rUCAxSTATW[UCFE] <= 1;
+            if (wUCOE) rUCAxSTATW[UCOE] <= 1;
+            if (wUCPE) rUCAxSTATW[UCPE] <= 1;
+            if (wUCRXERR) rUCAxSTATW[UCRXERR] <= 1;
+            rUCAxSTATW[UCBUSY] <= RxBusy | TxBusy;
+
+            // Handle UCSTATW bit clears on RxBuf Read
+            if (~wUCSWRST && (MAB - START == UCAnRXBUF) && ~MW) begin
+                rUCAxSTATW[UCFE:UCRXERR] <= 0;
+            end
+
+            // Handle RxBuf writes
+            if (wSetRXIFG) rUCAxRXBUF[7:0] <= wRxData;  
+
+            // Handle RXIFG clears when RxBuf is read
+            if (~reset && ~wUCSWRST && (MAB-START == UCAnRXBUF) && ~MW) begin
+                rUCAxIFG[UCRXIFG] <= 0;
+            end
+
+            // Handle TxBUF autoclear UCTXIFG
+            if ((MAB - START == UCAnTXBUF) && MW && ~reset && ~wUCSWRST) begin
+                rUCAxIFG[UCTXIFG] <= 0;
+            end
+
+            // Handle UCAxIFG flag sets
+            syncFlags <= {wSetRXIFG, wSetTXIFG, wSetSTTIFG, wSetTXCPTIFG};
+            // Look for rising edges
+            if (wSetRXIFG & ~syncFlags[3])    rUCAxIFG[UCRXIFG]     <= 1;
+            if (wSetTXIFG & ~syncFlags[2])    rUCAxIFG[UCTXIFG]     <= 1;
+            if (wSetSTTIFG & ~syncFlags[1])   rUCAxIFG[UCSTTIFG]    <= 1;
+            if (wSetTXCPTIFG & ~syncFlags[0]) rUCAxIFG[UCTXCPTIFG]  <= 1;
+            
+            // Handle UCAxIFG flag clears when IV read
+            if (~wUCSWRST && ((MAB & ~1) - START == UCAnIV) && ~MW) begin
+                case(rUCAxIV)
+                    2: rUCAxIFG[UCRXIFG]    <= 0;
+                    4: rUCAxIFG[UCTXIFG]    <= 0;
+                    6: rUCAxIFG[UCSTTIFG]   <= 0;
+                    8: rUCAxIFG[UCTXCPTIFG] <= 0;
+                    default: begin end
+                endcase
+            end
         end
         // Force reserved bits to 0 in case it was missed above
         rUCAxCTLW0[UCMODEx1:UCSYNC] <= 3'd0; rUCAxCTLW0[UCBRKIE:UCTXBRK] <= 4'd0;
@@ -233,69 +276,7 @@ module eUSCI_A #(
         rUCAxIE[15:4]    <= 0;
         rUCAxIFG[15:4]   <= 0;
     end
-
-    // Handle UCSTATW bit sets
-    always @(posedge MCLK) begin
-        if (~reset) begin
-            if (wUCFE) rUCAxSTATW[UCFE] <= 1;
-            if (wUCOE) rUCAxSTATW[UCOE] <= 1;
-            if (wUCPE) rUCAxSTATW[UCPE] <= 1;
-            if (wUCRXERR) rUCAxSTATW[UCRXERR] <= 1;
-            rUCAxSTATW[UCBUSY] <= RxBusy | TxBusy;
-        end
-    end
-
-    // Handle UCSTATW bit clears on RxBuf Read
-    always @(posedge MCLK) begin
-        if (~reset && ~wUCSWRST && (MAB - START == UCAnRXBUF) && ~MW) begin
-            rUCAxSTATW[UCFE:UCRXERR] <= 0;
-        end
-    end
-
-    // Handle RxBuf writes
-    always @(posedge MCLK) begin
-        if (wSetRXIFG) rUCAxRXBUF[7:0] <= wRxData;
-    end
-
-    // Handle RXIFG clears when RxBuf is read
-    always @(posedge MCLK) begin
-        if (~reset && ~wUCSWRST && (MAB-START == UCAnRXBUF) && ~MW) begin
-            rUCAxIFG[UCRXIFG] <= 0;
-        end
-    end
-
-    // Handle TxBUF autoclear UCTXIFG
-    always @(posedge MCLK) begin
-        if ((MAB - START == UCAnTXBUF) && MW && ~reset && ~wUCSWRST) begin
-            rUCAxIFG[UCTXIFG] <= 0;
-        end
-    end
-
-    // Handle UCAxIFG flag sets
-    always @(posedge MCLK) begin
-        if (~reset) begin
-            syncFlags <= {wSetRXIFG, wSetTXIFG, wSetSTTIFG, wSetTXCPTIFG};
-            // Look for rising edges
-            if (wSetRXIFG & ~syncFlags[3])    rUCAxIFG[UCRXIFG]     <= 1;
-            if (wSetTXIFG & ~syncFlags[2])    rUCAxIFG[UCTXIFG]     <= 1;
-            if (wSetSTTIFG & ~syncFlags[1])   rUCAxIFG[UCSTTIFG]    <= 1;
-            if (wSetTXCPTIFG & ~syncFlags[0]) rUCAxIFG[UCTXCPTIFG]  <= 1;
-        end
-    end
-
-    // Handle UCAxIFG flag clears when IV read
-    always @(posedge MCLK) begin
-        if (~reset && ~wUCSWRST && ((MAB & ~1) - START == UCAnIV) && ~MW) begin
-            case(rUCAxIV)
-                2: rUCAxIFG[UCRXIFG]    <= 0;
-                4: rUCAxIFG[UCTXIFG]    <= 0;
-                6: rUCAxIFG[UCSTTIFG]   <= 0;
-                8: rUCAxIFG[UCTXCPTIFG] <= 0;
-                default: begin end
-            endcase
-        end
-    end
-
+    
     /* Submodule Instantiations */
     BaudRateGenerator RxBRG(
         .BRCLK(BRCLK), .UCABEN(RxBEN & ~reset & ~wUCSWRST),
