@@ -23,8 +23,8 @@
 `timescale 100ns/100ns
 
 module InterruptUnit(
-    input MCLK, RSTn, INTACK, 
-    output reset, NMI, INT,
+    input MCLK, RSTn, INTACK, TEST, 
+    output reset, NMI, INT, BSLenter,
 
     // Conditionally Compiled netlist elements
     `ifdef IVT_SNMI_USED
@@ -192,10 +192,11 @@ module InterruptUnit(
         .DELAYBITS(`BOR_DELAYBITS),
         .DELAY(`BOR_DELAY)
         ) resetModule(
-        .MCLK(MCLK), .RSTn(RSTn),
+        .MCLK(MCLK), .RSTn(RSTn), .TEST(TEST),
         .INTACKin(INTACK), .IntAddrthru(IntAddr_from_SNMI),
         .req(REQ_from_RESET), .INTACKthru(INTACK_from_RESET),
-        .IntAddrout(IntAddr_from_RESET)
+        .IntAddrout(IntAddr_from_RESET),
+        .BSLenter(BSLenter)
     );
 
     /* Conditional compilation starts here. If a module is defined as being 

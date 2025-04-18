@@ -24,7 +24,7 @@
 `timescale 100ns/100ns
 
 module CPU(
-    input MCLK, reset,
+    input MCLK, reset, BSLenter,
     input NMI, INT,
     input [5:0] IntAddrLSBs,
     input [15:0] MDBin,
@@ -38,6 +38,7 @@ module CPU(
     /* Internal signal definitions */
     reg [15:0] InstructionReg;
     reg [CAR_BITS-1:0] CAR;
+    reg BlankDevice;
 
     /* From Interrupt Unit */
     wire INTREQ;
@@ -78,7 +79,7 @@ module CPU(
     /* Blank Detect */
     wire Blank;
 
-    initial begin {InstructionReg, CAR} <= 0; end
+    initial begin {InstructionReg, CAR, BlankDevice} <= 0; end
 
     /* Continuous Logic Assignments */
     assign INTREQ = NMI | INT & GIE;
@@ -92,6 +93,13 @@ module CPU(
                     CAR == CAR_JMP0);
 
     /* Sequential Logic Assignments */
+    always @(posedge MCLK) begin
+        if (reset && ~BSLenter && MDBin == 16'hFFFF)
+            BlankDevice <= 1;
+        else if (reset)
+            BlankDevice <= 0;
+    end
+
     always @(posedge MCLK) begin
         CAR <= CARnext;
         if (reset) begin
@@ -108,7 +116,7 @@ module CPU(
     );
 
     CarLatchControl latchControl(
-        .rst(reset), .INTREQ(INTREQ), .IF(IF), .Br(Br),
+        .rst(reset), .blank(BlankDevice), .INTREQ(INTREQ), .IF(IF), .Br(Br),
         .CARnew(CARnew), .CARold(CAR), .CARnext(CARnext)
     );
 
@@ -152,7 +160,7 @@ module CPU(
         .srcInc((AddrM == 2'b10) & (As == INDIRECT_AUTOINCREMENT_MODE)),
         .dstInc((AddrM == 2'b11) & (As == INDIRECT_AUTOINCREMENT_MODE)),
         .RW(~Mem && Ex && ({IW[15:12], 12'b0} != CMP) && ({IW[15:12], 12'b0} != BIT)),
-        .result(result), .ISR(MDBin),
+        .result(result), .ISR(BSLenter ? BSL_START : MDBin),
         .PCout(RegPC), .SPout(RegSP), .Rsrc(Rsrc), .Rdst(Rdst),
         .SRcurrent(SRcurrent),
         .GIE(GIE)

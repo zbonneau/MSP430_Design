@@ -9,7 +9,7 @@
 `timescale 100ns/100ns
 
 module tb_CPU;
-reg MCLK, reset;
+reg MCLK, reset, BSLenter;
 reg NMI, INT;
 reg [5:0] IntAddrLSBs;
 
@@ -28,7 +28,7 @@ wire [15:0] Reg0, Reg1, Reg2, Reg3, Reg4, Reg5, Reg6, Reg7,
 `include "NEW\\PARAMS.v"
 
 initial begin 
-    {MCLK, reset} = 0; 
+    {MCLK, reset, BSLenter} = 0; 
     NMI = 0;
     INT = 0;
     IntAddrLSBs = 63; // maps to FFFE, reset vector
@@ -91,7 +91,7 @@ assign MDBin = (MAB >= 16'h4400) ?
 
 CPU uut
 (
-    .MCLK(MCLK), .reset(reset), 
+    .MCLK(MCLK), .reset(reset), .BSLenter(BSLenter),
     .NMI(NMI), .INT(INT), .IntAddrLSBs(IntAddrLSBs), 
     .MDBin(MDBin), .MAB(MAB), .MDBout(MDBout), 
     .MW(MW), .BW(BW), .INTACK(INTACK)
@@ -130,6 +130,20 @@ initial begin
     /* Program has entered reset vector at this point */
     while (uut.RFile.Registers[PC] != exit)
         #CLK_PERIOD;
+    #(3*CLK_PERIOD);
+
+    // Trigger BSL entrance
+    reset = 1; #(2*CLK_PERIOD); BSLenter = 1; #(CLK_PERIOD);
+    reset = 0; #(3*CLK_PERIOD); BSLenter = 0;
+    #(3*CLK_PERIOD);
+
+    // Trigger Blank Device 
+    {memory[16'hFFFF], memory[16'hFFFE]} = 16'hFFFF;
+    `PULSE_DELAY(reset, 3*CLK_PERIOD); #(3*CLK_PERIOD);
+
+    // Trigger BSL on blank device
+    reset = 1; #(2*CLK_PERIOD); BSLenter = 1; #(CLK_PERIOD);
+    reset = 0; #(3*CLK_PERIOD); BSLenter = 0;
     #(3*CLK_PERIOD);
     $finish(0);
 end

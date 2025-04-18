@@ -20,7 +20,7 @@
 `timescale 100ns/100ns
 
 module CarLatchControl(
-    input rst, INTREQ, IF, Br,
+    input rst, blank, INTREQ, IF, Br,
     input [CAR_BITS-1:0]  CARnew, CARold,
     output [CAR_BITS-1:0] CARnext
  );
@@ -28,9 +28,10 @@ module CarLatchControl(
     `include "NEW\\PARAMS.v" // global parameter defines
 
     /* Continuous Logic Assignments */
-    assign CARnext = (rst) ? CAR_INT4 : // Interrupt sequence w/out PUSHes
-                     (Br)  ? CAR_0    : // PC WB occured @ end of uSeq 
-             (INTREQ & IF) ? CAR_INT0 : // Interrupt sequence w/ PUSHes
-                     (IF)  ? CARnew   : // PC valid & CAR Decoder produces next uSeq
-                             CARold +1; // No special case, default behavior
+    assign CARnext = (rst) ? CAR_INT4  : // Interrupt sequence w/out PUSHes
+                   (blank) ? CAR_BLANK : // Blank Device Detected.
+                     (Br)  ? CAR_0     : // PC WB occured @ end of uSeq 
+             (INTREQ & IF) ? CAR_INT0  : // Interrupt sequence w/ PUSHes
+                     (IF)  ? CARnew    : // PC valid & CAR Decoder produces next uSeq
+                             CARold +1 ; // No special case, default behavior
 endmodule

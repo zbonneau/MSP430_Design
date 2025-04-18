@@ -9,22 +9,22 @@
 `timescale 100ns/100ns
 
 module tb_BOR_POR_PUC;
-reg clk, rst;
+reg clk, rst, TEST;
 reg INTACKin;
 reg [5:0] IntAddrthru;
 
-wire req, INTACKthru;
+wire req, INTACKthru, BSLenter;
 wire [5:0] IntAddrout;
 
 `include "NEW/PARAMS.v"
 
-initial begin {clk, rst, INTACKin, IntAddrthru} = 0; end
+initial begin {clk, rst, TEST, INTACKin, IntAddrthru} = 0; end
 
 BOR_POR_PUC uut 
 (
-.MCLK(clk), .RSTn(rst), .INTACKin(INTACKin), 
+.MCLK(clk), .RSTn(rst), .INTACKin(INTACKin), .TEST(TEST),
 .IntAddrthru(IntAddrthru), 
-.req(req), .INTACKthru(INTACKthru), 
+.req(req), .INTACKthru(INTACKthru), .BSLenter(BSLenter),
 .IntAddrout(IntAddrout)
 );
 
@@ -50,7 +50,7 @@ initial begin
     // Test INTACK Feedthrough
     `PULSE(INTACKin)
 
-    // Trigger RSTn
+    // Trigger RSTn with regular RESET entrance
     rst = 0; #(3*CLK_PERIOD);
     rst = 1;
 
@@ -67,6 +67,30 @@ initial begin
     rst = 1;
 
     while (req) #CLK_PERIOD;
+
+    // trigger BSL entrance
+    rst = 0; #(4*CLK_PERIOD);
+    `PULSE(TEST) #CLK_PERIOD;
+    TEST = 1; #CLK_PERIOD;
+    rst = 1; #CLK_PERIOD;
+    TEST = 0;
+
+    #(12*CLK_PERIOD);
+
+    // fail BSL entrance with only one TEST edge
+    rst = 0; #(4*CLK_PERIOD);
+    `PULSE(TEST) #CLK_PERIOD;
+    rst = 1; 
+    #(12*CLK_PERIOD);
+
+    // bounce rst and then trigger BSL
+    `PULSEn(rst)
+    #(2*CLK_PERIOD);
+    `PULSE(TEST)
+    #CLK_PERIOD;
+    `PULSE_DELAY(TEST, 3*CLK_PERIOD)
+
+    #(12*CLK_PERIOD);
 
     $finish(0);
 end

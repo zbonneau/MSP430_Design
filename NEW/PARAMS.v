@@ -61,7 +61,8 @@
                   CAR_INT2      = 56,
                   CAR_INT3      = 57,
                   CAR_INT4      = 58,
-                  CAR_JMP0      = 59;
+                  CAR_JMP0      = 59,
+                  CAR_BLANK     = 60;
 
 
     // Defines for Instruction Types
@@ -166,6 +167,7 @@
 
     // Defines for Simulated Memory Map
     localparam 
+        BSL_START   = 16'h1000,
         RAM_START   = 16'h1C00,
         RAM_LEN     = 16'h0800,
         FRAM_START  = 16'h4400,

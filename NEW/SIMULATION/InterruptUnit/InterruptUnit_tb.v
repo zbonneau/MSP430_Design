@@ -10,10 +10,10 @@
 `timescale 100ns/100ns
 
 module tb_InterruptUnit;
-reg clk, rst_n, INTACK, Vacant;
+reg clk, rst_n, INTACK, Vacant, TEST;
 reg Timer0A0_int, Timer0A1_int, PORT1_int, PORT2_int;
 
-wire reset, NMI, INT, VMA_clr, RST_NMI_clr;
+wire reset, NMI, INT, VMA_clr, RST_NMI_clr, BSLenter;
 wire [5:0] IntAddrLSBs;
 wire Timer0A0_clr, Timer0A1_clr, PORT1_clr, PORT2_clr;
 
@@ -24,10 +24,10 @@ end
 
 InterruptUnit uut
 (
-.MCLK(clk), .RSTn(rst_n), .INTACK(INTACK), .Vacant(Vacant),
+.MCLK(clk), .RSTn(rst_n), .INTACK(INTACK), .TEST(TEST),// .Vacant(Vacant), 
 .reset(reset), .NMI(NMI), .INT(INT), 
-.VMA_clr(VMA_clr), .RST_NMI_clr(RST_NMI_clr), 
-.IntAddrLSBs(IntAddrLSBs),
+// .VMA_clr(VMA_clr), .RST_NMI_clr(RST_NMI_clr), 
+.IntAddrLSBs(IntAddrLSBs), .BSLenter(BSLenter),
 
 .Module_52_int(Timer0A0_int), .Module_52_clr(Timer0A0_clr),
 .Module_51_int(Timer0A1_int), .Module_51_clr(Timer0A1_clr),
