@@ -50,25 +50,36 @@ end
 initial begin
     // Default clock division on reset
     // TACLK, no division
-    #(10*TACLK_PERIOD);
+    #(3*TACLK_PERIOD);
 
     // ACLK, no division
     TASSEL = TASSEL__ACLK;
-    #(10*ACLK_PERIOD);
+    #(3*ACLK_PERIOD);
 
     // SMCLK, no division
     TASSEL = TASSEL__SMCLK;
-    #(10*SMCLK_PERIOD);
+    #(3*SMCLK_PERIOD);
 
     // INCLK, no division
     TASSEL = TASSEL__INCLK;
-    #(10*INCLK_PERIOD);
+    #(3*INCLK_PERIOD);
 
     // SMCLK, sweep through division
     TASSEL = TASSEL__SMCLK;
+
+    // ID = 1;
+    // IDEX = 2;
+    // `PULSE(wTACLR)
+    // #(3*SMCLK_PERIOD);
+    // uut.divCount = 1;
+
+    // #(20*SMCLK_PERIOD);
+    @(negedge SMCLK);
     
     for (i=0; i < 1<<5; i = i + 1) begin
+        @(negedge SMCLK);
         {ID, IDEX} = i; `PULSE(wTACLR)
+        @(negedge TimerClock);
         @(negedge TimerClock);
         // #(2*SMCLK_PERIOD);
         // #(64*SMCLK_PERIOD);

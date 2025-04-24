@@ -84,7 +84,7 @@ module CPU(
     /* Continuous Logic Assignments */
     assign INTREQ = NMI | INT & GIE;
     assign IntAddr = {9'b1111_1111_1, IntAddrLSBs, 1'b0};
-    assign Br = INTACK | (~Mem & Ex & (dstA == PC));
+    assign Br = ~Mem & Ex & (dstA == PC);
 
     assign Blank = (CAR == CAR_PUSH_REG0 || CAR == CAR_CALL_REG0 ||
                     CAR == CAR_CALL_IND2 || CAR == CAR_CALL_IDX3 ||
@@ -116,7 +116,7 @@ module CPU(
     );
 
     CarLatchControl latchControl(
-        .rst(reset), .blank(BlankDevice), .INTREQ(INTREQ), .IF(IF), .Br(Br),
+        .rst(reset), .blank(BlankDevice), .INTREQ(INTREQ), .IF(IF), .Br(Br), .INTACK(INTACK),
         .CARnew(CARnew), .CARold(CAR), .CARnext(CARnext)
     );
 
@@ -152,7 +152,7 @@ module CPU(
 
     RegisterFile RFile(
         .clk(MCLK), .rst(reset),
-        .IdxF(IdxF), .IF(IF),
+        .IdxF(IdxF), .IF(IF&~INTREQ),
         .SPF(AddrM == 2'b01),
         .INTACK(INTACK), .Ex(Ex),
         .SRnew(SRnew), .srcA(srcA), .dstA(dstA),
