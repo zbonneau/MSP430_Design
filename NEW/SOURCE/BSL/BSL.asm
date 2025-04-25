@@ -32,6 +32,7 @@ StopWDT     mov.w   #WDTPW|WDTHOLD,&WDTCTL  ; Stop watchdog timer
     mov.w       #0x0080,    UCA0CTLW0
 
     mov.b       #0x03,      P2SEL0
+    clr.b       &PM5CTL0
 
 ; while (1)
 ;   read for ';'
@@ -53,24 +54,28 @@ StopWDT     mov.w   #WDTPW|WDTHOLD,&WDTCTL  ; Stop watchdog timer
 ;   Copy Data
 ;   Send ACK
 ;
-.equ    BUFSTART  = 0x1c00
-.equ    LEN_OFS   = 0
-.equ    ADDRH_OFS = 1
-.equ    ADDRL_OFS = 2
-.equ    REC_OFS   = 3
-.equ    DATA_OFS  = 4
+BUFSTART        .equ 0x1c01
+LEN_OFS         .equ 0
+ADDRH_OFS       .equ 1
+ADDRL_OFS       .equ 2
+REC_OFS         .equ 3
+DATA_OFS        .equ 4
 
-.equ    buffer  = R4 
-.equ    CRC     = R5
-.equ    pADDR    = R6
-.equ    LEN     = R7
-.equ    pDATA   = R8
+buffer          .equ R4 
+CRC             .equ R5
+pADDR           .equ R6
+LEN             .equ R7
+pDATA           .equ R8
 
-.equ    RECORD_DATA = 0
-.equ    RECORD_EOF  = 1
+COLON           .equ 0x3A
+CR              .equ 0x0D
+LF              .equ 0x0A
 
-.equ    ACK  = 0x10
-.equ    NACK = 0x11
+RECORD_DATA     .equ 0
+RECORD_EOF      .equ 1
+
+ACK             .equ 0x10
+NACK            .equ 0x11
 
 LOOP:
     clr     buffer
@@ -78,28 +83,28 @@ LOOP:
 
 WAIT:
     call    #UART_read
-    cmp     #(0x3A),    R15
+    cmp     #COLON,    R15
     jne     WAIT
 
 readRecord:
     call    #UART_read              ; 16-22
 
-    cmp     #('\r'),    R15         ; 2
+    cmp     #CR,    R15         ; 2
     jeq     endRecord               ; 2  
-    cmp     #('\n'),    R15         ; 2
+    cmp     #LF,    R15         ; 2
     jeq     endRecord               ; 2
 
     sub     #'0',       R15         ; 1
     cmp     #10,        R15         ; 2
     jl      readRecord2             ; 2
     sub     #7,         R15         ; 2
+readRecord2:
     mov     R15,        R14         ; 1
     rla     R14                     ; 1
     rla     R14                     ; 1
     rla     R14                     ; 1
     rla     R14                     ; 1 - total = 36-42
 
-readRecord2:
     call    #UART_read              ; 16-22
 
     sub     #'0',       R15         ; 1
@@ -122,12 +127,12 @@ endRecord:
 
     ; if CRC Failed, send NACK, repeat
     mov.b   #NACK,      UCA0TXBUF
-    jmp     Loop
+    jmp     LOOP
 
 CRC_Passed:
 
 ; Check record type
-    cmp.b   #RECORD_EOF,    BUFSTART+REC_OFS
+    cmp.b   #RECORD_EOF,    &BUFSTART+REC_OFS
     jne     BSL_DATA
 
     ; EOF detected, send ACK
@@ -137,12 +142,12 @@ CRC_Passed:
 BSL_DATA:
 
 ; Extract Address from buffer
-    mov.b   BUFSTART+ADDRH_OFS,     pADDR
-    swpb    ADDR
-    mov.b   BUFSTART+ADDRL_OFS,     pADDR
+    mov.w   &BUFSTART+ADDRH_OFS,     pADDR
+    swpb    pADDR
+    ;bis.b   &BUFSTART+ADDRL_OFS,     pADDR
 
 ; Copy Data buffer to Memory @ ADDR
-    mov.b   BUFSTART+LEN_OFS,       LEN
+    mov.b   &BUFSTART+LEN_OFS,       LEN
     mov     #BUFSTART+DATA_OFS,     pDATA
 
 COPY:
@@ -159,7 +164,7 @@ COPY:
 UART_read:                          ; Call # = 4
     bit.w   #UCRXIFG,   UCA0IFG     ; 4
     jz      UART_read               ; 2
-    mov.b`  UCA0RXBUF,  R15         ; 3
+    mov.b   UCA0RXBUF,  R15         ; 3
     mov.b   UCA0RXBUF,  UCA0TXBUF           ;DEBUG
     ret                             ; 3
     nop                             ; total = 16 - 22
@@ -175,3 +180,4 @@ UART_read:                          ; Call # = 4
 ;-------------------------------------------------------------------------------
             .sect   ".reset"                ; MSP430 RESET Vector
             .short  RESET
+
