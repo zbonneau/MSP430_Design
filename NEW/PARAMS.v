@@ -157,23 +157,25 @@
         IMMEDIATE_MODE = 2'b11;
 
     // Defines for Memory Map
-    // localparam 
-    //     RAM_START   = 16'h1C00,
-    //     RAM_LEN     = 16'h0800,
-    //     FRAM_START  = 16'h4400,
-    //     FRAM_LEN    = 16'hBB80,
-    //     IVT_START   = 16'hFF80,
-    //     IVT_LEN     = 16'h0080;
-
-    // Defines for Simulated Memory Map
     localparam 
         BSL_START   = 16'h1000,
+        BSL_LEN     = 16'h0100,
         RAM_START   = 16'h1C00,
         RAM_LEN     = 16'h0800,
         FRAM_START  = 16'h4400,
-        FRAM_LEN    = 16'h0100, 
+        FRAM_LEN    = 16'hBB80,
         IVT_START   = 16'hFF80,
         IVT_LEN     = 16'h0080;
+
+    // Defines for Simulated Memory Map
+    // localparam 
+    //     BSL_START   = 16'h1000,
+    //     RAM_START   = 16'h1C00,
+    //     RAM_LEN     = 16'h0800,
+    //     FRAM_START  = 16'h4400,
+    //     FRAM_LEN    = 16'h0100, 
+    //     IVT_START   = 16'hFF80,
+    //     IVT_LEN     = 16'h0080;
 
     // Defines for peripheral map
     localparam 
