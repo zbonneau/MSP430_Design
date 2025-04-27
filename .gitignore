@@ -4,3 +4,5 @@
 */RemoteSystemsTempFiles/*
 *CCS_Workspace/*
 build/
+*.code-workspace
+*.json
