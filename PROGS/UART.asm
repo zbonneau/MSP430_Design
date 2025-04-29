@@ -20,24 +20,24 @@
 ;-------------------------------
 
 ;-------------------------------------------------------------------------------
-    ; echo on UART A0 @ 9600 BAUD
+    ; echo on UART A1 @ 9600 BAUD
 
 RESET       mov.w   #__STACK_END,SP         ; Initialize stackpointer
 StopWDT     mov.w   #WDTPW|WDTHOLD,&WDTCTL  ; Stop watchdog timer
 
-    ; Configure TX on P2.0 as well for oscope view
-            mov.b   #1, P2SEL0
+    ; Enable Application Backchannel on P3.4, P3.5
+            mov.b   #0x30,      P3SEL0
 
-    ; Configure eUSCIA0 for uart 9600 BAUD
-            mov.w   #6,         UCA0BRW
-            mov.w   #0x2081,    UCA0MCTLW
-            mov.w   #0x0080,    UCA0CTLW0
+    ; Configure eUSCIA1 for uart 9600 BAUD
+            mov.w   #6,         UCA1BRW
+            mov.w   #0x2081,    UCA1MCTLW
+            mov.w   #0x0080,    UCA1CTLW0
 
 Loop:
             ; Read Rx, Send on Tx
-            bit.w   #UCRXIFG,   UCA0IFG
+            bit.w   #UCRXIFG,   UCA1IFG
             jz      Loop
-            mov.b   UCA0RXBUF,  UCA0TXBUF
+            mov.b   UCA1RXBUF,  UCA1TXBUF
             jmp Loop
             nop
 
