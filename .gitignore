@@ -6,3 +6,5 @@
 build/
 *.code-workspace
 *.json
+venv/
+__pycache__/
