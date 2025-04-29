@@ -8,3 +8,5 @@ build/
 *.json
 venv/
 __pycache__/
+*.spec
+*.log

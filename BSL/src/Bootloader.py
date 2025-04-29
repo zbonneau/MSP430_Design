@@ -64,7 +64,7 @@ class HexParser:
         return len(self.records)
 
 class SerialHandler:
-    def __init__(self, port:str, baud_rate:int = 115200, timeout:float = 1, logger:logging.Logger = None):
+    def __init__(self, port:str, logger:logging.Logger, baud_rate:int = 115200, timeout:float = 1):
         self.port:str = port
         self.baud_rate:int = baud_rate
         self.timeout = timeout
@@ -106,8 +106,8 @@ class SerialHandler:
             raise serial.SerialException("Serial Port is not open.")
 
 class Bootloader:
-    def __init__(self):
-        self.args = None
+    def __init__(self, args:argparse.Namespace|None = None):
+        self.args = args
         self.hex_parser:HexParser = None
         self.serial_handler:SerialHandler = None
         self.logger = logging.getLogger(__name__)
@@ -127,7 +127,8 @@ class Bootloader:
         self.logger.addHandler(console_handler)
 
         # parse command line args
-        self.parse_arguments()
+        if self.args is None:
+            self.parse_arguments()
 
         # If Verbose is enabled or logging a file
         if self.args.verbose and not self.args.log_file:
@@ -137,7 +138,7 @@ class Bootloader:
         if self.args.log_file:
             file_handler = logging.FileHandler(self.args.log_file)
             file_handler.setLevel(logging.DEBUG)
-            file_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(messages)s')
+            file_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
             file_handler.setFormatter(file_formatter)
             self.logger.addHandler(file_handler)
     
@@ -150,10 +151,11 @@ class Bootloader:
         parser.add_argument("file", help="Path to intel HEX file")
         self.args = parser.parse_args()
 
-    def run(self)->None:
+    def run(self)->int:
         """Run the Bootloader Process"""
         start_time = time.perf_counter()
         self.logger.info("Starting bootloader process...")
+        retVal:int = 0
 
         # Initialize the HexParser and SerialHandler
         try:
@@ -161,7 +163,7 @@ class Bootloader:
         except ValueError:
             self.logger.error(f"Error durign Hex Parsing: {e}")
             self.logger.info("Bootloader execution killed due to earlier errors.")
-            return
+            return 1
         self.serial_handler = SerialHandler(self.args.port, logger=self.logger)
 
         try:
@@ -199,11 +201,13 @@ class Bootloader:
         except serial.SerialException as e:
             self.logger.error(f"Serial Error encountered during script execution: {e}")
             self.logger.info("Bootloader execution killed due to earlier errors.")
+            retVal = 1
            
         finally:
             # Close serialHandle
             self.logger.debug("Closing serial port")
             self.serial_handler.close_port()
+            return retVal
 
     def log_progress(self, message:str, level:int = logging.INFO)->None:
         """Log a progress message"""
@@ -222,7 +226,8 @@ class Bootloader:
 
     def transaction(self, record:str)->RESPONSE:
         """Transaction. Send record, receive response, parse response"""
-        valid_responses = [RESPONSE.ACK.value, RESPONSE.NO_TARGET.value, RESPONSE.TRIPLE_NACK.value, RESPONSE.NONE.value]
+        valid_responses = [RESPONSE.ACK.value, RESPONSE.NO_TARGET.value, 
+                           RESPONSE.TRIPLE_NACK.value, RESPONSE.NONE.value]
         try:
             for n in range(3):
                 self.logger.debug(f"Transaction attempt {n+1}/3")
@@ -249,4 +254,5 @@ class Bootloader:
 
 if __name__ == "__main__":
     bootloader = Bootloader()
-    bootloader.run()
+    code = bootloader.run()
+    print(f"Bootloader process completed with exit code {code}.")
