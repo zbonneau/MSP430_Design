@@ -40,6 +40,12 @@ The `Bootloader` tool allows you to program an MSP430FR6989 FPGA by sending Inte
 1. Find the MSP-EXP430 USB Application port (example shown from [MSP430FR6989 LaunchPad Development Kit (MSP-EXP430FR6989) User's Guide (Rev. A)](https://www.ti.com/lit/ug/slau627a/slau627a.pdf?ts=1692590917185&ref_url=https%253A%252F%252Fwww.google.com%252F))![alt text](image-1.png)
 2. Run the `Bootloader.exe` from the command line with the required arguments.
 
+### Generating Hex Files Using Code Composer Studio (v12.8.1)
+To generate intel hex files from Code Composer Studio, configure your project with the following:
+1. Right Click project directory, select properties![alt text](image-2.png)
+2. Under Build->MSP430 Hex Utilit, Enable MSP430 Hex Utility ![alt text](image-3.png)
+3. Under Build->MSP430 Hex Utility->Output Format Options, set the format to "Intel hex (--intel, -i)![alt text](image-4.png)
+4. The hex file is located at *projectname*->Debug->*projectname*.hex![alt text](image-5.png)
 ### Command Syntax
 ```
 Bootloader.exe -p <port> [-v] [-l <log_file>] <hex_file>
