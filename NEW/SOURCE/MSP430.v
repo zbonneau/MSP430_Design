@@ -45,7 +45,7 @@ module MSP430(
             .I(0), .T(1), .O(RSTpin), .IO(gpio[GPIO_RSTn])
         );
 
-        PULLUP PULLUP_inst_test(.O(gpio[GPIO_TEST]));
+        PULLDOWN PULLDOWN_inst_test(.O(gpio[GPIO_TEST]));
         IOBUF #(.DRIVE(12), .IOSTANDARD("LVCMOS33")) BUF_BSLpin(
             .I(0), .T(1), .O(TESTpin), .IO(gpio[GPIO_TEST])
         );
