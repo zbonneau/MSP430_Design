@@ -1,0 +1,8 @@
+# BSL430 FPGA Changelog | 04-30-2025 #
+
+# --------------------------------- v1.0.1 ---------------------------------- #
+Minor Revision to the MSP430 FPGA binary
+ - UART A1 Connected to cmod uart application channel
+
+Bug Fix:
+ - BSL script now catches File Not Found Error for invalid .hex path.

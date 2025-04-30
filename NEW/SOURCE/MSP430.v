@@ -74,9 +74,14 @@ module MSP430(
         `ifdef IVT_PORT3_USED
             // Application Back Channel = P3.4, P3.5
             assign uart_rxd_out = ({pbsel1[4], pbsel0[4]} == 2'b01) ? TxA1 : 1; 
-            assign RxA0 = ({pbsel1[5], pbsel0[5]} == 2'b01) ? uart_txd_in : 0;
+            assign RxA1 = ({pbsel1[5], pbsel0[5]} == 2'b01) ? uart_txd_in : 0;
+            `ifndef __ICARUS__
+                PULLDOWN PULLDOWN_inst_p3_5(.O(gpio[GPIO3_5])); // Pulldown  P3.4 for UART backchannel
+            `else
+                assign (strong1, pull0) gpio[3_5] = 0;
+            `endif
         `else
-            assign uart_rxd_out = 1;
+            assign uart_rxd_out = 1'b1;
         `endif
     `endif
 

@@ -50,7 +50,10 @@ class HexParser:
                     byteCount = record[1:3]
                     self.byteCount += int(byteCount, base=16)
         except ValueError as e:
-            self.logger.error("Value Error Encountered during hex parse: {e}")
+            self.logger.error(f"Value Error Encountered during hex parse: {e}")
+            raise
+        except FileNotFoundError as e:
+            self.logger.error(f"File Error Encountered during hex parse: {e}")
             raise
     
     def get_records(self)->list[str]:
@@ -160,8 +163,8 @@ class Bootloader:
         # Initialize the HexParser and SerialHandler
         try:
             self.hex_parser = HexParser(self.args.file, self.logger)
-        except ValueError:
-            self.logger.error(f"Error durign Hex Parsing: {e}")
+        except Exception as e:
+            # self.logger.error(f"Error durign Hex Parsing: {e}")
             self.logger.info("Bootloader execution killed due to earlier errors.")
             return 1
         self.serial_handler = SerialHandler(self.args.port, logger=self.logger)
