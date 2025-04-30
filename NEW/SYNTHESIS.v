@@ -20,7 +20,7 @@
 // `define IVT_ADC12_B_USED    
 `define IVT_Timer0A0_USED   
 `define IVT_Timer0A1_USED   
-// `define IVT_eUSCI_A1_USED   
+`define IVT_eUSCI_A1_USED   
 // `define IVT_eUSCI_B1_USED   
 // `define IVT_DMA_USED        
 `define IVT_Timer1A0_USED   

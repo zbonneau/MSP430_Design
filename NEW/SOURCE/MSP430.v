@@ -21,18 +21,39 @@ module MSP430(
     input SysClock,
     inout [43:0] gpio,
     // inout [7:0] pmod,
-    // input btn1, btn2,
-    input RST,
+    input RSTbtn, TESTbtn, 
     output led1, led2,
-    output [2:0] RGB
+    output [2:0] RGB,
+    output uart_rxd_out,
+    input  uart_txd_in
  );
  
     `include "NEW/PARAMS.v" // global parameter defines
 
     /* Internal signal definitions */
-    wire MCLK, SMCLK, ACLK, reset, RSTn;
-    assign RSTn = ~RST;
-    assign led2 = RST;
+    wire MCLK, SMCLK, ACLK, reset, RSTn, RSTpin, TESTpin, TEST, BSLenter;
+    reg rBSL_LED = 0;
+    assign RSTn = ~RSTbtn & RSTpin; 
+    assign TEST = TESTbtn | TESTpin;
+    assign led1 = rBSL_LED;
+    assign led2 = reset;
+    assign RGB = ~pain[7:5];
+
+    `ifndef __ICARUS__
+        PULLUP PULLUP_inst_rst(.O(gpio[GPIO_RSTn]));
+        IOBUF #(.DRIVE(12), .IOSTANDARD("LVCMOS33")) BUF_RSTpin(
+            .I(0), .T(1), .O(RSTpin), .IO(gpio[GPIO_RSTn])
+        );
+
+        PULLDOWN PULLDOWN_inst_test(.O(gpio[GPIO_TEST]));
+        IOBUF #(.DRIVE(12), .IOSTANDARD("LVCMOS33")) BUF_BSLpin(
+            .I(0), .T(1), .O(TESTpin), .IO(gpio[GPIO_TEST])
+        );
+    `else
+        assign (pull1, strong0) RSTpin = gpio[GPIO_RSTn];
+        assign (strong1, pull0) TESTpin = gpio[GPIO_TEST];
+    `endif
+
 
     wire [15:0] MAB, MDBwrite; // MDBread;
     wor  [15:0] MDBread;
@@ -45,6 +66,19 @@ module MSP430(
         wire eUSCIA0_INT;
         wor  UCA0CLK, RxA0, TxA0;
     `endif 
+
+    `ifdef IVT_eUSCI_A1_USED
+        wire eUSCIA1_INT;
+        wor  UCA1CLK, RxA1, TxA1;
+
+        `ifdef IVT_PORT3_USED
+            // Application Back Channel = P3.4, P3.5
+            assign uart_rxd_out = ({pbsel1[4], pbsel0[4]} == 2'b01) ? TxA1 : 1; 
+            assign RxA0 = ({pbsel1[5], pbsel0[5]} == 2'b01) ? uart_txd_in : 0;
+        `else
+            assign uart_rxd_out = 1;
+        `endif
+    `endif
 
     `ifdef IVT_Timer0A0_USED
         wor  TA0CLK;
@@ -75,16 +109,13 @@ module MSP430(
         wire P3INT, P4INT;
     `endif 
     
-    // initial begin {} = 0; end
-
-    /* Continuous Logic Assignments */
-    // assign gpio[GPIO1_1] = btn1;
-    // assign gpio[GPIO1_2] = btn2;
-    assign led1 = pain[0];
-    //  assign led2 = pbin[10];
-    assign RGB = ~pain[7:5];
-    
     /* Sequential Logic Assignments */
+    always @(posedge reset or posedge BSLenter) begin
+        if (BSLenter)
+            rBSL_LED <= 1;
+        else if (reset)
+            rBSL_LED <= 0;
+    end
 
     /* Submodule Instantiations */
     `ifndef RUN_SIMULATION
@@ -115,21 +146,24 @@ module MSP430(
         .MW(MW), .BW(BW),
         .INTACK(INTACK)
     );
-      
-    // BlockMemInterface memInst(
-    //     .MCLK(MCLK),
-    //     .MAB(MAB), .MDBwrite(MDBwrite), .MDBread(MDBread),
-    //     .MW(MW), .BW(BW)
-    // );
+
+    `ifndef __ICARUS__  
+        BlockMemInterface memInst(
+            .MCLK(MCLK),
+            .MAB(MAB), .MDBwrite(MDBwrite), .MDBread(MDBread),
+            .MW(MW), .BW(BW)
+        );
+    `endif
 
     InterruptUnit IntUnit(
-        .MCLK(MCLK), .RSTn(RSTn), .INTACK(INTACK),
-        .reset(reset), .NMI(NMI), .INT(INT),
+        .MCLK(MCLK), .RSTn(RSTn), .INTACK(INTACK), .TEST(TEST),
+        .reset(reset), .NMI(NMI), .INT(INT), .BSLenter(BSLenter),
         .Module_55_int(eUSCIA0_INT), .Module_55_clr(),
         .Module_52_int(TA0INT0), .Module_52_clr(TA0CLR0), 
         .Module_51_int(TA0INT1), .Module_51_clr(), 
+        .Module_50_int(TA1INT1), .Module_50_clr(),
         .Module_47_int(TA1INT0), .Module_47_clr(TA1CLR0), 
-        .Module_46_int(TA1INT1), .Module_46_clr(), 
+        .Module_46_int(eUSCIA1_INT), .Module_46_clr(), 
         .Module_45_int(P1INT), .Module_45_clr(), 
         .Module_42_int(P2INT), .Module_42_clr(), 
         .Module_39_int(P3INT), .Module_39_clr(), 
@@ -145,6 +179,17 @@ module MSP430(
             .Rx(RxA0), .Tx(TxA0), 
             .MAB(MAB), .MDBwrite(MDBwrite), .MW(MW), .BW(BW), .MDBread(MDBread),
             .INT1(eUSCIA0_INT)
+        );
+    `endif
+
+    `ifdef IVT_eUSCI_A1_USED
+        eUSCI_A #(
+            .START(MAP_eUSCI_A1)
+        ) eUSCIA1(
+            .MCLK(MCLK), .UCxCLK(UCA1CLK), .ACLK(ACLK), .SMCLK(SMCLK), .reset(reset),
+            .Rx(RxA1), .Tx(TxA1), 
+            .MAB(MAB), .MDBwrite(MDBwrite), .MW(MW), .BW(BW), .MDBread(MDBread),
+            .INT1(eUSCIA1_INT)
         );
     `endif
 
@@ -353,21 +398,21 @@ module MSP430(
         PIN PinB4(
             .Px_m(gpio[GPIO3_4]), .PxOUTm(pbout[4]), .PxDIRm(pbdir[4]), .PxRENm(pbren[4]), 
             .PxINm(pbin[4]), .PxSELm({pbsel1[4], pbsel0[4]}), 
-            .OUT_1(1'b0), .DIR_1(1'b0), .IN_1(), 
+            .OUT_1(TxA1), .DIR_1(1'b1), .IN_1(), 
             .OUT_2(1'b0), .DIR_2(1'b0), .IN_2(),
             .OUT_3(1'b0), .DIR_3(1'b0), .IN_3()
         );
         PIN PinB5(
             .Px_m(gpio[GPIO3_5]), .PxOUTm(pbout[5]), .PxDIRm(pbdir[5]), .PxRENm(pbren[5]), 
             .PxINm(pbin[5]), .PxSELm({pbsel1[5], pbsel0[5]}), 
-            .OUT_1(1'b0), .DIR_1(1'b0), .IN_1(), 
+            .OUT_1(1'b0), .DIR_1(1'b0), .IN_1(RxA1), 
             .OUT_2(1'b0), .DIR_2(1'b0), .IN_2(),
             .OUT_3(1'b0), .DIR_3(1'b0), .IN_3()
         );
         PIN PinB6(
             .Px_m(gpio[GPIO3_6]), .PxOUTm(pbout[6]), .PxDIRm(pbdir[6]), .PxRENm(pbren[6]), 
             .PxINm(pbin[6]), .PxSELm({pbsel1[6], pbsel0[6]}), 
-            .OUT_1(1'b0), .DIR_1(1'b0), .IN_1(), 
+            .OUT_1(1'b0), .DIR_1(1'b0), .IN_1(UCA1CLK), 
             .OUT_2(1'b0), .DIR_2(1'b0), .IN_2(),
             .OUT_3(1'b0), .DIR_3(1'b0), .IN_3()
         );

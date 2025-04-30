@@ -100,7 +100,7 @@ SetupUCA0
 SetupGPIO
     ; Configure IO, LEDS and RST/TEST
     mov.b   #RLED,      P1DIR
-    bis.b   #RLED,      P1OUT
+    bic.b   #RLED,      P1OUT
 
     mov.b   #GLED,      P9DIR
     bic.b   #GLED,      P9OUT
@@ -126,7 +126,9 @@ INIT_ARG
 
 LOOP:
     ; Read A Record In
+    bis.b   #GLED,      P9OUT       ; Enable GLED, Interface ready to receive Record
     call    #RxRecord
+    bic.b   #GLED,      P9OUT       ; Disable GLED, Interface processing Record
     cmp     #RECORD_SUCCESS, R15
     jne     Transmit_NACK
 
@@ -196,7 +198,7 @@ LOOP_EOF:
     bis.b   #0x02,			P2REN
 
     bis.b   #TARGET_RST,    P2OUT
-    bic.b   #GLED,          P9OUT
+    bic.b   #RLED,          P1OUT   ; Disble RLED, Target Rest
     clr     ACTIVE
     jmp     Transmit_ACK
 
@@ -226,7 +228,7 @@ Detected    ; Target Detected, enable UCA0 Rx line and start UCA0
 	bic.b   #0x02,		P2REN
     bis.b   #0x02,      P2SEL0
     bic     #UCSWRST,   UCA0CTLW0
-    bis.b   #GLED,      P9OUT
+    bis.b   #RLED,      P1OUT       ; Enable RLED, Target Entered BSL Mode
     inc     ACTIVE
     jmp     Transmit_ACK
 
